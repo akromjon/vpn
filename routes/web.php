@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use Akromjon\Pritunl\Pritunl;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,5 +14,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+        $pritunl = new Pritunl('143.110.242.252', "akrom", "akromjon98");
+
+        $organizationId = "6567162cb8915c9dd36bd0c9";
+
+        $userId = "65671630b8915c9dd36bd0d8";
+
+       return $pritunl->download($organizationId,$userId);
 });

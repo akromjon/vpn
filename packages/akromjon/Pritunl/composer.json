@@ -1,0 +1,15 @@
+{
+    "name": "akromjon/pritunl",
+    "autoload": {
+        "psr-4": {
+            "Akromjon\\Pritunl\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "akromjon",
+            "email": "numonov.akromjon1998@gmail.com"
+        }
+    ],
+    "require": {}
+}

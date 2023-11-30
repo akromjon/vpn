@@ -36,6 +36,12 @@ return [
             'throw' => false,
         ],
 
+        'servers' => [
+            'driver' => 'local',
+            'root' => storage_path('servers/vpnconfigs'),
+            'throw' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
