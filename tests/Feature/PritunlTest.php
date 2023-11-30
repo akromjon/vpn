@@ -11,16 +11,29 @@ class PritunlTest extends TestCase
 {
 
     protected Pritunl $pritunl;
-    protected string $ip = '143.110.242.252';
-    protected string $username = 'akrom';
-    protected string $password = 'akromjon98';
+    protected string $ip;
+    protected string $username;
+    protected string $password;
     protected function setUp(): void
     {
         parent::setUp();
 
+        $this->setUpCredentials();
+
         $this->pritunl = new Pritunl($this->ip, $this->username, $this->password);
 
     }
+
+    private function setUpCredentials()
+    {
+        $this->ip = env("TEST_PRITUNL_IP");
+
+        $this->username =env("TEST_PRITUNL_USERNAME");
+
+        $this->password =env("TEST_PRITUNL_PASSWORD");
+    }
+
+
 
     public function test_it_fails_with_wrong_credentials()
     {
