@@ -21,16 +21,16 @@ class Headers
 
     public static function write(string $ip,string $key,string $value):void
     {
-        $headers=json_decode(file_get_contents(self::path()),true);
+        $headers=json_decode(File::get(self::path()),true);
 
         $headers[$ip][$key]=$value;
 
-        file_put_contents(self::path(),json_encode($headers));
+        File::put(self::path(),json_encode($headers));
     }
 
     public static function read(string $ip,string $key):string|null
     {
-        $headers=json_decode(file_get_contents(self::path()),true);
+        $headers=json_decode(File::get(self::path()),true);
 
         if(!isset($headers[$ip][$key])){
             return null;
@@ -40,7 +40,7 @@ class Headers
     }
 
     public  static function clean():void{
-        file_put_contents(self::path(),json_encode([]));
+        File::put(self::path(),json_encode([]));
     }
 
 }

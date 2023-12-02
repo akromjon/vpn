@@ -184,4 +184,198 @@ class Pritunl extends BaseHttp
         return $response;
 
     }
+
+    public function servers(): Response
+    {
+        $response = $this->baseHttp('get', 'server/');
+
+        if (401 == $response->status()) {
+
+            $this->login();
+
+            return $this->baseHttp('get', 'server/');
+        }
+
+        $this->checkStatus($response, 'Servers');
+
+        return $response;
+
+    }
+
+    public function stopServer(string $serverId): Response
+    {
+        $response = $this->baseHttp('put', "server/{$serverId}/operation/stop");
+
+        if (401 == $response->status()) {
+
+            $this->login();
+
+            return $this->baseHttp('put', "server/{$serverId}/operation/stop");
+        }
+
+        $this->checkStatus($response, 'Stop Server');
+
+        return $response;
+
+    }
+
+    public function startServer(string $serverId): Response
+    {
+        $response = $this->baseHttp('put', "server/{$serverId}/operation/start");
+
+        if (401 == $response->status()) {
+
+            $this->login();
+
+            return $this->baseHttp('put', "server/{$serverId}/operation/start");
+        }
+
+        $this->checkStatus($response, 'Start Server');
+
+        return $response;
+
+    }
+
+    public function restartServer(string $serverId): Response
+    {
+        $response = $this->baseHttp('put', "server/{$serverId}/operation/restart");
+
+        if (401 == $response->status()) {
+
+            $this->login();
+
+            return $this->baseHttp('put', "server/{$serverId}/operation/restart");
+        }
+
+        $this->checkStatus($response, 'Restart Server');
+
+        return $response;
+
+    }
+
+    public function deleteServer(string $serverId): Response
+    {
+        $response = $this->baseHttp('delete', "server/{$serverId}/");
+
+        if (401 == $response->status()) {
+
+            $this->login();
+
+            return $this->baseHttp('delete', "server/{$serverId}/");
+        }
+
+        $this->checkStatus($response, 'Delete Server');
+
+        return $response;
+
+    }
+
+    public function addServer(string $name):Response
+    {
+        $payload=$this->getServerPayload($name);
+
+        $response = $this->baseHttp('post', "server/",$payload);
+
+        if (401 == $response->status()) {
+
+            $this->login();
+
+            return $this->baseHttp('post', "server",$payload);
+        }
+
+        $this->checkStatus($response, 'Add Server');
+
+        return $response;
+    }
+
+    public function attachOrganization(string $serverId,string $organizationId):Response
+    {
+        $response = $this->baseHttp('put', "server/{$serverId}/organization/{$organizationId}/");
+
+        if (401 == $response->status()) {
+
+            $this->login();
+
+            return $this->baseHttp('put', "server/{$serverId}/organization/{$organizationId}/");
+        }
+
+        $this->checkStatus($response, 'Attach Organization');
+
+        return $response;
+    }
+
+    public function detachOrganization(string $serverId,string $organizationId):Response
+    {
+        $response = $this->baseHttp('delete', "server/{$serverId}/organization/{$organizationId}/");
+
+        if (401 == $response->status()) {
+
+            $this->login();
+
+            return $this->baseHttp('delete', "server/{$serverId}/organization/{$organizationId}/");
+        }
+
+        $this->checkStatus($response, 'Detach Organization');
+
+        return $response;
+    }
+
+    public function settings()
+    {
+        $response = $this->baseHttp('get', 'settings/');
+
+        if (401 == $response->status()) {
+
+            $this->login();
+
+            return $this->baseHttp('get', 'settings/');
+        }
+
+        $this->checkStatus($response, 'Settings');
+
+        return $response;
+    }
+
+    public function updateSettings(string $username,string $newPassword):Response
+    {
+        $params=[
+            "username" => $username,
+            "password" => $newPassword,
+        ];
+
+        $response = $this->baseHttp('put', 'settings/',$params);
+
+        if (401 == $response->status()) {
+
+            $this->login();
+
+            return $this->baseHttp('put', 'settings/',$params);
+        }
+
+        $this->checkStatus($response, 'Update Settings');
+
+        return $response;
+    }
+
+    public function setPinMode(string $mode):Response
+    {
+        $params=[
+            "pin_mode" => $mode,
+        ];
+
+        $response = $this->baseHttp('put', "settings/",$params);
+
+        if (401 == $response->status()) {
+
+            $this->login();
+
+            return $this->baseHttp('put', "settings/",$params);
+        }
+
+        $this->checkStatus($response, 'Set Pin Mode');
+
+        return $response;
+    }
+
+
 }

@@ -7,7 +7,7 @@ use Akromjon\Pritunl\Pritunl;
 use Tests\TestCase;
 use Illuminate\Support\Str;
 
-class PritunlTest extends TestCase
+class DigitalOceanPritunlTest extends TestCase
 {
 
     protected Pritunl $pritunl;
@@ -76,6 +76,8 @@ class PritunlTest extends TestCase
         $pritunl = $this->pritunl;
 
         $users = $pritunl->users("6567162cb8915c9dd36bd0c9");
+
+        logger($users->body());
 
         $this->assertIsArray($users->json());
     }
@@ -195,6 +197,131 @@ class PritunlTest extends TestCase
 
             $this->assertFileExists($path);
         }
+    }
+
+    public function test_it_can_get_a_list_of_servers()
+    {
+        $pritunl = $this->pritunl;
+
+        $servers=$pritunl->servers()->body();
+
+        $this->assertSame(200,$pritunl->servers()->status());
+
+        $this->assertIsArray($servers);
+    }
+
+    public function test_it_can_stop_server()
+    {
+        $pritunl = $this->pritunl;
+
+        $servers=$pritunl->servers()->json();
+
+        $serverId=$servers[0]['id'];
+
+        $this->assertSame(200,$pritunl->stopServer($serverId)->status());
+    }
+
+    public function test_it_can_start_server()
+    {
+        $pritunl = $this->pritunl;
+
+        $servers=$pritunl->servers()->json();
+
+        $serverId=$servers[0]['id'];
+
+        $this->assertSame(200,$pritunl->startServer($serverId)->status());
+    }
+
+    public function test_it_can_restart_server()
+    {
+        $pritunl = $this->pritunl;
+
+        $servers=$pritunl->servers()->json();
+
+        $serverId=$servers[0]['id'];
+
+        $this->assertSame(200,$pritunl->restartServer($serverId)->status());
+    }
+
+    public function test_it_can_delete_server()
+    {
+        $pritunl = $this->pritunl;
+
+        $servers=$pritunl->servers()->json();
+
+        $serverId=$servers[0]['id'];
+
+        $this->assertSame(200,$pritunl->deleteServer($serverId)->status());
+    }
+
+    public function test_it_can_add_server(){
+
+        $pritunl = $this->pritunl;
+
+        $random = Str::uuid()->toString();
+
+        $response=$pritunl->addServer($random);
+
+        $this->assertSame(200,$response->status());
+
+        $this->assertStringContainsString($random,$response->body());
+    }
+
+    public function test_it_can_attach_orginization_to_server(){
+
+        $pritunl = $this->pritunl;
+
+        $servers=$pritunl->servers()->json();
+
+        $serverId=$servers[0]['id'];
+
+        $organizations=$pritunl->organization()->json();
+
+        $organizationId=$organizations[0]['id'];
+
+        $response=$pritunl->attachOrganization($serverId,$organizationId);
+
+        $this->assertSame(200,$response->status());
+
+        $this->assertStringContainsString($organizationId,$response->body());
+    }
+    public function test_it_can_detach_organization_from_server(){
+
+        $pritunl = $this->pritunl;
+
+        $servers=$pritunl->servers()->json();
+
+        $serverId=$servers[0]['id'];
+
+        $organizations=$pritunl->organization()->json();
+
+        $organizationId=$organizations[0]['id'];
+
+        $response=$pritunl->detachOrganization($serverId,$organizationId);
+
+        $this->assertSame(200,$response->status());
+
+        $this->assertStringNotContainsString($organizationId,$response->body());
+    }
+
+    public function test_it_can_get_settings()
+    {
+        $pritunl = $this->pritunl;
+
+        $response=$pritunl->settings();
+
+        $this->assertSame(200,$response->status());
+
+        $this->assertIsArray($response->json());
+    }
+
+    public function test_it_can_update_settings()
+    {
+        $pritunl = $this->pritunl;
+
+        $pritunl->updateSettings(env("TEST_PRITUNL_USERNAME"),env("TEST_PRITUNL_PASSWORD"));
+
+        $this->assertSame(200,$pritunl->settings()->status());
     }
 
 
