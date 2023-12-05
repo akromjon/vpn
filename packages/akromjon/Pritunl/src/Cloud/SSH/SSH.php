@@ -51,6 +51,13 @@ class SSH extends SSHConnection
         return false;
     }
 
+    public function setTimeout(int $timeout):void
+    {
+        if(!$this->isSSH()){
+            $this->SSH2->setTimeout($timeout);
+        }
+    }
+
 }
 
 

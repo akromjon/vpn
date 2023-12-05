@@ -19,7 +19,7 @@ class Headers
         return $path;
     }
 
-    public static function write(string $ip,string $key,string $value):void
+    public static function write(string $ip,string $key,string|array $value):void
     {
         $headers=json_decode(File::get(self::path()),true);
 
@@ -28,7 +28,7 @@ class Headers
         File::put(self::path(),json_encode($headers));
     }
 
-    public static function read(string $ip,string $key):string|null
+    public static function read(string $ip,string $key):string|null|array
     {
         $headers=json_decode(File::get(self::path()),true);
 

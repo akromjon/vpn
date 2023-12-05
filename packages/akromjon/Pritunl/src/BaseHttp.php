@@ -2,6 +2,7 @@
 
 namespace Akromjon\Pritunl;
 
+use Akromjon\Pritunl\Cloud\SSH\SSH;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
@@ -34,10 +35,14 @@ abstract class BaseHttp
     protected function login():void
     {
 
+        dd($this->username ."-".$this->password);
+
+
         $response = $this->baseHttp('post','auth/session/', [
             'username' => $this->username,
             'password' => $this->password,
         ]);
+
 
 
         if($response->status()!=200){
@@ -130,6 +135,33 @@ abstract class BaseHttp
             "multihome"=> false
         ];
     }
+
+    protected function ssh(int $port, string $username,string $password="",string $connectionType="key" ,string $privateKeyPath="ssh"): SSH
+    {
+        return new SSH($this->ip, $port, $username,$password,$connectionType,$privateKeyPath);
+    }
+
+    protected function filterCredentials(string $credentials):array|\Exception
+    {
+
+        $regexUsername = '/username: "(.*?)"/';
+        $regexPassword = '/password: "(.*?)"/';
+
+        preg_match($regexUsername, $credentials, $matchesUsername);
+        preg_match($regexPassword, $credentials, $matchesPassword);
+
+        // Check if matches were found
+        if (isset($matchesUsername[1]) && isset($matchesPassword[1])) {
+            // Extracted username and password
+            $username = $matchesUsername[1];
+            $password = $matchesPassword[1];
+
+            return ['username'=>$username,'password'=>$password];
+        }
+
+        return new \Exception("Credentials not found");
+    }
+
 
 
 }

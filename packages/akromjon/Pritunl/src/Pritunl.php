@@ -2,6 +2,7 @@
 
 namespace Akromjon\Pritunl;
 
+use Akromjon\Pritunl\Cloud\SSH\SSH;
 use Illuminate\Http\Client\Response;
 use Akromjon\Pritunl\BaseHttp;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -373,6 +374,96 @@ class Pritunl extends BaseHttp
         }
 
         $this->checkStatus($response, 'Set Pin Mode');
+
+        return $response;
+    }
+
+    public function activateSubscription():Response
+    {
+        $params=[
+            'license' =>"active ultimate"
+        ];
+
+        $response = $this->baseHttp('post', 'subscription/', $params);
+
+        if (401 == $response->status()) {
+
+            $this->login();
+
+            return $this->baseHttp('post', 'subscription/', $params);
+        }
+
+        $this->checkStatus($response, 'Active Subscriptions');
+
+        return $response;
+    }
+
+    public function self(string $ip,string $username,string $password):self
+    {
+        return new self($ip,$username,$password);
+    }
+
+    public function install(int $port, string $username,string $password="",string $connectionType="key" ,string $privateKeyPath="ssh"):SSH
+    {
+        $ssh=$this->ssh($port,$username,$password,$connectionType,$privateKeyPath);
+
+        if(!$ssh->connect()){
+
+            throw new \Exception("SSH connection failed");
+
+        }
+
+        $ssh->setTimeout(0);
+
+        // $ssh->exec('wget -O - https://raw.githubusercontent.com/akromjon/pritunl-ubuntu-22-04/main/install-pritunl.sh | bash');
+
+        // $ssh->exec('sudo systemctl start pritunl');
+
+
+        // $result=str_replace("\n","",$result);
+
+        // Headers::write($this->ip,'set-upk-ey',$result);
+
+        // $this->setUp();
+
+        // $result=$ssh->exec("sudo pritunl default-password");
+
+        // $credentials=$this->filterCredentials($result);
+
+        // Headers::write($this->ip,'default-password',$credentials);
+
+        $credentials=Headers::read($this->ip,'default-password');
+
+
+
+
+        $pritunl=$this->self($this->ip,$credentials['username'],$credentials['password']);
+
+        $pritunl=$this->updateSettings($credentials['username'],$credentials['password']);
+
+        $ssh->disconnect();
+
+        return $ssh;
+    }
+
+    public function setUp()
+    {
+        $params=[
+            "setup_key" => Headers::read($this->ip,'setupkey'),
+            "mongodb_uri" => "mongodb://localhost:27017/pritunl",
+        ];
+
+        $response = $this->baseHttp('post', 'setup/mongodb',$params);
+
+        if (401 == $response->status()) {
+
+            $this->login();
+
+            return $this->baseHttp('post', 'setup/mongodb',$params);
+        }
+
+
+        $this->checkStatus($response, 'Setup');
 
         return $response;
     }
