@@ -22,7 +22,7 @@ class SSH extends SSHConnection
         return true;
     }
 
-    public function exec(string $command):string|Exception|Error
+    public function exec(string $command):bool|string|Exception|Error
     {
         if($this->isSSH() || !$this->SSH2->isConnected()){
 
@@ -56,6 +56,15 @@ class SSH extends SSHConnection
         if(!$this->isSSH()){
             $this->SSH2->setTimeout($timeout);
         }
+    }
+
+    public function getStatusExitCode():int
+    {
+        if(!$this->isSSH()){
+            return $this->SSH2->getExitStatus();
+        }
+
+        return 0;
     }
 
 }

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Akromjon\Pritunl\Cloud\SSH\SSH;
 use Akromjon\Pritunl\Headers;
 use Akromjon\Pritunl\Pritunl;
 use Tests\TestCase;
@@ -26,7 +27,7 @@ class DigitalOceanPritunlTest extends TestCase
 
     private function setUpCredentials()
     {
-        $this->ip = env("TEST_PRITUNL_IP");
+        $this->ip = env("SERVER_IP");
 
         $this->username =env("TEST_PRITUNL_USERNAME");
 
@@ -323,6 +324,22 @@ class DigitalOceanPritunlTest extends TestCase
 
         $this->assertSame(200,$pritunl->settings()->status());
     }
+
+    public function test_it_can_restart_restart_pritunl()
+    {
+        $pritunl = $this->pritunl;
+
+        $ssh=new SSH($this->ip,22,'root',$this->password);
+
+        $pritunl->restartPritunl($ssh);
+
+        $this->assertSame(0,$ssh->getStatusExitCode());
+
+        $ssh->disconnect();
+
+    }
+
+
 
 
 }

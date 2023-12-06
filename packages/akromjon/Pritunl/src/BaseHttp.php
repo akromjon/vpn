@@ -5,12 +5,14 @@ namespace Akromjon\Pritunl;
 use Akromjon\Pritunl\Cloud\SSH\SSH;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 abstract class BaseHttp
 {
     protected string $ip;
     protected string $username;
     protected string $password;
+    protected string $restartCommand="sudo systemctl restart pritunl.service && sleep 10";
     public function __construct(string $ip, string $username, string $password)
     {
         $this->ip = $ip;
@@ -23,26 +25,25 @@ abstract class BaseHttp
         return "https://{$this->ip}/";
     }
 
-    protected function baseHttp(string $method,string $route,array $requestBody=[]):Response
+    protected function baseHttp(string $method,string $route,array $requestBody=[],int $timeout=30):Response
     {
         return Http::withOptions(['verify' => false])
-            ->withHeaders([
-            'csrf-token' => Headers::read($this->ip,'csrf-token'),
-            'Cookie' => Headers::read($this->ip,'cookie')
-        ])->{$method}($this->baseUrl().$route,$requestBody);
+                ->timeout($timeout)
+                ->withHeaders([
+                    'csrf-token' => Headers::read($this->ip,'csrf-token'),
+                    'Cookie' => Headers::read($this->ip,'cookie')
+                ])->{$method}($this->baseUrl().$route,$requestBody);
     }
+
+
 
     protected function login():void
     {
-
-        dd($this->username ."-".$this->password);
-
 
         $response = $this->baseHttp('post','auth/session/', [
             'username' => $this->username,
             'password' => $this->password,
         ]);
-
 
 
         if($response->status()!=200){
@@ -160,6 +161,84 @@ abstract class BaseHttp
         }
 
         return new \Exception("Credentials not found");
+    }
+
+    protected function installPritunl(SSH $ssh):SSH
+    {
+        $ssh->connect();
+
+        $ssh->setTimeout(0);
+
+        Log::info("starting install-pritunl.sh");
+
+        $output = $ssh->exec('wget -O - https://raw.githubusercontent.com/akromjon/pritunl-ubuntu-22-04/main/install-pritunl.sh | bash');
+
+        Log::info("output of install-pritunl.sh", ['output' => $output]);
+
+        $ssh->exec($this->restartCommand);
+
+        return $ssh;
+    }
+
+    protected function generateSetUpKey(SSH $ssh):SSH
+    {
+        $result = $ssh->exec('sudo pritunl setup-key');
+
+        Log::info("sudo pritunl setup-key", ['output' => $result]);
+
+        Headers::write($this->ip, 'set-up-key', str_replace("\n", "", $result));
+
+        return $ssh;
+    }
+
+    protected function generateDefaultCredentials(SSH $ssh):SSH
+    {
+        $result = $ssh->exec("sudo pritunl default-password");
+
+        Log::info("sudo pritunl default-password", ['output' => $result]);
+
+        Headers::write($this->ip, 'default-password', $this->filterCredentials($result));
+
+        $this->resetLoginAndPassword();
+
+        $ssh->exec($this->restartCommand);
+
+        return $ssh;
+    }
+
+    protected function requestKey(): Response
+    {
+        $params = [
+            "setup_key" => Headers::read($this->ip, 'set-up-key'),
+            "mongodb_uri" => "mongodb://localhost:27017/pritunl",
+        ];
+
+        $response = $this->baseHttp('put', 'setup/mongodb', $params,180);
+
+        $this->checkStatus($response, 'setUpKey');
+
+        return $response;
+    }
+
+    protected function installFakeAPI(SSH $ssh):SSH
+    {
+        $output = $ssh->exec("curl -sSL https://raw.githubusercontent.com/akromjon/Pritunl-Fake-API/master/server/setup.py | python3 -");
+
+        Log::info("setup.py", ['output' => $output]);
+
+        $result=$ssh->exec($this->restartCommand);
+
+        Log::info($this->restartCommand, ['output' => $result]);
+
+        return $ssh;
+    }
+
+    protected function resetLoginAndPassword()
+    {
+        $credentials = Headers::read($this->ip, 'default-password');
+
+        $this->username = $credentials['username']; $this->password = $credentials['password'];
+
     }
 
 

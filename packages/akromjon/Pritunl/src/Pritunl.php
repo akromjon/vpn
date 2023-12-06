@@ -5,6 +5,7 @@ namespace Akromjon\Pritunl;
 use Akromjon\Pritunl\Cloud\SSH\SSH;
 use Illuminate\Http\Client\Response;
 use Akromjon\Pritunl\BaseHttp;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class Pritunl extends BaseHttp
@@ -84,7 +85,7 @@ class Pritunl extends BaseHttp
     public function addUser(string $organizationId, string $name): Response
     {
 
-        $params=[
+        $params = [
             "id" => null,
             "organization" => $organizationId,
             "organization_name" => null,
@@ -130,7 +131,7 @@ class Pritunl extends BaseHttp
 
     }
 
-    public function deleteUser(string $organizationId,string $userId):Response
+    public function deleteUser(string $organizationId, string $userId): Response
     {
         $response = $this->baseHttp('delete', "user/{$organizationId}/{$userId}/");
 
@@ -146,7 +147,7 @@ class Pritunl extends BaseHttp
         return $response;
     }
 
-    public function download(string $organizationId,string $userId):BinaryFileResponse|Response
+    public function download(string $organizationId, string $userId): BinaryFileResponse|Response
     {
         $response = $this->baseHttp('get', "key/{$organizationId}/{$userId}.tar");
 
@@ -159,14 +160,14 @@ class Pritunl extends BaseHttp
 
         $this->checkStatus($response, 'Download User');
 
-        $config=new VPNConfig($this->ip,$organizationId,$userId);
+        $config = new VPNConfig($this->ip, $organizationId, $userId);
 
-       return response()->download($config->download($response->body()));
+        return response()->download($config->download($response->body()));
     }
 
-    public function getDownloadFilePath(string $organizationId,string $userId):string
+    public function getDownloadFilePath(string $organizationId, string $userId): string
     {
-        $config=new VPNConfig($this->ip,$organizationId,$userId);
+        $config = new VPNConfig($this->ip, $organizationId, $userId);
 
         return $config->getExtractedFile();
 
@@ -271,17 +272,17 @@ class Pritunl extends BaseHttp
 
     }
 
-    public function addServer(string $name):Response
+    public function addServer(string $name): Response
     {
-        $payload=$this->getServerPayload($name);
+        $payload = $this->getServerPayload($name);
 
-        $response = $this->baseHttp('post', "server/",$payload);
+        $response = $this->baseHttp('post', "server/", $payload);
 
         if (401 == $response->status()) {
 
             $this->login();
 
-            return $this->baseHttp('post', "server",$payload);
+            return $this->baseHttp('post', "server", $payload);
         }
 
         $this->checkStatus($response, 'Add Server');
@@ -289,7 +290,7 @@ class Pritunl extends BaseHttp
         return $response;
     }
 
-    public function attachOrganization(string $serverId,string $organizationId):Response
+    public function attachOrganization(string $serverId, string $organizationId): Response
     {
         $response = $this->baseHttp('put', "server/{$serverId}/organization/{$organizationId}/");
 
@@ -305,7 +306,7 @@ class Pritunl extends BaseHttp
         return $response;
     }
 
-    public function detachOrganization(string $serverId,string $organizationId):Response
+    public function detachOrganization(string $serverId, string $organizationId): Response
     {
         $response = $this->baseHttp('delete', "server/{$serverId}/organization/{$organizationId}/");
 
@@ -337,20 +338,20 @@ class Pritunl extends BaseHttp
         return $response;
     }
 
-    public function updateSettings(string $username,string $newPassword):Response
+    public function updateSettings(string $username, string $newPassword): Response
     {
-        $params=[
+        $params = [
             "username" => $username,
             "password" => $newPassword,
         ];
 
-        $response = $this->baseHttp('put', 'settings/',$params);
+        $response = $this->baseHttp('put', 'settings/', $params);
 
         if (401 == $response->status()) {
 
             $this->login();
 
-            return $this->baseHttp('put', 'settings/',$params);
+            return $this->baseHttp('put', 'settings/', $params);
         }
 
         $this->checkStatus($response, 'Update Settings');
@@ -358,19 +359,19 @@ class Pritunl extends BaseHttp
         return $response;
     }
 
-    public function setPinMode(string $mode):Response
+    public function setPinMode(string $mode): Response
     {
-        $params=[
+        $params = [
             "pin_mode" => $mode,
         ];
 
-        $response = $this->baseHttp('put', "settings/",$params);
+        $response = $this->baseHttp('put', "settings/", $params);
 
         if (401 == $response->status()) {
 
             $this->login();
 
-            return $this->baseHttp('put', "settings/",$params);
+            return $this->baseHttp('put', "settings/", $params);
         }
 
         $this->checkStatus($response, 'Set Pin Mode');
@@ -378,19 +379,19 @@ class Pritunl extends BaseHttp
         return $response;
     }
 
-    public function activateSubscription():Response
+    public function activateSubscription(): Response
     {
-        $params=[
-            'license' =>"active ultimate"
+        $params = [
+            'license' => "active ultimate"
         ];
 
-        $response = $this->baseHttp('post', 'subscription/', $params);
+        $response = $this->baseHttp('post', 'subscription/', $params,180);
 
         if (401 == $response->status()) {
 
             $this->login();
 
-            return $this->baseHttp('post', 'subscription/', $params);
+            return $this->baseHttp('post', 'subscription/', $params,180);
         }
 
         $this->checkStatus($response, 'Active Subscriptions');
@@ -398,75 +399,40 @@ class Pritunl extends BaseHttp
         return $response;
     }
 
-    public function self(string $ip,string $username,string $password):self
+    public function self(string $ip, string $username, string $password): self
     {
-        return new self($ip,$username,$password);
+        return new self($ip, $username, $password);
     }
 
-    public function install(int $port, string $username,string $password="",string $connectionType="key" ,string $privateKeyPath="ssh"):SSH
+    public function install(SSH $ssh, string $username, string $password): Response
     {
-        $ssh=$this->ssh($port,$username,$password,$connectionType,$privateKeyPath);
+        $this->installPritunl($ssh);
 
-        if(!$ssh->connect()){
+        $this->generateSetUpKey($ssh);
 
-            throw new \Exception("SSH connection failed");
+        $this->requestKey();
 
-        }
+        $this->generateDefaultCredentials($ssh);
 
-        $ssh->setTimeout(0);
+        $this->updateSettings($username, $password);
 
-        // $ssh->exec('wget -O - https://raw.githubusercontent.com/akromjon/pritunl-ubuntu-22-04/main/install-pritunl.sh | bash');
-
-        // $ssh->exec('sudo systemctl start pritunl');
-
-
-        // $result=str_replace("\n","",$result);
-
-        // Headers::write($this->ip,'set-upk-ey',$result);
-
-        // $this->setUp();
-
-        // $result=$ssh->exec("sudo pritunl default-password");
-
-        // $credentials=$this->filterCredentials($result);
-
-        // Headers::write($this->ip,'default-password',$credentials);
-
-        $credentials=Headers::read($this->ip,'default-password');
-
-
-
-
-        $pritunl=$this->self($this->ip,$credentials['username'],$credentials['password']);
-
-        $pritunl=$this->updateSettings($credentials['username'],$credentials['password']);
+        $this->installFakeAPI($ssh);
 
         $ssh->disconnect();
 
-        return $ssh;
+        return $this->activateSubscription();
+
     }
 
-    public function setUp()
+    public function restartPritunl(SSH $ssh):string
     {
-        $params=[
-            "setup_key" => Headers::read($this->ip,'setupkey'),
-            "mongodb_uri" => "mongodb://localhost:27017/pritunl",
-        ];
+        $ssh->connect();
 
-        $response = $this->baseHttp('post', 'setup/mongodb',$params);
+        $output=$ssh->exec($this->restartCommand);
 
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('post', 'setup/mongodb',$params);
-        }
-
-
-        $this->checkStatus($response, 'Setup');
-
-        return $response;
+        return $output;
     }
+
 
 
 }

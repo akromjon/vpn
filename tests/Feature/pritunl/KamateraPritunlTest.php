@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Akromjon\Pritunl\Cloud\SSH\SSH;
 use Akromjon\Pritunl\Headers;
 use Akromjon\Pritunl\Pritunl;
 use Tests\TestCase;
@@ -26,11 +27,11 @@ class KamateraPritunlTest extends TestCase
 
     private function setUpCredentials()
     {
-        $this->ip = env("TEST_KAMATERA_PRITUNL_IP");
+        $this->ip = env("SERVER_IP");
 
-        $this->username =env("TEST_KAMATERA_PRITUNL_USERNAME");
+        $this->username =env("SERVER_USERNAME");
 
-        $this->password =env("TEST_KAMATERA_PRITUNL_PASSWORD");
+        $this->password =env("SERVER_PASSWORD");
     }
 
 
@@ -341,6 +342,27 @@ class KamateraPritunlTest extends TestCase
 
         $this->assertSame(200,$pritunl->settings()->status());
     }
+
+    public function test_it_can_activate_subscription()
+    {
+        $pritunl = $this->pritunl;
+
+        $response=$pritunl->activateSubscription();
+
+        $this->assertSame(200,$response->status());
+    }
+
+    public function test_it_can_install_itself()
+    {
+        $ssh=new SSH(env('SERVER_IP'),22,'root',env('SERVER_PASSWORD'));
+        $pritunl= new Pritunl(env('SERVER_IP'),env('TEST_PRITUNL_USERNAME'),env('TEST_PRITUNL_PASSWORD'));
+        $response=$pritunl->install($ssh,env('TEST_PRITUNL_USERNAME'),env('TEST_PRITUNL_PASSWORD'));
+        $this->assertSame(200,$response->status());
+    }
+
+
+
+
 
 
 }

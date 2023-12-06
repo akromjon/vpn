@@ -63,6 +63,8 @@ abstract class SSHConnection
 
         return $this->SSH2->login($this->username, $this->getKey());
     }
+
+
 }
 
 

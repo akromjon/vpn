@@ -2,7 +2,9 @@
 
 use Tests\TestCase;
 use Akromjon\Pritunl\Cloud\SSH\SSH;
-class KamateraSSHTest extends TestCase{
+use Akromjon\Pritunl\Pritunl;
+
+class SSHTest extends TestCase{
 
     protected SSH $ssh;
     protected string $ip;
@@ -22,11 +24,14 @@ class KamateraSSHTest extends TestCase{
 
     private function setUpCredentials()
     {
-        $this->ip = env("TEST_KAMATERA_SERVER_IP");
+        $this->ip = env("SERVER_IP");
 
-        $this->username =env("TEST_KAMATERA_USERNAME");
+        $this->username =env("SERVER_USERNAME");
 
-        $this->password =env("TEST_KAMATERA_PASSWORD");
+        $this->password =env("SERVER_PASSWORD");
+
+        $this->connectionType=env("SERVER_CONNECTION");
+
     }
 
     public function test_it_can_connect_to_server()
@@ -61,13 +66,35 @@ class KamateraSSHTest extends TestCase{
         $this->assertFalse($ssh->isConntected());
     }
 
-    public function test_it_can_get_exception_when_connecting_to_server()
+    public function test_it_can_get_exception_when_connecting_to_server_kamatera()
     {
         $this->expectException(\Error::class);
 
         $ssh = $this->ssh;
 
-        $ssh->exec('pwds');
+        $ssh->exec('pwd');
+
+    }
+    public function test_it_can_reboot()
+    {
+        $ssh=$this->ssh;
+        $ssh->connect();
+        $ssh->exec('reboot');
+        $ssh->disconnect();
+        $this->assertFalse($ssh->isConntected());
+
+    }
+
+    public function test_it_can_get_error_when_command_is_wrong()
+    {
+        $ssh=$this->ssh;
+        $ssh->connect();
+        $ssh->exec('wrong_command');
+        $this->assertSame($ssh->getStatusExitCode(),127);
+        $ssh->exec("pwd");
+        $this->assertSame($ssh->getStatusExitCode(),0);
+        $ssh->disconnect();
+        $this->assertFalse($ssh->isConntected());
 
     }
 }
