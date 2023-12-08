@@ -1,0 +1,17 @@
+{
+    "name": "akromjon/digital-ocean-client",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Akromjon\\DigitalOceanClient\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "akromjon",
+            "email": "numonov.akromjon1998@gmail.com"
+        }
+    ],
+    "require": {}
+}

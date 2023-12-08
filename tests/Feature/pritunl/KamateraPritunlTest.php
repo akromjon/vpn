@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\pritunl;
 
 use Akromjon\Pritunl\Cloud\SSH\SSH;
 use Akromjon\Pritunl\Headers;
