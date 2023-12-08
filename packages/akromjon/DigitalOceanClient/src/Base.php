@@ -56,4 +56,9 @@ abstract class Base
             'Operational / Developer tooling',
         ];
     }
+
+    protected function getValueOrDefault(string $value,string $defaultValue):string
+    {
+        return $value != "" ? $value : $defaultValue;
+    }
 }
