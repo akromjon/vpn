@@ -3,7 +3,6 @@
 namespace Akromjon\DigitalOceanClient;
 
 use Illuminate\Http\Client\Response;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
 abstract class Base
@@ -23,11 +22,21 @@ abstract class Base
         return $response;
     }
 
+    private function createExceptionMessage(string $method,string $route,array $requestBody,string $responseBody):string
+    {
+        $requestBody=json_encode($requestBody);
+
+        return "Method: {$method}, Route: {$route}, Request Body: {$requestBody}, Response: {$responseBody}";
+    }
+
     protected function checkResponse(Response $response,string $method,string $route,array $requestBody):Response|\Exception
     {
-        if(!in_array($response->status(),[200,201,204])){
-            $requestBody=json_encode($requestBody);
-            throw new \Exception("Code:{$response->status()}, Method: {$method}, Route: {$route}, Request Body: {$requestBody}, Response: {$response->body()}");
+        $status=$response->status();
+
+        if(!in_array($status,[200,201,204])){
+
+            throw new \Exception($this->createExceptionMessage($method,$route,$requestBody,$response->body()));
+
         }
 
         return $response;
@@ -35,9 +44,10 @@ abstract class Base
 
     protected function wrapInArray(array|null $data):array
     {
-        if(is_null($data))
-        {
+        if(is_null($data)){
+
             return [];
+
         }
 
         return collect($data)->all();
