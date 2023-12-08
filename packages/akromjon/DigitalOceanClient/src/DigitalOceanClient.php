@@ -1,7 +1,6 @@
 <?php
 
 namespace Akromjon\DigitalOceanClient;
-use Illuminate\Database\Eloquent\Collection;
 
 class DigitalOceanClient extends \Akromjon\DigitalOceanClient\Base
 {
