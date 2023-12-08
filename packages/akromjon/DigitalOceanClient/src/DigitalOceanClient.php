@@ -1,36 +1,41 @@
 <?php
 
 namespace Akromjon\DigitalOceanClient;
-
-use Akromjon\DigitalOceanClient\Base;
-
-class DigitalOceanClient extends Base
+class DigitalOceanClient extends \Akromjon\DigitalOceanClient\Base
 {
     public function projects(): array
     {
         $response = $this->baseHTTP('get', 'projects');
+
         return $this->wrapInArray($response->json(), 'projects');
     }
 
     public function project(string $projectId): array
     {
         $response = $this->baseHTTP('get', 'projects/' . $projectId);
+
         return $this->wrapInArray($response->json(), 'project');
     }
 
     public function projectResources(string $projectId): array
     {
         $response = $this->baseHTTP('get', 'projects/' . $projectId . '/resources');
+
         return $this->wrapInArray($response->json(), 'resources');
     }
 
-    public function createProject(string $name, string $purpose="", string $description="",string $environment=""): array
+    public function createProject(
+        string $name,
+        string $purpose="",
+        string $description="",
+        string $environment=""): array
     {
+
         $response = $this->baseHTTP('post', 'projects', [
             'name' => $name,
-            'purpose' => ''==$purpose ? $this->getProjectPurposes()[4] : $purpose,
-            'description' => ''==$description ? $this->getProjectPurposes()[4] : $description,
-            'environment' => ''==$environment ? 'Development' : $environment,
+            'purpose' => $this->getValueOrDefault($purpose, $this->getProjectPurposes()[4]),
+            'description' => $this->getValueOrDefault($description, $this->getProjectPurposes()[4]),
+            'environment' => $this->getValueOrDefault($environment, "Development")
         ]);
 
         return $this->wrapInArray($response->json(), 'project');
@@ -41,11 +46,11 @@ class DigitalOceanClient extends Base
         $project = $this->project($projectId);
 
         $params = [
-            'name' => $name != "" ? $name : $project['name'],
-            'purpose' => $purpose != "" ? $purpose : $project['purpose'],
-            'description' => $description != "" ? $description : $project['description'],
-            'environment' => $environment != "" ? $environment : $project['environment'],
-            'is_default' => $isDefault ? $isDefault : $project['is_default'],
+            'name' => $this->getValueOrDefault($name, $project['name']),
+            'purpose' => $this->getValueOrDefault($purpose, $project['purpose']),
+            'description' => $this->getValueOrDefault($description, $project['description']),
+            'environment' => $this->getValueOrDefault($environment, $project['environment']),
+            'is_default' => $this->getValueOrDefault($isDefault, $project['is_default']),
         ];
 
         $response = $this->baseHTTP('put', 'projects/' . $projectId, $params);
@@ -98,6 +103,20 @@ class DigitalOceanClient extends Base
         $response = $this->baseHTTP('get', 'vpcs');
 
         return $this->wrapInArray($response->json(), 'vpcs');
+    }
+
+    public function vpc(string $vpcId):array
+    {
+        $response = $this->baseHTTP('get', 'vpcs/' . $vpcId);
+
+        return $this->wrapInArray($response->json(), 'vpc');
+    }
+
+    public function account():array
+    {
+        $response = $this->baseHTTP('get', 'account');
+
+        return $this->wrapInArray($response->json(), 'account');
     }
 
 
