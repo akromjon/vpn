@@ -3,6 +3,7 @@
 namespace Akromjon\DigitalOceanClient;
 
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
 abstract class Base
@@ -32,14 +33,14 @@ abstract class Base
         return $response;
     }
 
-    protected function wrapInArray(array|null $data,string $get):array
+    protected function wrapInArray(array|null $data):array
     {
         if(is_null($data))
         {
             return [];
         }
 
-        return collect($data)->get($get);
+        return collect($data)->all();
     }
 
     public function getProjectPurposes(): array
@@ -57,8 +58,14 @@ abstract class Base
         ];
     }
 
-    protected function getValueOrDefault(string $value,string $defaultValue):string
+    protected function getValueOrDefault(string|bool $value,string $defaultValue):string|bool
     {
+        if(is_bool($value)){
+
+            return $value ? true : false;
+
+        }
+
         return $value != "" ? $value : $defaultValue;
     }
 }

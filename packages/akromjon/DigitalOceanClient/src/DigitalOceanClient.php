@@ -1,27 +1,28 @@
 <?php
 
 namespace Akromjon\DigitalOceanClient;
+
 class DigitalOceanClient extends \Akromjon\DigitalOceanClient\Base
 {
     public function projects(): array
     {
         $response = $this->baseHTTP('get', 'projects');
 
-        return $this->wrapInArray($response->json(), 'projects');
+        return $this->wrapInArray($response->json('projects'));
     }
 
     public function project(string $projectId): array
     {
         $response = $this->baseHTTP('get', 'projects/' . $projectId);
 
-        return $this->wrapInArray($response->json(), 'project');
+        return $this->wrapInArray($response->json('project'));
     }
 
     public function projectResources(string $projectId): array
     {
         $response = $this->baseHTTP('get', 'projects/' . $projectId . '/resources');
 
-        return $this->wrapInArray($response->json(), 'resources');
+        return $this->wrapInArray($response->json('resources'));
     }
 
     public function createProject(
@@ -38,7 +39,7 @@ class DigitalOceanClient extends \Akromjon\DigitalOceanClient\Base
             'environment' => $this->getValueOrDefault($environment, "Development")
         ]);
 
-        return $this->wrapInArray($response->json(), 'project');
+        return $this->wrapInArray($response->json('project'));
     }
 
     public function updateProject(string $projectId, string $name = "", string $purpose = "", string $description = "", string $environment = "", bool $isDefault = false): array
@@ -55,7 +56,7 @@ class DigitalOceanClient extends \Akromjon\DigitalOceanClient\Base
 
         $response = $this->baseHTTP('put', 'projects/' . $projectId, $params);
 
-        return $this->wrapInArray($response->json(), 'project');
+        return $this->wrapInArray($response->json('project'));
     }
 
     public function deleteProject(string $projectId): array
@@ -65,21 +66,21 @@ class DigitalOceanClient extends \Akromjon\DigitalOceanClient\Base
             'project_id' => $projectId
         ]);
 
-        return $this->wrapInArray($response->json(), 'project');
+        return $this->wrapInArray($response->json('project'));
     }
 
     public function defaultProject(): array
     {
         $response = $this->baseHTTP('get', 'projects/default');
 
-        return $this->wrapInArray($response->json(), 'project');
+        return $this->wrapInArray($response->json('project'));
     }
 
     public function sizes(): array
     {
         $response = $this->baseHTTP('get', 'sizes');
 
-        return $this->wrapInArray($response->json(), 'sizes');
+        return $this->wrapInArray($response->json('sizes'));
     }
 
     public function snapshots(string $resourceType = "droplet"): array
@@ -88,35 +89,35 @@ class DigitalOceanClient extends \Akromjon\DigitalOceanClient\Base
             'resource_type' => $resourceType
         ]);
 
-        return $this->wrapInArray($response->json(), 'snapshots');
+        return $this->wrapInArray($response->json('snapshots'));
     }
 
     public function snapshot(string $snapshotId): array
     {
         $response = $this->baseHTTP('get', 'snapshots/' . $snapshotId);
 
-        return $this->wrapInArray($response->json(), 'snapshot');
+        return $this->wrapInArray($response->json('snapshot'));
     }
 
     public function vpcs():array
     {
         $response = $this->baseHTTP('get', 'vpcs');
 
-        return $this->wrapInArray($response->json(), 'vpcs');
+        return $this->wrapInArray($response->json('vpcs'));
     }
 
     public function vpc(string $vpcId):array
     {
         $response = $this->baseHTTP('get', 'vpcs/' . $vpcId);
 
-        return $this->wrapInArray($response->json(), 'vpc');
+        return $this->wrapInArray($response->json('vpc'));
     }
 
     public function account():array
     {
         $response = $this->baseHTTP('get', 'account');
 
-        return $this->wrapInArray($response->json(), 'account');
+        return $this->wrapInArray($response->json('account'));
     }
 
 
