@@ -3,15 +3,19 @@
 namespace Akromjon\DigitalOceanClient;
 
 use Illuminate\Http\Client\Response;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
 abstract class Base
 {
     protected string $baseUrl='https://api.digitalocean.com/v2/';
-    public function __construct(protected string $token)
+    private function __construct(protected string $token)
     {
         $this->token = $token;
+    }
+
+    public static function connect(string $token): static
+    {
+        return new static($token);
     }
 
     protected function baseHTTP(string $method,string $route,array $requestBody=[]):Response|\Exception
@@ -23,11 +27,21 @@ abstract class Base
         return $response;
     }
 
+    private function createExceptionMessage(int $status,string $method,string $route,array $requestBody,string $responseBody):string
+    {
+        $requestBody=json_encode($requestBody);
+
+        return "Status: $status, Method: {$method}, Route: {$route}, Request Body: {$requestBody}, Response: {$responseBody}";
+    }
+
     protected function checkResponse(Response $response,string $method,string $route,array $requestBody):Response|\Exception
     {
-        if(!in_array($response->status(),[200,201,204])){
-            $requestBody=json_encode($requestBody);
-            throw new \Exception("Code:{$response->status()}, Method: {$method}, Route: {$route}, Request Body: {$requestBody}, Response: {$response->body()}");
+        $status=$response->status();
+
+        if(!in_array($status,[200,201,202,204])){
+
+            throw new \Exception($this->createExceptionMessage($status,$method,$route,$requestBody,$response->body()));
+
         }
 
         return $response;
@@ -35,9 +49,10 @@ abstract class Base
 
     protected function wrapInArray(array|null $data):array
     {
-        if(is_null($data))
-        {
+        if(is_null($data)){
+
             return [];
+
         }
 
         return collect($data)->all();

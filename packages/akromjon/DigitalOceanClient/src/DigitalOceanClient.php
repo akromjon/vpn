@@ -1,8 +1,8 @@
 <?php
 
 namespace Akromjon\DigitalOceanClient;
-
-class DigitalOceanClient extends \Akromjon\DigitalOceanClient\Base
+use Akromjon\DigitalOceanClient\Base;
+class DigitalOceanClient extends Base
 {
     public function projects(): array
     {
@@ -23,6 +23,26 @@ class DigitalOceanClient extends \Akromjon\DigitalOceanClient\Base
         $response = $this->baseHTTP('get', 'projects/' . $projectId . '/resources');
 
         return $this->wrapInArray($response->json('resources'));
+    }
+
+    public function assignProjectResources(string $projectId, array $resources): array
+    {
+        $response = $this->baseHTTP('post', 'projects/' . $projectId . '/resources', [
+            'resources' => $resources
+        ]);
+
+        return $this->wrapInArray($response->json('resources'));
+    }
+
+    public function assignProjectDroplets(string $projectId, array $dropletIds): array
+    {
+        $resources=[];
+
+        array_map(function ($dropletId) use (&$resources) {
+            $resources[] = "do:droplet:$dropletId";
+        }, $dropletIds);
+
+        return $this->assignProjectResources($projectId, $resources);
     }
 
     public function createProject(
@@ -120,9 +140,118 @@ class DigitalOceanClient extends \Akromjon\DigitalOceanClient\Base
         return $this->wrapInArray($response->json('account'));
     }
 
+    public function images(string $private="false",string $type="distribution"):array
+    {
+        $response = $this->baseHTTP('get', 'images',[
+            'private'=>$private,
+            'type'=>$type,
+        ]);
 
+        return $this->wrapInArray($response->json('images'));
+    }
 
+    public function image(string $imageId):array
+    {
+        $response = $this->baseHTTP('get', 'images/' . $imageId);
 
+        return $this->wrapInArray($response->json('image'));
+    }
 
+    public function regions():array
+    {
+        $response = $this->baseHTTP('get', 'regions');
+
+        return $this->wrapInArray($response->json('regions'));
+    }
+
+    public function sshKeys():array
+    {
+        $response = $this->baseHTTP('get', 'account/keys');
+
+        return $this->wrapInArray($response->json('ssh_keys'));
+    }
+
+    public function sshKey(string $sshKeyId):array
+    {
+        $response = $this->baseHTTP('get', 'account/keys/'.$sshKeyId);
+
+        return $this->wrapInArray($response->json('ssh_key'));
+    }
+
+    public function createSshKey(string $name,string $publicKey):array
+    {
+        $response = $this->baseHTTP('post', 'account/keys',[
+            'name'=>$name,
+            'public_key'=>$publicKey
+        ]);
+
+        return $this->wrapInArray($response->json('ssh_key'));
+    }
+
+    public function deleteSshKey(string $sshKeyId):array
+    {
+        $response = $this->baseHTTP('delete', 'account/keys/'.$sshKeyId);
+
+        return $this->wrapInArray($response->json('ssh_key'));
+    }
+
+    public function updateSshKey(string $sshKeyId,string $name):array
+    {
+        $response = $this->baseHTTP('put', 'account/keys/'.$sshKeyId,[
+            'name'=>$name,
+        ]);
+
+        return $this->wrapInArray($response->json('ssh_key'));
+    }
+
+    public function deteleteSshKey(string $sshKeyId):array
+    {
+        $response = $this->baseHTTP('delete', 'account/keys/'.$sshKeyId);
+
+        return $this->wrapInArray($response->json('ssh_key'));
+    }
+
+    public function droplets():array
+    {
+        $response=$this->baseHTTP('get','droplets');
+
+        return $this->wrapInArray($response->json('droplets'));
+    }
+
+    public function droplet(string $dropletId):array
+    {
+        $response=$this->baseHTTP('get','droplets/'.$dropletId);
+
+        return $this->wrapInArray($response->json('droplet'));
+    }
+
+    public function createDroplet(string $projectId,string $name,string $regionSlug,string $sizeSlug,string $imageIdOrSlug,array $sshKeyIds=[],bool $backups=false, bool $ipv6=false,bool $monitoring=false,array $tags=[],string $vpcUuid="",):array
+    {
+        $response=$this->baseHTTP('post','droplets',[
+            'name'=>$name,
+            'region'=>$regionSlug,
+            'size'=>$sizeSlug,
+            'image'=>$imageIdOrSlug,
+            'ssh_keys'=>$sshKeyIds,
+            'backups'=>$backups,
+            'ipv6'=>$ipv6,
+            'monitoring'=>$monitoring,
+            'tags'=>$tags,
+            'vpc_uuid'=>$vpcUuid,
+        ]);
+
+        if(!empty($projectId)){
+            $this->assignProjectDroplets($projectId,[$response->json('droplet')['id']]);
+        }
+
+        return $this->wrapInArray($response->json('droplet'));
+    }
+
+    public function deleteDroplet(string $dropletId):array
+    {
+        $response=$this->baseHTTP('delete','droplets/'.$dropletId);
+
+        return $this->wrapInArray($response->json('droplet'));
+    }
 
 }

@@ -5,7 +5,6 @@ namespace Akromjon\Pritunl;
 use Akromjon\Pritunl\Cloud\SSH\SSH;
 use Illuminate\Http\Client\Response;
 use Akromjon\Pritunl\BaseHttp;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class Pritunl extends BaseHttp
