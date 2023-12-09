@@ -8,9 +8,14 @@ use Illuminate\Support\Facades\Http;
 abstract class Base
 {
     protected string $baseUrl='https://api.digitalocean.com/v2/';
-    public function __construct(protected string $token)
+    private function __construct(protected string $token)
     {
         $this->token = $token;
+    }
+
+    public static function connect(string $token): static
+    {
+        return new static($token);
     }
 
     protected function baseHTTP(string $method,string $route,array $requestBody=[]):Response|\Exception
@@ -22,20 +27,20 @@ abstract class Base
         return $response;
     }
 
-    private function createExceptionMessage(string $method,string $route,array $requestBody,string $responseBody):string
+    private function createExceptionMessage(int $status,string $method,string $route,array $requestBody,string $responseBody):string
     {
         $requestBody=json_encode($requestBody);
 
-        return "Method: {$method}, Route: {$route}, Request Body: {$requestBody}, Response: {$responseBody}";
+        return "Status: $status, Method: {$method}, Route: {$route}, Request Body: {$requestBody}, Response: {$responseBody}";
     }
 
     protected function checkResponse(Response $response,string $method,string $route,array $requestBody):Response|\Exception
     {
         $status=$response->status();
 
-        if(!in_array($status,[200,201,204])){
+        if(!in_array($status,[200,201,202,204])){
 
-            throw new \Exception($this->createExceptionMessage($method,$route,$requestBody,$response->body()));
+            throw new \Exception($this->createExceptionMessage($status,$method,$route,$requestBody,$response->body()));
 
         }
 
