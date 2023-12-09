@@ -5,6 +5,8 @@ namespace Akromjon\Pritunl;
 use Akromjon\Pritunl\Cloud\SSH\SSH;
 use Illuminate\Http\Client\Response;
 use Akromjon\Pritunl\BaseHttp;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class Pritunl extends BaseHttp
@@ -13,7 +15,6 @@ class Pritunl extends BaseHttp
     {
         return $this->baseHttp('get', 'organization/')->json();
     }
-
     public function organization(string $organizationId): array
     {
         return $this->baseHttp('get', "organization/{$organizationId}/")->json();
@@ -83,7 +84,10 @@ class Pritunl extends BaseHttp
     {
         $users=$this->baseHttp('get', "user/{$organizationId}/")->json();
 
-        return collect($users)->filter(fn($user) => $user['status'] === true)->all();
+        return collect($users)
+                ->filter(fn($user) => $user['status'] === true)
+                ->values()
+                ->all();
     }
 
     public function download(string $organizationId, string $userId): BinaryFileResponse|Response
@@ -201,6 +205,18 @@ class Pritunl extends BaseHttp
 
         return $this->activateSubscription();
 
+    }
+
+    public function createNumberOfUsers(string $organizationId, int $numberOfUsers=5): array
+    {
+        $users = [];
+
+        for ($i = 0; $i < $numberOfUsers; $i++) {
+            $userName=Str::random(6);
+            $users[] = $this->addUser($organizationId, $userName);
+        }
+
+        return $users;
     }
 
 }

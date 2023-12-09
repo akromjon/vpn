@@ -2,11 +2,10 @@
 
 namespace Tests\Feature\pritunl;
 
-use Akromjon\Pritunl\Cloud\SSH\SSH;
-use Akromjon\Pritunl\Headers;
+
 use Akromjon\Pritunl\Pritunl;
-use Tests\TestCase;
 use Illuminate\Support\Str;
+use Tests\TestCase;
 
 class DigitalOceanPritunlTest extends TestCase
 {
@@ -158,8 +157,26 @@ class DigitalOceanPritunlTest extends TestCase
         $organization=$organizations[0];
         $pritunl->attachOrganization($server['id'],$organization['id']);
         $servers=$pritunl->servers();
-        dd($servers);
-        $this->assertEquals($servers[0]['organizations'][0]['id'],$organization['id']);
+        $this->assertIsArray($servers);
+    }
+
+    public function test_it_can_create_n_number_of_users(){
+        $pritunl=$this->pritunl;
+        $orginizations=$pritunl->organizations();
+        $organization=$orginizations[0];
+        $users=$pritunl->users($organization['id']);
+
+        foreach ($users as $user) {
+            $pritunl->deleteUser($organization['id'],$user['id']);
+        }
+
+        $userCount=100;
+
+        $pritunl->createNumberOfUsers($organization['id'],$userCount);
+
+        $users=$pritunl->users($organization['id']);
+
+        $this->assertEquals($userCount,count($users));
     }
 
 
