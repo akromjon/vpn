@@ -6,13 +6,12 @@ use Akromjon\Pritunl\Cloud\SSH\SSH;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-
 abstract class BaseHttp
 {
     protected string $ip;
     protected string $username;
     protected string $password;
-    protected string $restartCommand="sudo systemctl restart pritunl.service && sleep 10";
+    const RESTART_COMMAND="sudo systemctl restart pritunl.service && sleep 10";
     public function __construct(string $ip, string $username, string $password)
     {
         $this->ip = $ip;
@@ -20,19 +19,33 @@ abstract class BaseHttp
         $this->password = $password;
     }
 
+    public static function connect(...$params):self
+    {
+        return new static(...$params);
+    }
+
     protected function baseUrl():string
     {
         return "https://{$this->ip}/";
     }
 
-    protected function baseHttp(string $method,string $route,array $requestBody=[],int $timeout=30):Response
+    protected function baseHttp(string $method,string $route,array $requestBody=[],int $timeout=30):Response|\Exception
     {
-        return Http::withOptions(['verify' => false])
+        $response= Http::withOptions(['verify' => false])
                 ->timeout($timeout)
                 ->withHeaders([
                     'csrf-token' => Headers::read($this->ip,'csrf-token'),
                     'Cookie' => Headers::read($this->ip,'cookie')
                 ])->{$method}($this->baseUrl().$route,$requestBody);
+
+        $responseWithLogin=$this->checkResponse($response,$method,$route,$requestBody);
+
+        if($responseWithLogin instanceof Response){
+            return $responseWithLogin;
+        }
+
+        return $response;
+
     }
 
 
@@ -64,6 +77,32 @@ abstract class BaseHttp
         $response = $this->baseHttp('get','state/');
 
         return $response->json()['csrf_token'];
+    }
+
+    private function createExceptionMessage(int $status,string $method,string $route,array $requestBody,string $responseBody):string
+    {
+        $requestBody=json_encode($requestBody);
+
+        return "Status: $status, Method: {$method}, Route: {$route}, Request Body: {$requestBody}, Response: {$responseBody}";
+    }
+    protected function checkResponse(Response $response,string $method,string $route,array $requestBody):Response|\Exception
+    {
+        $status=$response->status();
+
+        if (401 == $response->status()) {
+
+            $this->login();
+
+            return $this->baseHttp($method, $route, $requestBody);
+        }
+
+        if(!in_array($status,[200,201,202,204])){
+
+            throw new \Exception($this->createExceptionMessage($status,$method,$route,$requestBody,$response->body()));
+
+        }
+
+        return $response;
     }
 
     protected function checkStatus(Response $response,string $param=""){
@@ -137,11 +176,6 @@ abstract class BaseHttp
         ];
     }
 
-    protected function ssh(int $port, string $username,string $password="",string $connectionType="key" ,string $privateKeyPath="ssh"): SSH
-    {
-        return new SSH($this->ip, $port, $username,$password,$connectionType,$privateKeyPath);
-    }
-
     protected function filterCredentials(string $credentials):array|\Exception
     {
 
@@ -175,7 +209,7 @@ abstract class BaseHttp
 
         Log::info("output of install-pritunl.sh", ['output' => $output]);
 
-        $ssh->exec($this->restartCommand);
+        $ssh->exec(self::RESTART_COMMAND);
 
         return $ssh;
     }
@@ -201,23 +235,19 @@ abstract class BaseHttp
 
         $this->resetLoginAndPassword();
 
-        $ssh->exec($this->restartCommand);
+        $ssh->exec(self::RESTART_COMMAND);
 
         return $ssh;
     }
 
-    protected function requestKey(): Response
+    protected function requestKey(): array
     {
         $params = [
             "setup_key" => Headers::read($this->ip, 'set-up-key'),
             "mongodb_uri" => "mongodb://localhost:27017/pritunl",
         ];
 
-        $response = $this->baseHttp('put', 'setup/mongodb', $params,180);
-
-        $this->checkStatus($response, 'setUpKey');
-
-        return $response;
+       return $this->baseHttp('put', 'setup/mongodb', $params,180)->json();
     }
 
     protected function installFakeAPI(SSH $ssh):SSH
@@ -226,9 +256,9 @@ abstract class BaseHttp
 
         Log::info("setup.py", ['output' => $output]);
 
-        $result=$ssh->exec($this->restartCommand);
+        $result=$ssh->exec(self::RESTART_COMMAND);
 
-        Log::info($this->restartCommand, ['output' => $result]);
+        Log::info(self::RESTART_COMMAND, ['output' => $result]);
 
         return $ssh;
     }
@@ -238,7 +268,6 @@ abstract class BaseHttp
         $credentials = Headers::read($this->ip, 'default-password');
 
         $this->username = $credentials['username']; $this->password = $credentials['password'];
-
     }
 
 

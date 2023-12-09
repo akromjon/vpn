@@ -27,13 +27,6 @@ abstract class Base
         return $response;
     }
 
-    private function createExceptionMessage(int $status,string $method,string $route,array $requestBody,string $responseBody):string
-    {
-        $requestBody=json_encode($requestBody);
-
-        return "Status: $status, Method: {$method}, Route: {$route}, Request Body: {$requestBody}, Response: {$responseBody}";
-    }
-
     protected function checkResponse(Response $response,string $method,string $route,array $requestBody):Response|\Exception
     {
         $status=$response->status();
@@ -46,6 +39,15 @@ abstract class Base
 
         return $response;
     }
+
+    private function createExceptionMessage(int $status,string $method,string $route,array $requestBody,string $responseBody):string
+    {
+        $requestBody=json_encode($requestBody);
+
+        return "Status: $status, Method: {$method}, Route: {$route}, Request Body: {$requestBody}, Response: {$responseBody}";
+    }
+
+
 
     protected function wrapInArray(array|null $data):array
     {

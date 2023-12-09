@@ -225,7 +225,7 @@ class DigitalOceanClient extends Base
         return $this->wrapInArray($response->json('droplet'));
     }
 
-    public function createDroplet(string $projectId,string $name,string $regionSlug,string $sizeSlug,string $imageIdOrSlug,array $sshKeyIds=[],bool $backups=false, bool $ipv6=false,bool $monitoring=false,array $tags=[],string $vpcUuid="",):array
+    public function createDroplet(string $name,string $regionSlug,string $sizeSlug,string $imageIdOrSlug,string $projectId="",array $sshKeyIds=[],bool $backups=false, bool $ipv6=false,bool $monitoring=false,array $tags=[],string $vpcUuid="",):array
     {
         $response=$this->baseHTTP('post','droplets',[
             'name'=>$name,

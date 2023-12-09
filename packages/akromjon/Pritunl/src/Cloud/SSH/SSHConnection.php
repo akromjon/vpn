@@ -64,6 +64,11 @@ abstract class SSHConnection
         return $this->SSH2->login($this->username, $this->getKey());
     }
 
+    public static function load(...$params):self
+    {
+        return new static(...$params);
+    }
+
 
 }
 

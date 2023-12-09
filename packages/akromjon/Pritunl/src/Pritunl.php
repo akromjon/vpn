@@ -9,23 +9,16 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class Pritunl extends BaseHttp
 {
-    public function organization(): Response
+    public function organizations(): array
     {
-        $response = $this->baseHttp('get', 'organization/');
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('get', 'organization/');
-        }
-
-        $this->checkStatus($response, 'Organization');
-
-        return $response;
-
+        return $this->baseHttp('get', 'organization/')->json();
     }
-    public function addOrganization(string $name): Response
+
+    public function organization(string $organizationId): array
+    {
+        return $this->baseHttp('get', "organization/{$organizationId}/")->json();
+    }
+    public function addOrganization(string $name): array
     {
 
         $params = [
@@ -34,54 +27,17 @@ class Pritunl extends BaseHttp
             'id' => null,
         ];
 
-        $response = $this->baseHttp('post', 'organization/', $params);
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('post', 'organization/', $params);
-        }
-
-        $this->checkStatus($response, 'Add Organization');
-
-        return $response;
-
+        return $this->baseHttp('post', 'organization/', $params)->json();
     }
-    public function deleteOrganization(string $organizationId): Response
+    public function deleteOrganization(string $organizationId): array
     {
-
-        $response = $this->baseHttp('delete', "organization/{$organizationId}/");
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('delete', "organization/{$organizationId}/");
-        }
-
-        $this->checkStatus($response, 'Delete Organization');
-
-        return $response;
-
+        return $this->baseHttp('delete', "organization/{$organizationId}/")->json();
     }
-    public function users(string $organizationId): Response
+    public function users(string $organizationId): array
     {
-        $response = $this->baseHttp('get', "user/{$organizationId}/");
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('get', "user/{$organizationId}/");
-        }
-
-        $this->checkStatus($response, 'Users');
-
-        return $response;
-
+        return $this->baseHttp('get', "user/{$organizationId}/",['status'=>true])->json();
     }
-    public function addUser(string $organizationId, string $name): Response
+    public function addUser(string $organizationId, string $name): array
     {
 
         $params = [
@@ -115,49 +71,24 @@ class Pritunl extends BaseHttp
             "mac_addresses" => []
         ];
 
-        $response = $this->baseHttp('post', "user/{$organizationId}/", $params);
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('post', "user/{$organizationId}/", $params);
-        }
-
-        $this->checkStatus($response, 'Add User');
-
-        return $response;
-
+        return $this->baseHttp('post', "user/{$organizationId}/", $params)->json();
     }
 
-    public function deleteUser(string $organizationId, string $userId): Response
+    public function deleteUser(string $organizationId, string $userId): array
     {
-        $response = $this->baseHttp('delete', "user/{$organizationId}/{$userId}/");
+        return $this->baseHttp('delete', "user/{$organizationId}/{$userId}/")->json();
+    }
 
-        if (401 == $response->status()) {
+    public function onlineUsers(string $organizationId):array
+    {
+        $users=$this->baseHttp('get', "user/{$organizationId}/")->json();
 
-            $this->login();
-
-            return $this->baseHttp('delete', "user/{$organizationId}/{$userId}/");
-        }
-
-        $this->checkStatus($response, 'Delete User');
-
-        return $response;
+        return collect($users)->filter(fn($user) => $user['status'] === true)->all();
     }
 
     public function download(string $organizationId, string $userId): BinaryFileResponse|Response
     {
         $response = $this->baseHttp('get', "key/{$organizationId}/{$userId}.tar");
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('get', "key/{$organizationId}/{$userId}.tar");
-        }
-
-        $this->checkStatus($response, 'Download User');
 
         $config = new VPNConfig($this->ip, $organizationId, $userId);
 
@@ -171,239 +102,88 @@ class Pritunl extends BaseHttp
         return $config->getExtractedFile();
 
     }
-    public function log(): Response
+    public function log(): array
     {
-        $response = $this->baseHttp('get', 'log/');
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('get', 'log/');
-        }
-
-        return $response;
+        return $this->baseHttp('get', 'log/')->json();
 
     }
 
-    public function servers(): Response
+    public function servers(): array
     {
-        $response = $this->baseHttp('get', 'server/');
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('get', 'server/');
-        }
-
-        $this->checkStatus($response, 'Servers');
-
-        return $response;
-
+        return $this->baseHttp('get', 'server/')->json();
     }
 
-    public function stopServer(string $serverId): Response
+    public function server(string $serverId): array
     {
-        $response = $this->baseHttp('put', "server/{$serverId}/operation/stop");
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('put', "server/{$serverId}/operation/stop");
-        }
-
-        $this->checkStatus($response, 'Stop Server');
-
-        return $response;
-
+        return $this->baseHttp('get', "server/{$serverId}/")->json();
     }
 
-    public function startServer(string $serverId): Response
+    public function stopServer(string $serverId): array
     {
-        $response = $this->baseHttp('put', "server/{$serverId}/operation/start");
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('put', "server/{$serverId}/operation/start");
-        }
-
-        $this->checkStatus($response, 'Start Server');
-
-        return $response;
-
+        return $this->baseHttp('put', "server/{$serverId}/operation/stop")->json();
     }
 
-    public function restartServer(string $serverId): Response
+    public function startServer(string $serverId): array
     {
-        $response = $this->baseHttp('put', "server/{$serverId}/operation/restart");
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('put', "server/{$serverId}/operation/restart");
-        }
-
-        $this->checkStatus($response, 'Restart Server');
-
-        return $response;
-
+        return $this->baseHttp('put', "server/{$serverId}/operation/start")->json();
     }
 
-    public function deleteServer(string $serverId): Response
+    public function restartServer(string $serverId): array
     {
-        $response = $this->baseHttp('delete', "server/{$serverId}/");
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('delete', "server/{$serverId}/");
-        }
-
-        $this->checkStatus($response, 'Delete Server');
-
-        return $response;
-
+        return $this->baseHttp('put', "server/{$serverId}/operation/restart")->json();
     }
 
-    public function addServer(string $name): Response
+    public function deleteServer(string $serverId): array
     {
-        $payload = $this->getServerPayload($name);
-
-        $response = $this->baseHttp('post', "server/", $payload);
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('post', "server", $payload);
-        }
-
-        $this->checkStatus($response, 'Add Server');
-
-        return $response;
+        return $this->baseHttp('delete', "server/{$serverId}/")->json();
     }
 
-    public function attachOrganization(string $serverId, string $organizationId): Response
+    public function serverOrganization(string $serverId): array
     {
-        $response = $this->baseHttp('put', "server/{$serverId}/organization/{$organizationId}/");
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('put', "server/{$serverId}/organization/{$organizationId}/");
-        }
-
-        $this->checkStatus($response, 'Attach Organization');
-
-        return $response;
+        return $this->baseHttp('get', "server/{$serverId}/organization/")->json();
     }
 
-    public function detachOrganization(string $serverId, string $organizationId): Response
+    public function addServer(string $name): array
     {
-        $response = $this->baseHttp('delete', "server/{$serverId}/organization/{$organizationId}/");
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('delete', "server/{$serverId}/organization/{$organizationId}/");
-        }
-
-        $this->checkStatus($response, 'Detach Organization');
-
-        return $response;
+        return $this->baseHttp('post', "server/", $this->getServerPayload($name))->json();
     }
 
-    public function settings()
+    public function attachOrganization(string $serverId, string $organizationId): array
     {
-        $response = $this->baseHttp('get', 'settings/');
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('get', 'settings/');
-        }
-
-        $this->checkStatus($response, 'Settings');
-
-        return $response;
+        return $this->baseHttp('put', "server/{$serverId}/organization/{$organizationId}/")->json();
     }
 
-    public function updateSettings(string $username, string $newPassword): Response
+    public function detachOrganization(string $serverId, string $organizationId): array
+    {
+        return $this->baseHttp('delete', "server/{$serverId}/organization/{$organizationId}/")->json();
+    }
+
+    public function settings():array
+    {
+        return $this->baseHttp('get', 'settings/')->json();
+    }
+
+    public function updateSettings(string $username, string $newPassword): array
     {
         $params = [
             "username" => $username,
             "password" => $newPassword,
         ];
 
-        $response = $this->baseHttp('put', 'settings/', $params);
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('put', 'settings/', $params);
-        }
-
-        $this->checkStatus($response, 'Update Settings');
-
-        return $response;
+       return $this->baseHttp('put', 'settings/', $params)->json();
     }
 
-    public function setPinMode(string $mode): Response
+    public function setPinMode(string $mode): array
     {
-        $params = [
-            "pin_mode" => $mode,
-        ];
-
-        $response = $this->baseHttp('put', "settings/", $params);
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('put', "settings/", $params);
-        }
-
-        $this->checkStatus($response, 'Set Pin Mode');
-
-        return $response;
+        return $this->baseHttp('put', "settings/",["pin_mode" => $mode])->json();
     }
 
-    public function activateSubscription(): Response
+    public function activateSubscription(): array
     {
-        $params = [
-            'license' => "active ultimate"
-        ];
-
-        $response = $this->baseHttp('post', 'subscription/', $params,180);
-
-        if (401 == $response->status()) {
-
-            $this->login();
-
-            return $this->baseHttp('post', 'subscription/', $params,180);
-        }
-
-        $this->checkStatus($response, 'Active Subscriptions');
-
-        return $response;
+        return $this->baseHttp('post', 'subscription/', ['license' => "active ultimate"], 180)->json();
     }
 
-    public function self(string $ip, string $username, string $password): self
-    {
-        return new self($ip, $username, $password);
-    }
-
-    public function install(SSH $ssh, string $username, string $password): Response
+    public function install(SSH $ssh, string $username, string $password): array
     {
         $this->installPritunl($ssh);
 
@@ -422,16 +202,5 @@ class Pritunl extends BaseHttp
         return $this->activateSubscription();
 
     }
-
-    public function restartPritunl(SSH $ssh):string
-    {
-        $ssh->connect();
-
-        $output=$ssh->exec($this->restartCommand);
-
-        return $output;
-    }
-
-
 
 }
