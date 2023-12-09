@@ -4,7 +4,7 @@ The `DigitalOceanClient` class is a part of our application designed to interact
 ### Examples:
 Creating an instance of DigitalOceanClient Class.
 ```php
-$client =DigitalOceanClient::connect($apiToken);
+$client=DigitalOceanClient::connect(env('DIGITAL_OCEAN_TOKEN'));
 ```
 ###### Projects - Supports CRUD actions and Project Resources: getting default project, assigning project resources and droplets as well.
 ```php
