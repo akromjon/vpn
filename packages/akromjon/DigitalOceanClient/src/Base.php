@@ -33,7 +33,7 @@ abstract class Base
 
         if(!in_array($status,[200,201,202,204])){
 
-            throw new \Exception($this->createExceptionMessage($status,$method,$route,$requestBody,$response->body()));
+            throw new \Exception($this->createExceptionMessage($status,$method,$route,$requestBody,$response->body()),$status);
 
         }
 

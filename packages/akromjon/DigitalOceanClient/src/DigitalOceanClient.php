@@ -2,13 +2,17 @@
 
 namespace Akromjon\DigitalOceanClient;
 use Akromjon\DigitalOceanClient\Base;
+use Illuminate\Support\Facades\Cache;
+
 class DigitalOceanClient extends Base
 {
     public function projects(): array
     {
-        $response = $this->baseHTTP('get', 'projects');
+        $projects=Cache::rememberForever('digitalocean.projects', function ()  {
+            return $this->baseHTTP('get', 'projects')->json('projects');
+        });
 
-        return $this->wrapInArray($response->json('projects'));
+        return $this->wrapInArray($projects);
     }
 
     public function project(string $projectId): array
@@ -98,18 +102,22 @@ class DigitalOceanClient extends Base
 
     public function sizes(): array
     {
-        $response = $this->baseHTTP('get', 'sizes');
+        $sizes=Cache::rememberForever('digitalocean.sizes', function ()  {
+            return $this->baseHTTP('get', 'sizes')->json('sizes');
+        });
 
-        return $this->wrapInArray($response->json('sizes'));
+        return $this->wrapInArray($sizes);
     }
 
     public function snapshots(string $resourceType = "droplet"): array
     {
-        $response = $this->baseHTTP('get', 'snapshots', [
-            'resource_type' => $resourceType
-        ]);
+        $snapshots=Cache::rememberForever("digitalocean.snapshots.{$resourceType}", function () use ($resourceType) {
+            return $this->baseHTTP('get', 'snapshots', [
+                'resource_type' => $resourceType
+            ])->json('snapshots');
+        });
 
-        return $this->wrapInArray($response->json('snapshots'));
+        return $this->wrapInArray($snapshots);
     }
 
     public function snapshot(string $snapshotId): array
@@ -159,16 +167,20 @@ class DigitalOceanClient extends Base
 
     public function regions():array
     {
-        $response = $this->baseHTTP('get', 'regions');
+        $regions=Cache::rememberForever('digitalocean.regions', function ()  {
+            return $this->baseHTTP('get', 'regions')->json('regions');
+        });
 
-        return $this->wrapInArray($response->json('regions'));
+        return $this->wrapInArray($regions);
     }
 
     public function sshKeys():array
     {
-        $response = $this->baseHTTP('get', 'account/keys');
+        $keys=Cache::rememberForever('digitalocean.ssh_keys', function ()  {
+            return $this->baseHTTP('get', 'account/keys')->json('ssh_keys');
+        });
 
-        return $this->wrapInArray($response->json('ssh_keys'));
+        return $this->wrapInArray($keys);
     }
 
     public function sshKey(string $sshKeyId):array
