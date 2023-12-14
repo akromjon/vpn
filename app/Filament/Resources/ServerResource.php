@@ -8,10 +8,10 @@ use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Select;
-use App\Enum\CloudProviderTypeEnum;
+use App\Models\Server\Enum\CloudProviderType;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\Action;
-use App\Enum\ServerEnum;
+use App\Models\Server\Enum\ServerStatus;
 use App\Jobs\Server\Deletion;
 use App\Jobs\Server\Reboot;
 use Filament\Forms\Components\CheckboxList;
@@ -33,14 +33,23 @@ class ServerResource extends Resource
 {
     protected static ?string $model = Server::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-server-stack';
+    protected static ?string $navigationGroup="Server";
+
+    public static function getNavigationBadge(): ?string
+    {
+        return Server::where("status",ServerStatus::ACTIVE)->count(). "/". Server::count();
+    }
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return "success";
+    }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 TextInput::make('uuid')->label('UUID')->maxLength(255)->hiddenOn("create"),
-                Select::make('cloud_provider_type')->label("Cloud Provider Type")->options(CloudProviderTypeEnum::class)->default(CloudProviderTypeEnum::DigitalOcean)->required(),
+                Select::make('cloud_provider_type')->label("Cloud Provider Type")->options(CloudProviderType::class)->default(CloudProviderType::DigitalOcean)->required(),
                 TextInput::make('name')->live(onBlur: true)->minLength(2)->required()->afterStateUpdated(function (Set $set, $state) {
                     return $set('name', Str::slug($state));
                 }),
@@ -49,7 +58,7 @@ class ServerResource extends Resource
                 Select::make('image_id')->options(self::imageOptions())->required()->label("Image"),
                 CheckboxList::make('ssh_key_ids')->options(self::sshKeyOptions())->required()->label("SSH Keys")->default(array_key_first(self::sshKeyOptions())),
                 Select::make('project_id')->options(self::projectOptions())->required()->default(array_key_first(self::projectOptions()))->label("Project"),
-                Select::make('status')->options(ServerEnum::class)->label("Status")->hiddenOn("create"),
+                Select::make('status')->options(ServerStatus::class)->label("Status")->hiddenOn("create"),
                 TextInput::make('public_ip_address')->ip()->readOnly()->hiddenOn("create")->maxLength(45),
                 TextInput::make('private_ip_address')->ip()->readOnly()->hiddenOn("create")->maxLength(45),
                 DateTimePicker::make('server_created_at')->hiddenOn("create"),
@@ -65,9 +74,9 @@ class ServerResource extends Resource
             TextColumn::make('public_ip_address')->label("Ip Address")->searchable()->copyable()->copyable()->copyMessage('IP Address copied')->copyMessageDuration(1500),
             TextColumn::make("size")->searchable(),
             SelectColumn::make('region')->options(self::regionOptions())->disabled(function ($record) {
-                return $record->status !== ServerEnum::UNAVAILABLE;
+                return $record->status !== ServerStatus::UNAVAILABLE;
             })->searchable()->afterStateUpdated(function ($record, $state) {
-                if ($record->status === ServerEnum::UNAVAILABLE) {
+                if ($record->status === ServerStatus::UNAVAILABLE) {
                     Creation::dispatch($record);
                 }
             }),
@@ -164,9 +173,9 @@ class ServerResource extends Resource
 
     protected static function fireDeleteJob(Server $server): void
     {
-        if (ServerEnum::DELETING !== $server->status) {
+        if (ServerStatus::DELETING !== $server->status) {
 
-            $server->status = ServerEnum::DELETING;
+            $server->status = ServerStatus::DELETING;
 
             $server->save();
 
@@ -189,10 +198,10 @@ class ServerResource extends Resource
             Action::make("Reboot")->color('gray')->icon('heroicon-o-power')
                 ->requiresConfirmation("Are you sure you want to reboot the servers?")
                 ->disabled(function ($record) {
-                    return ServerEnum::ACTIVE !== $record->status;
+                    return ServerStatus::ACTIVE !== $record->status;
                 })->action(function (Server $server) {
-                    if (ServerEnum::ACTIVE === $server->status) {
-                        $server->status = ServerEnum::REBOOTING;
+                    if (ServerStatus::ACTIVE === $server->status) {
+                        $server->status = ServerStatus::REBOOTING;
                         $server->save();
                         Reboot::dispatch($server->public_ip_address, 'root', $server);
                         Notification::make()
@@ -208,7 +217,7 @@ class ServerResource extends Resource
                 ->requiresConfirmation("Are you sure you want to delete the server?")->action(function (Server $server) {
                     self::fireDeleteJob($server);
                 })->disabled(function ($record) {
-                    return ServerEnum::NEW === $record->status;
+                    return ServerStatus::NEW === $record->status;
                 }),
 
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Enum;
+namespace App\Models\Server\Enum;
 
 use Filament\Support\Contracts\HasLabel;
-enum CloudProviderTypeEnum:string  implements HasLabel{
+enum CloudProviderType:string  implements HasLabel{
     case DigitalOcean="digitalocean";
     case Kamatera="kamatera";
     case Hetzner="hetzner";

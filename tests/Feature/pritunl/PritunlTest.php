@@ -7,7 +7,7 @@ use Akromjon\Pritunl\Pritunl;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
-class DigitalOceanPritunlTest extends TestCase
+class PritunlTest extends TestCase
 {
 
     protected Pritunl $pritunl;

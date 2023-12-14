@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Enum;
+namespace App\Models\Server\Enum;
+
 
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
-enum ServerEnum:string implements HasLabel, HasColor{
+enum ServerStatus:string implements HasLabel, HasColor{
 
     case NEW="new";
     case REBOOTING="rebooting";
