@@ -54,7 +54,7 @@ class CreateServerListener implements ShouldQueue
         }
         catch(\Exception $e){
 
-            if($e->getCode()===422){
+            if(422===$e->getCode()){
 
                 $server->status=ServerEnum::UNAVAILABLE;
 
