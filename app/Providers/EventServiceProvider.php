@@ -2,8 +2,7 @@
 
 namespace App\Providers;
 
-use App\Events\CreateServerEvent;
-use App\Listeners\CreateServerListener;
+
 use GuzzleHttp\Promise\Create;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -21,9 +20,7 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        CreateServerEvent::class => [
-            CreateServerListener::class,
-        ],
+
     ];
 
     /**

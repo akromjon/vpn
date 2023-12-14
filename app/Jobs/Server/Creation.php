@@ -1,21 +1,33 @@
 <?php
 
-namespace App\Listeners;
+namespace App\Jobs\Server;
 
 use Akromjon\DigitalOceanClient\DigitalOceanClient;
 use App\Enum\CloudProviderTypeEnum;
 use App\Enum\ServerEnum;
-use App\Events\CreateServerEvent;
 use App\Models\Server\Server;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
-class CreateServerListener implements ShouldQueue
+class Creation implements ShouldQueue
 {
-    public function handle(CreateServerEvent $event): void
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public function __construct(protected Server $server)
     {
-        $server=$event->getServer();
+        //
+    }
+
+    public function handle(): void
+    {
+        $server=$this->server;
+
 
         if($server->cloud_provider_type==CloudProviderTypeEnum::DigitalOcean){
+
 
             $this->digitalOceanClient($server);
 
@@ -25,11 +37,10 @@ class CreateServerListener implements ShouldQueue
 
     private function digitalOceanClient(Server $server):void
     {
-
-
         $client=DigitalOceanClient::connect(config("digitalocean.token"));
 
         try{
+
 
             $droplet=$client->createDroplet(
                 name: $server->name,
@@ -46,11 +57,10 @@ class CreateServerListener implements ShouldQueue
 
             $server->save();
 
-            sleep(120);
+            sleep(90);
 
-            $droplet=$client->droplet($server->uuid);
+            Synchronization::dispatch();
 
-            $server->fillWithDigitalOcean($server,$droplet)->save();
         }
         catch(\Exception $e){
 

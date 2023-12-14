@@ -17,7 +17,7 @@ abstract class SSHConnection
     protected string $privateKeyPath;
 
 
-    public function __construct(string $ip, int $port, string $username,string $password="",string $connectionType="key" ,string $privateKeyPath="ssh")
+    public function __construct(string $ip, int $port=22, string $username="root",string $password="",string $connectionType="key" ,string $privateKeyPath="ssh")
     {
         $this->ip = $ip;
 

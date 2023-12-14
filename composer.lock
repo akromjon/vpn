@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ba7e9ff95ce780884ecc0c89cc149c02",
+    "content-hash": "3133d9ee414cc98a1a51369fe77dce9e",
     "packages": [
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -279,76 +279,6 @@
                 }
             ],
             "time": "2023-12-11T17:09:12+00:00"
-        },
-        {
-            "name": "croustibat/filament-jobs-monitor",
-            "version": "2.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/croustibat/filament-jobs-monitor.git",
-                "reference": "f9e56ca15e0e8675d370f732dbc4ed8f98637370"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/croustibat/filament-jobs-monitor/zipball/f9e56ca15e0e8675d370f732dbc4ed8f98637370",
-                "reference": "f9e56ca15e0e8675d370f732dbc4ed8f98637370",
-                "shasum": ""
-            },
-            "require": {
-                "filament/filament": "^3.0",
-                "illuminate/contracts": "^10.0",
-                "php": "^8.1|^8.2|^8.3",
-                "spatie/laravel-package-tools": "^1.13.5"
-            },
-            "require-dev": {
-                "laravel/pint": "^1.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Croustibat\\FilamentJobsMonitor\\FilamentJobsMonitorServiceProvider",
-                        "Croustibat\\FilamentJobsMonitor\\QueueMonitorProvider"
-                    ],
-                    "aliases": {
-                        "QueueMonitor": "Croustibat\\FilamentJobsMonitor\\QueueMonitorProvider\\Facade"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Croustibat\\FilamentJobsMonitor\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Baptiste",
-                    "email": "baptiste@derniercri.io",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Background Jobs monitoring like Horizon for all drivers for FilamentPHP",
-            "homepage": "https://github.com/croustibat/filament-jobs-monitor",
-            "keywords": [
-                "croustibat",
-                "filament-jobs-monitor",
-                "laravel"
-            ],
-            "support": {
-                "issues": "https://github.com/croustibat/filament-jobs-monitor/issues",
-                "source": "https://github.com/croustibat/filament-jobs-monitor/tree/2.1.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/croustibat",
-                    "type": "github"
-                }
-            ],
-            "time": "2023-12-07T23:06:57+00:00"
         },
         {
             "name": "danharrin/date-format-converter",
@@ -2408,6 +2338,84 @@
             "time": "2023-12-12T19:03:09+00:00"
         },
         {
+            "name": "laravel/horizon",
+            "version": "v5.21.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/horizon.git",
+                "reference": "bdf58c84b592b83f62262cc6ca98b0debbbc308b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/horizon/zipball/bdf58c84b592b83f62262cc6ca98b0debbbc308b",
+                "reference": "bdf58c84b592b83f62262cc6ca98b0debbbc308b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-pcntl": "*",
+                "ext-posix": "*",
+                "illuminate/contracts": "^8.17|^9.0|^10.0",
+                "illuminate/queue": "^8.17|^9.0|^10.0",
+                "illuminate/support": "^8.17|^9.0|^10.0",
+                "nesbot/carbon": "^2.17",
+                "php": "^7.3|^8.0",
+                "ramsey/uuid": "^4.0",
+                "symfony/error-handler": "^5.0|^6.0",
+                "symfony/process": "^5.0|^6.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.0",
+                "orchestra/testbench": "^6.0|^7.0|^8.0",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^9.0",
+                "predis/predis": "^1.1|^2.0"
+            },
+            "suggest": {
+                "ext-redis": "Required to use the Redis PHP driver.",
+                "predis/predis": "Required when not using the Redis PHP driver (^1.1|^2.0)."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.x-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Horizon\\HorizonServiceProvider"
+                    ],
+                    "aliases": {
+                        "Horizon": "Laravel\\Horizon\\Horizon"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Horizon\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "Dashboard and code-driven configuration for Laravel queues.",
+            "keywords": [
+                "laravel",
+                "queue"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/horizon/issues",
+                "source": "https://github.com/laravel/horizon/tree/v5.21.4"
+            },
+            "time": "2023-11-23T15:47:58+00:00"
+        },
+        {
             "name": "laravel/prompts",
             "version": "v0.1.13",
             "source": {
@@ -4255,6 +4263,67 @@
                 }
             ],
             "time": "2023-11-27T11:13:31+00:00"
+        },
+        {
+            "name": "predis/predis",
+            "version": "v2.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/predis/predis.git",
+                "reference": "b1d3255ed9ad4d7254f9f9bba386c99f4bb983d1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/predis/predis/zipball/b1d3255ed9ad4d7254f9f9bba386c99f4bb983d1",
+                "reference": "b1d3255ed9ad4d7254f9f9bba386c99f4bb983d1",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2 || ^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.3",
+                "phpstan/phpstan": "^1.9",
+                "phpunit/phpunit": "^8.0 || ~9.4.4"
+            },
+            "suggest": {
+                "ext-relay": "Faster connection with in-memory caching (>=0.6.2)"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Predis\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Till Krüss",
+                    "homepage": "https://till.im",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "A flexible and feature-complete Redis client for PHP.",
+            "homepage": "http://github.com/predis/predis",
+            "keywords": [
+                "nosql",
+                "predis",
+                "redis"
+            ],
+            "support": {
+                "issues": "https://github.com/predis/predis/issues",
+                "source": "https://github.com/predis/predis/tree/v2.2.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/sponsors/tillkruss",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-09-13T16:42:03+00:00"
         },
         {
             "name": "psr/cache",

@@ -6,10 +6,13 @@ use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
 enum ServerEnum:string implements HasLabel, HasColor{
+
     case NEW="new";
+    case REBOOTING="rebooting";
     case UNAVAILABLE="unavailable";
     case ACTIVE="active";
     case INACTIVE="inactive";
+    case DELETING="deleting";
     case DELETED="deleted";
 
     public function getLabel(): ?string
@@ -20,6 +23,8 @@ enum ServerEnum:string implements HasLabel, HasColor{
             self::INACTIVE => "Inactive",
             self::DELETED => "Deleted",
             self::UNAVAILABLE => "Unavailable",
+            self::DELETING => "Deleting",
+            self::REBOOTING => "Rebooting",
         };
     }
 
@@ -31,6 +36,8 @@ enum ServerEnum:string implements HasLabel, HasColor{
             self::INACTIVE => "warning",
             self::DELETED => "danger",
             self::UNAVAILABLE => "danger",
+            self::DELETING => "danger",
+            self::REBOOTING => "warning",
         };
     }
 
