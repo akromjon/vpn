@@ -3,6 +3,7 @@
 namespace Akromjon\DigitalOceanClient;
 use Akromjon\DigitalOceanClient\Base;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 
 class DigitalOceanClient extends Base
 {

@@ -15,11 +15,11 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class Creation implements ShouldQueue
+class CreateNumberOfUsers implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(protected Pritunl $pritunl)
+    public function __construct(protected Pritunl $pritunl, protected int $numberOfUsers)
     {
         //
     }
@@ -39,30 +39,14 @@ class Creation implements ShouldQueue
                 password: $pritunl->password
             );
 
-            $organizationId=$client->addOrganization($pritunl->server->public_ip_address)["id"];
-
             $client->createNumberOfUsers(
-                organizationId: $organizationId,
-                numberOfUsers: $pritunl->user_count
+                organizationId: $pritunl->organization_id,
+                numberOfUsers: $this->numberOfUsers
             );
-
-            sleep(1);
-
-            $serverId=$client->addServer($pritunl->server->public_ip_address)["id"];
-
-            $client->attachOrganization(
-                serverId: $serverId,
-                organizationId: $organizationId,
-            );
-
-            $client->startServer($serverId);
 
             $pritunl->update([
-                "organization_id"=>$organizationId,
-                "internal_server_id"=>$serverId,
-                "internal_server_status"=>InternalServerStatus::ONLINE,
                 "status"=>PritunlStatus::ACTIVE,
-                "user_count"=>$pritunl->user_count,
+                "user_count"=>$pritunl->user_count+$this->numberOfUsers,
             ]);
 
             Synchronization::dispatch($pritunl);

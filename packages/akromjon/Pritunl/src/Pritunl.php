@@ -42,37 +42,29 @@ class Pritunl extends BaseHttp
     {
 
         $params = [
-            "id" => null,
             "organization" => $organizationId,
-            "organization_name" => null,
             "name" => $name,
-            "email" => null,
-            "groups" => [],
-            "last_active" => null,
-            "gravatar" => null,
-            "audit" => null,
-            "type" => null,
-            "auth_type" => "local",
-            "yubico_id" => "",
-            "status" => null,
-            "sso" => null,
-            "otp_auth" => null,
-            "otp_secret" => null,
-            "servers" => null,
-            "disabled" => null,
-            "network_links" => [],
-            "dns_mapping" => null,
-            "bypass_secondary" => false,
-            "client_to_client" => false,
-            "dns_servers" => [],
-            "dns_suffix" => "",
-            "port_forwarding" => [],
-            "pin" => null,
-            "devices" => null,
-            "mac_addresses" => []
         ];
 
         return $this->baseHttp('post', "user/{$organizationId}/", $params)->json();
+    }
+
+    public function addMultiUsers(string $organizationId, array $users): array
+    {
+        return $this->baseHttp('post', "user/{$organizationId}/multi", $users)->json();
+    }
+    public function createNumberOfUsers(string $organizationId, int $numberOfUsers=5): array
+    {
+        $users = [];
+
+        for ($i = 0; $i < $numberOfUsers; $i++) {
+            $users[] = [
+                "email" => null,
+                "name" => Str::random(6),
+            ];
+        }
+
+        return $this->addMultiUsers($organizationId, $users);
     }
 
     public function deleteUser(string $organizationId, string $userId): array
@@ -207,16 +199,6 @@ class Pritunl extends BaseHttp
 
     }
 
-    public function createNumberOfUsers(string $organizationId, int $numberOfUsers=5): array
-    {
-        $users = [];
 
-        for ($i = 0; $i < $numberOfUsers; $i++) {
-            $userName=Str::random(6);
-            $users[] = $this->addUser($organizationId, $userName);
-        }
-
-        return $users;
-    }
 
 }

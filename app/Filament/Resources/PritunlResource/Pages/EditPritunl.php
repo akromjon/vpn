@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\PritunlResource\Pages;
 
 use App\Filament\Resources\PritunlResource;
-use Filament\Actions;
+use App\Jobs\Pritunl\Deletion;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditPritunl extends EditRecord
@@ -13,7 +15,10 @@ class EditPritunl extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Action::make("Delete")->color("danger")->requiresConfirmation()->icon("heroicon-o-trash")->after(function () {
+                Deletion::dispatch($this->record);
+                return redirect(PritunlResource::getUrl());
+            }),
         ];
     }
 }

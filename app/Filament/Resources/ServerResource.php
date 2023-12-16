@@ -94,7 +94,7 @@ class ServerResource extends Resource
                 BulkActionGroup::make([
                     BulkAction::make("Delete")->action(function (Collection $records) {
                         $records->each(function ($record) {
-                            Server::fireDeleteJob($record);
+                            self::fireDeleteJob($record);
                         });
                     })->color("danger")->icon("heroicon-o-trash")->requiresConfirmation("Are you sure you want to delete the servers?")
                 ]),

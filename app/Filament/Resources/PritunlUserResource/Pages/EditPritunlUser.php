@@ -15,7 +15,7 @@ class EditPritunlUser extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Action::make("Delete")->color('danger')->after(function () {
+            Action::make("Delete")->icon("heroicon-o-trash")->color('danger')->after(function () {
                 DeletionPritunlUser::dispatch($this->record);
                 Notification::make()
                     ->title('Pritunl User Deleted')

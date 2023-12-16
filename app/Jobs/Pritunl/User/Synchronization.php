@@ -48,6 +48,11 @@ class Synchronization implements ShouldQueue
             }
 
             $this->pritunl->update([
+                "user_count" => count($users),
+                "status" => PritunlUserStatus::ACTIVE,
+            ]);
+
+            $this->pritunl->update([
                 "sync_status" => PritunlSyncStatus::SYNCED,
             ]);
 

@@ -37,6 +37,10 @@ class CreationPritunlUser implements ShouldQueue
 
             $user=$client->addUser($pritunlUser->pritunl->organization_id,$pritunlUser->name);
 
+            $pritunlUser->pritunl->update([
+                "user_count"=>$pritunlUser->pritunl->user_count+1,
+            ]);
+
             $vpnPath=$client->download($pritunlUser->pritunl->organization_id,$user[0]["id"]);
 
             $pritunlUser->update([
