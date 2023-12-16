@@ -3,9 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PritunlResource\Pages;
-use App\Jobs\Pritunl\RestartInternalServer;
+use App\Jobs\Pritunl\InternalServerOperation;
+use App\Jobs\Pritunl\User\Synchronization;
 use App\Models\Pritunl\Enum\InternalServerStatus;
 use App\Models\Pritunl\Enum\PritunlStatus;
+use App\Models\Pritunl\Enum\PritunlSyncStatus;
 use App\Models\Pritunl\Pritunl;
 use App\Models\Server\Enum\ServerStatus;
 use App\Models\Server\Server;
@@ -25,11 +27,18 @@ class PritunlResource extends Resource
 {
     protected static ?string $model = Pritunl::class;
 
-    protected static ?string $navigationGroup="Server";
+    protected static ?string $navigationGroup="VPN";
+
+    protected static ?string $navigationLabel = 'Pritunl';
+
+
 
     public static function getNavigationBadge(): ?string
     {
-        return Pritunl::where("status",PritunlStatus::ACTIVE)->count(). "/". Pritunl::count();
+        return Pritunl::where(function($query){
+            $query=$query->where("status",PritunlStatus::ACTIVE);
+            return $query->Where("internal_server_status",InternalServerStatus::ONLINE);
+        })->count(). "/". Pritunl::count();
     }
     public static function getNavigationBadgeColor(): string|array|null
     {
@@ -69,6 +78,7 @@ class PritunlResource extends Resource
                 TextColumn::make("server.public_ip_address")->label("Server")->searchable()->sortable(),
                 TextColumn::make('status')->searchable()->sortable()->badge(),
                 TextColumn::make('internal_server_status')->label("Internal Status")->badge()->searchable()->sortable(),
+                TextColumn::make('sync_status')->label("Sync Status")->badge()->searchable()->sortable(),
                 TextColumn::make('online_user_count')->label("Online")->searchable()->sortable(),
                 TextColumn::make('user_limit')->label("Limit")->searchable()->sortable(),
                 TextColumn::make('user_count')->label("Total Users")->searchable()->sortable(),
@@ -77,10 +87,26 @@ class PritunlResource extends Resource
                 //
             ])
             ->actions([
-                Action::make("Restart")->icon('heroicon-o-arrow-path')->color("info")->requiresConfirmation("Are you sure you want to restart this Pritunl?")->action(function(Pritunl $pritunl){
-                    RestartInternalServer::dispatch($pritunl);
+                Action::make("Sync Users")->icon("heroicon-o-arrow-path")->color("info")->requiresConfirmation("Are you sure you want to sync users?")->action(function(Pritunl $pritunl){
+                    Synchronization::dispatch($pritunl);
                 })->disabled(function(Pritunl $pritunl){
-                    return $pritunl->internal_server_status !== InternalServerStatus::ONLINE;
+                    return $pritunl->internal_server_status != InternalServerStatus::ONLINE || $pritunl->sync_status == PritunlSyncStatus::SYNCING;
+                }),
+                Action::make("Start")->icon("heroicon-o-cursor-arrow-rays")->color("success")->requiresConfirmation("Are you sure you want to start this Pritunl?")->action(function(Pritunl $pritunl){
+                    InternalServerOperation::dispatch($pritunl,"start");
+                })->disabled(function(Pritunl $pritunl){
+                    return $pritunl->internal_server_status != InternalServerStatus::OFFLINE;
+                }),
+                Action::make("Stop")->icon("heroicon-o-x-circle")->color("danger")->requiresConfirmation("Are you sure you want to stop this Pritunl?")->action(function(Pritunl $pritunl){
+                    InternalServerOperation::dispatch($pritunl,"stop");
+                })->disabled(function(Pritunl $pritunl){
+                    return $pritunl->internal_server_status != InternalServerStatus::ONLINE;
+                }),
+
+                Action::make("Restart")->icon('heroicon-o-arrow-path')->color("info")->requiresConfirmation("Are you sure you want to restart this Pritunl?")->action(function(Pritunl $pritunl){
+                    InternalServerOperation::dispatch($pritunl,"restart");
+                })->disabled(function(Pritunl $pritunl){
+                    return $pritunl->internal_server_status != InternalServerStatus::ONLINE;
                 }),
 
                 EditAction::make(),

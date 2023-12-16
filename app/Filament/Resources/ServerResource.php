@@ -33,7 +33,8 @@ class ServerResource extends Resource
 {
     protected static ?string $model = Server::class;
 
-    protected static ?string $navigationGroup="Server";
+    protected static ?string $navigationGroup="Servers";
+
 
     public static function getNavigationBadge(): ?string
     {

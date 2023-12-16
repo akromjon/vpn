@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string("internal_server_id",100)->nullable();
             $table->string("internal_server_status",30)->nullable();
             $table->string("status",15)->nullable();
+            $table->string("sync_status",15)->default("not_synced");
             $table->unsignedBigInteger("user_count")->nullable();
             $table->unsignedBigInteger("user_limit")->nullable();
             $table->unsignedBigInteger("online_user_count")->default(0);

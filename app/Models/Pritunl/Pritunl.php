@@ -3,6 +3,7 @@
 namespace App\Models\Pritunl;
 
 use App\Models\Pritunl\Enum\InternalServerStatus;
+use App\Models\Pritunl\Enum\PritunlSyncStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Pritunl\Enum\PritunlStatus;
 use App\Models\Server\Enum\ServerStatus;
@@ -17,6 +18,8 @@ class Pritunl extends Model
     protected $casts=[
         "status"=>PritunlStatus::class,
         "internal_server_status"=>InternalServerStatus::class,
+        "sync_status"=>PritunlSyncStatus::class,
+
     ];
 
     public function server():BelongsTo

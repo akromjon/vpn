@@ -38,7 +38,8 @@ class AdminPanelProvider extends PanelProvider
                 Pages\Dashboard::class,
             ])
             ->navigationGroups([
-                NavigationGroup::make("Server")->icon("heroicon-o-server-stack")
+                NavigationGroup::make("Servers")->icon("heroicon-o-server-stack"),
+                NavigationGroup::make("VPN")->icon("heroicon-o-wifi")
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([

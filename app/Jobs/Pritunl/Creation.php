@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class Creation implements ShouldQueue
@@ -64,6 +65,8 @@ class Creation implements ShouldQueue
             ]);
         }
         catch(\Exception $e){
+
+            Log::error($e->getMessage());
 
             $pritunl->update([
                 "status"=>PritunlStatus::FAILED,

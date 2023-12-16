@@ -14,23 +14,22 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class RestartInternalServer implements ShouldQueue
+class InternalServerDeletion implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public function __construct(protected Pritunl $pritunl)
     {
-        //
     }
 
-    public function handle(){
-
+    public function handle():void
+    {
         try{
 
             $pritunl=$this->pritunl;
 
             $pritunl->update([
-                "internal_server_status"=>InternalServerStatus::RESTARTING,
+                "internal_server_status"=>InternalServerStatus::DELETING,
             ]);
 
             $client=PritunlClient::connect(
@@ -39,18 +38,22 @@ class RestartInternalServer implements ShouldQueue
                 password: $pritunl->password
             );
 
-            $client->restartServer($pritunl->internal_server_id);
+            $client->stopServer($pritunl->internal_server_id);
+
+            $client->deleteServer($pritunl->internal_server_id);
+
+            $client->deleteOrganization($pritunl->organization_id);
 
             $pritunl->update([
-                "internal_server_status"=>InternalServerStatus::ONLINE,
+                "internal_server_status"=>InternalServerStatus::DELETED,
             ]);
-        }
-        catch(\Exception $e){
+
+        }catch(\Exception $e){
 
             Log::error($e->getMessage());
 
-            $this->pritunl->update([
-                "internal_server_status"=>InternalServerStatus::FAILED_TO_RESTART,
+            $pritunl->update([
+                "internal_server_status"=>InternalServerStatus::FAILED_TO_DELETE,
             ]);
         }
     }
