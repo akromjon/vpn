@@ -58,12 +58,8 @@ abstract class BaseHttp
             'password' => $this->password,
         ]);
 
-        if(401==$response->status()){
+        if(401==$response->status() || 200!=$response->status()){
             throw new \Exception("Credentials are not valid: {$this->ip}, {$this->username}, {$this->password} with status: {$response->status()} body: {$response->body()} route: {$this->baseUrl()}/auth/session");
-        }
-
-        if (200!=$response->status()) {
-            throw new \Exception("Auth failed for {$this->ip} with status {$response->status()}");
         }
 
         $cookie = $response->header('Set-Cookie');

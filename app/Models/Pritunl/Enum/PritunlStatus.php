@@ -8,9 +8,14 @@ enum PritunlStatus:string implements HasLabel,HasColor {
     case ACTIVE="active";
     case CREATING="creating";
     case INACTIVE="inactive";
+    case DELETING="deleting";
     case DELETED="deleted";
     case RESTARTING="restarting";
     case FAILED="failed";
+    case FAILED_TO_CREATE="failed_to_create";
+    case FAILED_TO_DELETE="failed_to_delete";
+    case FAILED_TO_RESTART="failed_to_restart";
+
 
 
     public function getLabel(): ?string{
@@ -21,6 +26,10 @@ enum PritunlStatus:string implements HasLabel,HasColor {
             self::RESTARTING => "Restarting",
             self::FAILED => "Failed",
             self::CREATING => "Creating",
+            self::DELETING => "Deleting",
+            self::FAILED_TO_CREATE => "Failed to create",
+            self::FAILED_TO_DELETE => "Failed to delete",
+            self::FAILED_TO_RESTART => "Failed to restart",
         };
     }
 
@@ -28,11 +37,15 @@ enum PritunlStatus:string implements HasLabel,HasColor {
     {
         return match ($this) {
             self::ACTIVE => "success",
-            self::INACTIVE => "warning",
+            self::INACTIVE => "danger",
             self::DELETED => "danger",
             self::RESTARTING => "warning",
             self::FAILED => "danger",
             self::CREATING => "warning",
+            self::DELETING => "warning",
+            self::FAILED_TO_CREATE => "danger",
+            self::FAILED_TO_DELETE => "danger",
+            self::FAILED_TO_RESTART => "danger",
         };
     }
 }

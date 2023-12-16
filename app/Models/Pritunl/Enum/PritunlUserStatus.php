@@ -8,6 +8,7 @@ enum PritunlUserStatus:string implements HasLabel,HasColor {
 
     case CREATING="creating";
     case ACTIVE="active";
+    case INACTIVE="inactive";
     case UPDATING="updating";
     case UPDATED="updated";
     case DELETING="deleting";
@@ -20,6 +21,7 @@ enum PritunlUserStatus:string implements HasLabel,HasColor {
     public function getLabel(): ?string{
         return match ($this) {
             self::CREATING => "Creating",
+            self::INACTIVE => "Inactive",
             self::ACTIVE => "Active",
             self::UPDATING => "Updating",
             self::UPDATED => "Updated",
@@ -35,6 +37,7 @@ enum PritunlUserStatus:string implements HasLabel,HasColor {
     {
         return match ($this) {
             self::CREATING => "warning",
+            self::INACTIVE => "danger",
             self::ACTIVE => "success",
             self::UPDATING => "warning",
             self::UPDATED => "success",

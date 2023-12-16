@@ -37,6 +37,10 @@ class DeletionPritunlUser implements ShouldQueue
                 password: $pritunlUser->pritunl->password
             );
 
+            $pritunlUser->pritunl->update([
+                "user_count" => $pritunlUser->pritunl->user_count - 1,
+            ]);
+
             $pritunlClient->deleteUser($pritunlUser->pritunl->organization_id, $pritunlUser->internal_user_id);
 
             $pritunlUser->update([

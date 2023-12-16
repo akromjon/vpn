@@ -52,7 +52,7 @@ class VPNConfig
 
         $this->extractTarFile($file);
 
-        $this->deleteFile($file);
+        // $this->deleteFile($file);
 
        return $this->getExtractedFile();
     }
@@ -73,14 +73,19 @@ class VPNConfig
     {
         Storage::disk('servers')->delete($file);
     }
-
-    public function getExtractedFile():string
+    public function getExtractedFile(): string
     {
-        $file = $this->baseBath().$this->filePath()."/".$this->lookForFile();
+        $file = $this->baseBath() . $this->filePath() . "/" . $this->lookForFile();
 
-        $newFile=$this->baseBath().$this->filePath()."/config.ovpn";
+        $newFile = $this->baseBath() . $this->filePath() . "/config.ovpn";
 
         rename($file, $newFile);
+
+        $fileContent = File::get($newFile);
+
+        $cleanedContent = strstr($fileContent, '</key>', true)."</key>";
+
+        File::put($newFile, $cleanedContent);
 
         return $newFile;
     }
