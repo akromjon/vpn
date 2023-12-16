@@ -90,13 +90,13 @@ class Pritunl extends BaseHttp
                 ->all();
     }
 
-    public function download(string $organizationId, string $userId): BinaryFileResponse|Response
+    public function download(string $organizationId, string $userId): string
     {
         $response = $this->baseHttp('get', "key/{$organizationId}/{$userId}.tar");
 
         $config = new VPNConfig($this->ip, $organizationId, $userId);
 
-        return response()->download($config->download($response->body()));
+        return ($config->download($response->body()));
     }
 
     public function getDownloadFilePath(string $organizationId, string $userId): string

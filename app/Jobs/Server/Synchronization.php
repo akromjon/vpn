@@ -3,7 +3,7 @@
 namespace App\Jobs\Server;
 
 use Akromjon\DigitalOceanClient\DigitalOceanClient;
-use App\Enum\CloudProviderTypeEnum;
+use App\Models\Server\Enum\CloudProviderType;
 use App\Models\Server\Server;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -28,7 +28,7 @@ class Synchronization implements ShouldQueue
 
             $server=Server::firstOrNew([
                 "uuid"=>$droplet["id"],
-                "cloud_provider_type"=>CloudProviderTypeEnum::DigitalOcean,
+                "cloud_provider_type"=>CloudProviderType::DigitalOcean,
             ]);
 
             $this->fillWithDigitalOcean($server,$droplet)->save();
@@ -47,7 +47,7 @@ class Synchronization implements ShouldQueue
             'region' => $droplet['region']['slug'],
             "size"=>$droplet["size_slug"],
             'image_id' => $droplet['image']['id'],
-            'cloud_provider_type' => CloudProviderTypeEnum::DigitalOcean,
+            'cloud_provider_type' => CloudProviderType::DigitalOcean,
             'public_ip_address' => $ipAddresses['public_ip_address'] ?? null,
             'private_ip_address' => $ipAddresses['private_ip_address'] ?? null,
             'server_created_at' => $droplet['created_at'],

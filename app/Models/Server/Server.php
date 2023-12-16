@@ -4,8 +4,8 @@ namespace App\Models\Server;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Enum\CloudProviderTypeEnum;
-use App\Enum\ServerEnum;
+use App\Models\Server\Enum\CloudProviderType;
+use App\Models\Server\Enum\ServerStatus;
 use Illuminate\Support\Facades\Cache;
 
 class Server extends Model
@@ -13,8 +13,8 @@ class Server extends Model
     use HasFactory;
     protected $casts=[
         "server_created_at"=>"datetime",
-        "status"=>ServerEnum::class,
-        "cloud_provider_type"=>CloudProviderTypeEnum::class,
+        "status"=>ServerStatus::class,
+        "cloud_provider_type"=>CloudProviderType::class,
         "ssh_key_ids"=>"array",
     ];
 

@@ -3,8 +3,8 @@
 namespace App\Jobs\Server;
 
 use Akromjon\DigitalOceanClient\DigitalOceanClient;
-use App\Enum\CloudProviderTypeEnum;
-use App\Enum\ServerEnum;
+use App\Models\Server\Enum\CloudProviderType;
+use App\Models\Server\Enum\ServerStatus;
 use App\Models\Server\Server;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,7 +26,7 @@ class Creation implements ShouldQueue
         $server=$this->server;
 
 
-        if($server->cloud_provider_type==CloudProviderTypeEnum::DigitalOcean){
+        if($server->cloud_provider_type==CloudProviderType::DigitalOcean){
 
 
             $this->digitalOceanClient($server);
@@ -66,7 +66,7 @@ class Creation implements ShouldQueue
 
             if(422===$e->getCode()){
 
-                $server->status=ServerEnum::UNAVAILABLE;
+                $server->status=ServerStatus::UNAVAILABLE;
 
                 $server->save();
 

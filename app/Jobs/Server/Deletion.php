@@ -3,7 +3,7 @@
 namespace App\Jobs\Server;
 
 use Akromjon\DigitalOceanClient\DigitalOceanClient;
-use App\Enum\CloudProviderTypeEnum;
+use App\Models\Server\Enum\CloudProviderType;
 use App\Models\Server\Server;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -26,7 +26,7 @@ class Deletion implements ShouldQueue
     {
         $server=$this->server;
 
-        if($server->cloud_provider_type==CloudProviderTypeEnum::DigitalOcean){
+        if($server->cloud_provider_type==CloudProviderType::DigitalOcean){
 
             $this->digitalOceanClient($server);
 

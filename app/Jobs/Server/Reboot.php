@@ -3,7 +3,7 @@
 namespace App\Jobs\Server;
 
 use Akromjon\Pritunl\Cloud\SSH\SSH;
-use App\Enum\ServerEnum;
+use App\Models\Server\Enum\ServerStatus;
 use App\Models\Server\Server;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -35,7 +35,7 @@ class Reboot implements ShouldQueue
 
        $ssh->disconnect();
 
-       $this->server->status=ServerEnum::ACTIVE;
+       $this->server->status=ServerStatus::ACTIVE;
        $this->server->save();
     }
 }
