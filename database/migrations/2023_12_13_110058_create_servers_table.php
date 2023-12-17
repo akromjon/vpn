@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('uuid')->unique()->nullable();
             $table->string("name");
             $table->string("region",50)->nullable();
+            $table->string("country_code",10)->nullable();
             $table->string("size",50)->nullable();
             $table->string("image_id",15)->nullable();
             $table->json("ssh_key_ids")->nullable();

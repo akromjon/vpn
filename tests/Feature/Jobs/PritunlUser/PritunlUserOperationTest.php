@@ -11,7 +11,7 @@ use App\Models\Pritunl\Enum\PritunlUserStatus;
 use App\Models\Pritunl\Pritunl;
 use App\Models\Pritunl\PritunlUser;
 
-class PritunlUserSynchronizationTest extends \Tests\TestCase
+class PritunlUserOperationTest extends \Tests\TestCase
 {
     public function test_it_can_create_a_user_on_pritunl_with_job()
     {

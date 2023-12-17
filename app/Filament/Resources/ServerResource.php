@@ -60,7 +60,7 @@ class ServerResource extends Resource
                 CheckboxList::make('ssh_key_ids')->options(self::sshKeyOptions())->required()->label("SSH Keys")->default(array_key_first(self::sshKeyOptions())),
                 Select::make('project_id')->options(self::projectOptions())->required()->default(array_key_first(self::projectOptions()))->label("Project"),
                 Select::make('status')->options(ServerStatus::class)->label("Status")->hiddenOn("create"),
-                TextInput::make('public_ip_address')->ip()->readOnly()->hiddenOn("create")->maxLength(45),
+                TextInput::make('public_ip_address')->ip()->hiddenOn("create")->maxLength(45),
                 TextInput::make('private_ip_address')->ip()->readOnly()->hiddenOn("create")->maxLength(45),
                 DateTimePicker::make('server_created_at')->hiddenOn("create"),
                 TextInput::make('price')->numeric()->prefix('$')->hiddenOn("create"),
@@ -70,6 +70,7 @@ class ServerResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->columns([
+            TextColumn::make("cloud_provider_type")->label("Cloud Provider")->searchable(),
             TextColumn::make('uuid')->label('UUID')->searchable(),
             TextColumn::make('status')->badge()->searchable(),
             TextColumn::make('public_ip_address')->label("Ip Address")->searchable()->copyable()->copyable()->copyMessage('IP Address copied')->copyMessageDuration(1500),
