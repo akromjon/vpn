@@ -2,28 +2,44 @@
 
 namespace App\Models;
 
+use App\Models\Client\Client;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 
 class Token extends Model
 {
     use HasFactory;
 
-    public static function setCache(string $token):void
+    public function client():BelongsTo
     {
-        cache()->forever('tokens',array_merge(self::getCache(),[$token]));
+        return $this->belongsTo(Client::class);
+    }
+
+    public function getClient(string $token):?Client
+    {
+        return $this->where('token',$token)->first()->client;
+    }
+
+    public static function getCachedClient():?Client
+    {
+        return self::getCache()[request()->header('TOKEN')];
+    }
+
+    public static function setCache(array $token):void
+    {
+        cache()->forever('client_tokens',array_merge(self::getCache(),$token));
     }
 
     public static function getCache():array
     {
-        return cache()->get('tokens',[]);
+        return cache()->get('client_tokens',[]);
     }
 
     public static function isCached(string $token):bool
     {
-        return in_array($token,self::getCache());
+        return array_key_exists($token,self::getCache());
     }
 
 

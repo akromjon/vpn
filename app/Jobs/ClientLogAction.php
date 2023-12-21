@@ -31,6 +31,10 @@ class ClientLogAction implements ShouldQueue
 
         $client = Client::where('uuid',$this->clientUuid)->first();
 
+        $client->update([
+            'last_used_at'=>now()
+        ]);
+
         if (!$client) {
             return;
         }

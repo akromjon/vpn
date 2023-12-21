@@ -68,7 +68,7 @@ class PritunlResource extends Resource
 
                 TextInput::make("password")->default(function () {
                     return config("pritunl.password");
-                })->prefixIcon("heroicon-o-arrow-right-on-rectangle")->password()->label("Password")->maxLength(100)->required(),
+                })->prefixIcon("heroicon-o-arrow-right-on-rectangle")->label("Password")->maxLength(100)->required(),
 
                 Select::make("status")->options(PritunlStatus::class)->label("Status")->hiddenOn("create")->nullable(),
                 TextInput::make("organization_id")->label("Organization ID")->hiddenOn("create")->maxLength(100)->nullable(),

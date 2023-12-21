@@ -7,19 +7,18 @@ use App\Models\Client\Client;
 use App\Models\Pritunl\Enum\InternalServerStatus;
 use App\Models\Pritunl\Enum\PritunlStatus;
 use App\Models\Pritunl\Enum\PritunlSyncStatus;
+use App\Models\Pritunl\PritunlUser;
 use App\Models\Server\Enum\ServerStatus;
 use Illuminate\Support\Facades\DB;
 use App\Models\Client\Enum\ClientAction;
 use App\Models\Pritunl\Enum\PritunlUserStatus;
+use App\Models\Token;
 
 class ServerController extends Controller
 {
     public function list()
     {
-        if($clientId=request()->get("client_id")){
-
-            $this->act($clientId, ClientAction::LIST_SERVERS);
-        }
+        $this->act(Token::getCachedClient()->uuid, ClientAction::LIST_SERVERS);
 
         $selectColumns = [
             "pritunls.online_user_count as online",
@@ -46,15 +45,10 @@ class ServerController extends Controller
         return response()->json($results);
     }
 
-    public function connect(string $ip)
+    public function download(string $ip)
     {
-        if($clientId=request()->get("client_id")){
-
-            $this->act($clientId, ClientAction::CONNECTING);
-        }
-
         $server = DB::table("servers")
-            ->select("pritunl_users.vpn_config_path as vpn_config_path")
+            ->select("pritunl_users.vpn_config_path as vpn_config_path", "pritunl_users.id as pritunl_user_id")
             ->join("pritunls", "pritunls.server_id", "=", "servers.id")
             ->join("pritunl_users", "pritunl_users.pritunl_id", "=", "pritunls.id")
             ->where("servers.status", ServerStatus::ACTIVE)
@@ -72,6 +66,85 @@ class ServerController extends Controller
             return response()->json(["message" => "Server not found"], 404);
         }
 
-        return response()->download($server->vpn_config_path);
+        $pritunlUser = PritunlUser::where("id", $server->pritunl_user_id)->first();
+
+        $pritunlUser->update(["status" => PritunlUserStatus::IN_USE]);
+
+        $client = Token::getCachedClient();
+
+        $lastConnection=$client->connections->last();
+
+        if(isset($lastConnection->status) && $lastConnection->status!=='disconnected'){
+
+            $lastConnection->update([
+                "status" => 'disconnected',
+                'disconnected_at' => now()
+            ]);
+        }
+
+        $client->connections()->create([
+            "pritunl_user_id" => $pritunlUser->id,
+            "status" => 'idle',
+        ]);
+
+        $this->act(Token::getCachedClient()->uuid, ClientAction::DOWNLOADED_CONFIG);
+
+        return response()->download($server->vpn_config_path, 'vpn_config.ovpn', ['USER-ID' => $server->pritunl_user_id]);
+    }
+
+    public function connected()
+    {
+        $client = Token::getCachedClient();
+
+        $lastConnection=$client->connections->last();
+
+        if($lastConnection->status!=='idle'){
+
+            return response()->json(["message" => "Need to be downloaded or disconnected to connect"], 400);
+
+        }
+
+        $client->update(['last_used_at' => now()]);
+
+        $lastConnection->update([
+            "status" => 'connected',
+            'connected_at' => now()
+        ]);
+
+        $lastConnection->pritunlUser->update([
+            "status" => PritunlUserStatus::ACTIVE,
+            "is_online" => true,
+            'last_active' => now()
+        ]);
+
+        return response()->json(["message" => "Connected"]);
+    }
+
+    public function disconnected()
+    {
+        $client = Token::getCachedClient();
+
+        $lastConnection=$client->connections->last();
+
+        if($lastConnection->status!=='connected'){
+
+            return response()->json(["message" => "Need to be connected to disconnect"], 400);
+
+        }
+
+        $client->update(['last_used_at' => now()]);
+
+        $lastConnection->update([
+            "status" => 'disconnected',
+            'disconnected_at' => now()
+        ]);
+
+        $lastConnection->pritunlUser->update([
+            "status" => PritunlUserStatus::ACTIVE,
+            "is_online" => false,
+            'last_active' => now()
+        ]);
+
+        return response()->json(["message" => "Disconnected"]);
     }
 }
