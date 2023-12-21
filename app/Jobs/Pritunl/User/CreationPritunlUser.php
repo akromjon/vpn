@@ -30,7 +30,7 @@ class CreationPritunlUser implements ShouldQueue
             ]);
 
             $client=PritunlClient::connect(
-                ip: $pritunlUser->pritunl->server->public_ip_address,
+                ip: $pritunlUser->pritunl->server->ip,
                 username: $pritunlUser->pritunl->username,
                 password: $pritunlUser->pritunl->password
             );
@@ -45,7 +45,7 @@ class CreationPritunlUser implements ShouldQueue
 
             $pritunlUser->update([
                 "internal_user_id"=>$user[0]["id"],
-                "server_ip"=>$pritunlUser->pritunl->server->public_ip_address,
+                "server_ip"=>$pritunlUser->pritunl->server->ip,
                 "status"=>PritunlUserStatus::ACTIVE,
                 "opt_secret"=>$user[0]["otp_secret"],
                 "vpn_config_path"=>$vpnPath,

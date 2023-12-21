@@ -54,7 +54,7 @@ class PritunlUserResource extends Resource
                 Select::make("pritunl_id")->label("Server")
                     ->relationship("pritunl","id")
                     ->getOptionLabelFromRecordUsing(function(Pritunl $record){
-                        return "{$record->server->public_ip_address}-{$record->server->region}";
+                        return "{$record->server->ip}-{$record->server->region}";
                     })
                     ->required(),
                 TextInput::make("name")->default(fn()=>Str::random(6))->label("Name")->maxLength(50)->required(),
@@ -94,9 +94,6 @@ class PritunlUserResource extends Resource
 
                                 DeletionPritunlUser::dispatch($record);
                             }
-
-                            $record->delete();
-
                         });
 
                         Notification::make()

@@ -170,6 +170,7 @@ return [
         App\Providers\HorizonServiceProvider::class,
         App\Providers\Filament\AdminPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\TelescopeServiceProvider::class,
     ])->toArray(),
 
     /*
@@ -186,5 +187,8 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
+
+
+    "api-key"=>env("API_KEY")
 
 ];

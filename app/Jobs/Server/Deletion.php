@@ -26,7 +26,7 @@ class Deletion implements ShouldQueue
     {
         $server=$this->server;
 
-        if($server->cloud_provider_type==CloudProviderType::DigitalOcean){
+        if($server->provider==CloudProviderType::DIGITALOCEAN){
 
             $this->digitalOceanClient($server);
 

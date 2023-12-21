@@ -34,12 +34,12 @@ class Creation implements ShouldQueue
             ]);
 
             $client=PritunlClient::connect(
-                ip: $pritunl->server->public_ip_address,
+                ip: $pritunl->server->ip,
                 username: $pritunl->username,
                 password: $pritunl->password
             );
 
-            $organizationId=$client->addOrganization($pritunl->server->public_ip_address)["id"];
+            $organizationId=$client->addOrganization($pritunl->server->ip)["id"];
 
             $client->createNumberOfUsers(
                 organizationId: $organizationId,
@@ -48,7 +48,7 @@ class Creation implements ShouldQueue
 
             sleep(1);
 
-            $serverId=$client->addServer($pritunl->server->public_ip_address)["id"];
+            $serverId=$client->addServer($pritunl->server->ip)["id"];
 
             $client->attachOrganization(
                 serverId: $serverId,

@@ -4,7 +4,6 @@ namespace App\Filament\Resources\PritunlResource\Pages;
 
 use App\Filament\Resources\PritunlResource;
 use App\Jobs\Pritunl\Creation;
-use App\Models\Pritunl\Enum\PritunlStatus;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreatePritunl extends CreateRecord
@@ -15,6 +14,7 @@ class CreatePritunl extends CreateRecord
     {
         return 'Pritunl creation started and will take some time.';
     }
+
     protected function AfterCreate()
     {
         Creation::dispatch($this->record);

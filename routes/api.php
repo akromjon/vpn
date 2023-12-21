@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ServerController;
+use App\Http\Controllers\TokenController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('api-key')->prefix('/token')->group(function () {
+
+    Route::post("/",[TokenController::class, 'generateToken']);
+
+});
+
+Route::middleware('token')->prefix("/servers")->group(function () {
+
+    Route::get("/",[ServerController::class, 'list']);
+
+    Route::get("/{ip}/connect",[ServerController::class, 'connect']);
+
 });

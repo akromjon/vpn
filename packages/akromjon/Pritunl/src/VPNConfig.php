@@ -52,7 +52,7 @@ class VPNConfig
 
         $this->extractTarFile($file);
 
-        // $this->deleteFile($file);
+        $this->deleteFile($file);
 
        return $this->getExtractedFile();
     }

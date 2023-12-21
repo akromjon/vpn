@@ -39,7 +39,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 NavigationGroup::make("Servers")->icon("heroicon-o-server-stack"),
-                NavigationGroup::make("VPN")->icon("heroicon-o-wifi")
+                NavigationGroup::make("VPN")->icon("heroicon-o-wifi"),
+                NavigationGroup::make("Clients")->icon("heroicon-o-users")
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
