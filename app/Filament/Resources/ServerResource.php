@@ -27,65 +27,118 @@ use App\Jobs\Server\Creation;
 use App\Models\Server\Server;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
-
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Get;
+use Illuminate\Support\Facades\File;
+use Closure;
+use Filament\Forms\Components\Repeater;
+use Filament\Tables\Columns\ImageColumn;
 
 class ServerResource extends Resource
 {
     protected static ?string $model = Server::class;
 
-    protected static ?string $navigationGroup="Servers";
+    protected static ?string $navigationGroup = "Servers";
 
 
     public static function getNavigationBadge(): ?string
     {
-        return Server::where("status",ServerStatus::ACTIVE)->count(). "/". Server::count();
+        return Server::where("status", ServerStatus::ACTIVE)->count() . "/" . Server::count();
     }
-    public static function getNavigationBadgeColor(): string|array|null
+
+    private static function getCountryNames(): array
     {
-        return "success";
+        return collect(self::countries())
+            ->mapWithKeys(fn($country) => [$country["name"] => $country["name"]])
+            ->toArray();
+    }
+
+    private static function countries(): array
+    {
+        return json_decode(File::get(public_path("json/countries.json"), true), true);
     }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('uuid')->label('UUID')->maxLength(255)->hiddenOn("create"),
-                Select::make('cloud_provider_type')->label("Cloud Provider Type")->options(CloudProviderType::class)->default(CloudProviderType::DigitalOcean)->required(),
-                TextInput::make('name')->live(onBlur: true)->minLength(2)->required()->afterStateUpdated(function (Set $set, $state) {
-                    return $set('name', Str::slug($state));
-                }),
-                Select::make('region')->options(self::regionOptions())->required(),
-                Select::make('size')->options(self::sizeOptions())->required()->label("Size"),
-                Select::make('image_id')->options(self::imageOptions())->required()->label("Image"),
-                CheckboxList::make('ssh_key_ids')->options(self::sshKeyOptions())->required()->label("SSH Keys")->default(array_key_first(self::sshKeyOptions())),
-                Select::make('project_id')->options(self::projectOptions())->required()->default(array_key_first(self::projectOptions()))->label("Project"),
-                Select::make('status')->options(ServerStatus::class)->label("Status")->hiddenOn("create"),
-                TextInput::make('public_ip_address')->ip()->hiddenOn("create")->maxLength(45),
-                TextInput::make('private_ip_address')->ip()->readOnly()->hiddenOn("create")->maxLength(45),
-                DateTimePicker::make('server_created_at')->hiddenOn("create"),
-                TextInput::make('price')->numeric()->prefix('$')->hiddenOn("create"),
+
+                Fieldset::make('Server Configuration')
+                    ->schema([
+                        TextInput::make("name")->default(fn() => Str::random(6))->label("Name")->maxLength(255)->required(),
+                        Select::make("provider")->label("Provider")->options(CloudProviderType::class)->live()->required(),
+                        Select::make("status")->label("Status")->options(ServerStatus::class)->required(),
+                        TextInput::make("ip")->label("IP")->maxLength(100)->hiddenOn("create")->required(),
+                        Select::make("country")->options(self::getCountryNames())->label("Country")->afterStateUpdated(function (Set $set, $state) {
+                            $code = Str::lower(collect(self::countries())->where("name", $state)->first()["code"]);
+                            $set("country_code", $code);
+                            $set('flag', asset("flags/1x1/$code.svg"));
+                        })
+                            ->reactive()->required(),
+                        TextInput::make("city")->label("City")->required(),
+                        TextInput::make("country_code")->live()->label("Country Code")->minLength(2)->maxLength(3)->required(),
+                        TextInput::make("flag")->label("Flag")->required(),
+                    ])
+                    ->live()
+                    ->columns(3),
+
+                Fieldset::make('DIGITALOCEAN')
+                    ->hidden(function (Get $get) {
+                        return "digitalocean" != $get("provider");
+                    })
+                    ->schema([
+                        Select::make("config.project")->label("Project")->options(self::projectOptions())->required(),
+                        Select::make("config.region")->label("Region")->options(self::regionOptions())->required(),
+                        Select::make("config.size")->label("Size")->options(self::sizeOptions())->required(),
+                        Select::make("config.image")->label("Image")->options(self::imageOptions())->required(),
+                        Select::make("config.ssh_keys")->label("SSH Key")->options(self::sshKeyOptions())->required(),
+                    ])
+                    ->columns(3),
+
+                Fieldset::make('KAMATERA')
+                    ->hidden(function (Get $get) {
+                        return "kamatera" != $get("provider");
+                    })
+                    ->schema([
+                        Select::make("config.project")->label("Project")->options(self::projectOptions())->required(),
+                        Select::make("config.region")->label("Region")->options(self::regionOptions())->required(),
+                        Select::make("config.size")->label("Size")->options(self::sizeOptions())->required(),
+                        Select::make("config.image")->label("Image")->options(self::imageOptions())->required(),
+                        Select::make("config.ssh_keys")->label("SSH Key")->options(self::sshKeyOptions())->required(),
+                    ])
+                    ->columns(3),
+
+                Fieldset::make("Localization")
+                    ->schema([
+                        Repeater::make("localization")->schema(
+                            [
+                                Select::make("country_code")->label("Language")->options([
+                                    'spain' => 'Spain',
+                                    "ru" => "Russian",
+                                    "uz" => "Uzbek",
+                                ])->required()->disableOptionsWhenSelectedInSiblingRepeaterItems(),
+                                TextInput::make("country")->label("Country")->required(),
+                                TextInput::make("city")->label("City")->required(),
+                            ]
+
+                        )->maxWidth(100)->grid(3)->label("")->addActionLabel("Add Localization")->defaultItems(3),
+                    ])->columns(1),
+
+
+
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table->columns([
-            TextColumn::make("cloud_provider_type")->label("Cloud Provider")->searchable(),
-            TextColumn::make('uuid')->label('UUID')->searchable(),
-            TextColumn::make('status')->badge()->searchable(),
-            TextColumn::make('public_ip_address')->label("Ip Address")->searchable()->copyable()->copyable()->copyMessage('IP Address copied')->copyMessageDuration(1500),
-            TextColumn::make("size")->searchable(),
-            SelectColumn::make('region')->options(self::regionOptions())->disabled(function ($record) {
-                return $record->status !== ServerStatus::UNAVAILABLE;
-            })->searchable()->afterStateUpdated(function ($record, $state) {
-                if ($record->status === ServerStatus::UNAVAILABLE) {
-                    Creation::dispatch($record);
-                }
-            }),
-            TextColumn::make('server_created_at')->label("Creation")->dateTime()->sortable(),
-            TextColumn::make('price')->money()->sortable(),
-            TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
-            TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+            TextColumn::make("name")->label("Name")->searchable()->sortable(),
+            TextColumn::make("status")->label("Status")->badge()->searchable()->sortable(),
+            TextColumn::make("ip")->label("IP")->searchable()->sortable(),
+            TextColumn::make("country")->label("Country")->searchable()->sortable(),
+            TextColumn::make("city")->label("City")->searchable()->sortable(),
+            ImageColumn::make("flag")->label("Flag")->searchable()->sortable(),
+
         ])
             ->filters([
                 //
@@ -205,7 +258,7 @@ class ServerResource extends Resource
                     if (ServerStatus::ACTIVE === $server->status) {
                         $server->status = ServerStatus::REBOOTING;
                         $server->save();
-                        Reboot::dispatch($server->public_ip_address, 'root', $server);
+                        Reboot::dispatch($server->ip, 'root', $server);
                         Notification::make()
                             ->title('Server is being rebooted!')
                             ->success()

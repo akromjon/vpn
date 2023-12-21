@@ -11,6 +11,7 @@ return new class extends Migration
     {
         Schema::create('pritunls', function (Blueprint $table) {
             $table->id();
+            $table->string("uuid")->unique();
             $table->string("username",100);
             $table->string("password",100);
             $table->string("organization_id",100)->nullable();
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger("user_count")->nullable();
             $table->unsignedBigInteger("online_user_count")->default(0);
             $table->foreignId('server_id')->unique()->constrained('servers')->onDelete('cascade');
+            $table->index('server_id');
             $table->timestamps();
         });
     }

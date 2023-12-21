@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ServerController;
 use App\Http\Controllers\TokenController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,8 +22,10 @@ Route::middleware('api-key')->prefix('/token')->group(function () {
 
 });
 
-Route::middleware('auth:sanctum')->prefix("/")->group(function () {
+Route::middleware('token')->prefix("/servers")->group(function () {
 
+    Route::get("/",[ServerController::class, 'list']);
 
+    Route::get("/{ip}/connect",[ServerController::class, 'connect']);
 
 });

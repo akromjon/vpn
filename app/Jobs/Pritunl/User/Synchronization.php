@@ -78,14 +78,14 @@ class Synchronization implements ShouldQueue
         return PritunlUser::firstOrNew([
             "internal_user_id" => $userId,
             "pritunl_id" => $this->pritunl->id,
-            "server_ip" => $this->pritunl->server->public_ip_address,
+            "server_ip" => $this->pritunl->server->ip,
         ]);
     }
 
     private function connect(): PritunlClient
     {
         return PritunlClient::connect(
-            ip: $this->pritunl->server->public_ip_address,
+            ip: $this->pritunl->server->ip,
             username: $this->pritunl->username,
             password: $this->pritunl->password
         );

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('tokens', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
             $table->string('token')->unique();
-            $table->string("status",20)->default("active");
             $table->timestamps();
         });
     }

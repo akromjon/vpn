@@ -55,8 +55,8 @@ class PritunlResource extends Resource
         return $form
             ->schema([
                 Select::make("server_id")->label("Server")
-                    ->relationship("server", "public_ip_address")
-                    ->getOptionLabelFromRecordUsing(fn(Server $record) => "{$record->public_ip_address}-{$record->region}")
+                    ->relationship("server", "ip")
+                    ->getOptionLabelFromRecordUsing(fn(Server $record) => "{$record->ip}-{$record->region}")
                     ->required(),
 
 
@@ -80,7 +80,7 @@ class PritunlResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make("server.public_ip_address")->label("Server")->searchable()->sortable(),
+                TextColumn::make("server.ip")->label("Server")->searchable()->sortable(),
                 TextColumn::make('status')->searchable()->sortable()->badge(),
                 TextColumn::make('internal_server_status')->label("Internal Status")->badge()->searchable()->sortable(),
                 TextColumn::make('sync_status')->label("Sync Status")->badge()->searchable()->sortable(),

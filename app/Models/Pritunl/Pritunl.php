@@ -10,6 +10,8 @@ use App\Models\Server\Enum\ServerStatus;
 use App\Models\Server\Server;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
+
 
 class Pritunl extends Model
 {
@@ -21,6 +23,14 @@ class Pritunl extends Model
         "sync_status"=>PritunlSyncStatus::class,
 
     ];
+
+    // we need to do something before we create a new record
+    protected static function booted()
+    {
+        static::creating(function(Pritunl $pritunl){
+            $pritunl->uuid=Str::uuid()->toString();
+        });
+    }
 
     public function server():BelongsTo
     {

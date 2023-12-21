@@ -2,6 +2,7 @@
 
 namespace App\Models\Server;
 
+use App\Jobs\Server\Creation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Server\Enum\CloudProviderType;
@@ -12,10 +13,10 @@ class Server extends Model
 {
     use HasFactory;
     protected $casts=[
-        "server_created_at"=>"datetime",
         "status"=>ServerStatus::class,
-        "cloud_provider_type"=>CloudProviderType::class,
-        "ssh_key_ids"=>"array",
+        "provider"=>CloudProviderType::class,
+        "config"=>"array",
+        "localization"=>"json",
     ];
 
     public static function getSynchronizationStatus(): bool
@@ -26,5 +27,10 @@ class Server extends Model
     public static function setSynchronizationStatus(bool $status): void
     {
         Cache::put("server_synchronization", $status, now()->addDays());
+    }
+
+    public static function addServer(self $self)
+    {
+        Creation::dispatch($self);
     }
 }

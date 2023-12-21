@@ -11,10 +11,11 @@ class KeyMiddleware
 
     public function handle(Request $request, Closure $next): Response
     {
+
         if(!$request->hasHeader('API-KEY')) {
 
             return response()->json([
-                'message' => 'Not found!'
+                'message' => 'API_KEY not found'
             ], 404);
 
         }

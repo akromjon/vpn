@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\ServerResource\Pages;
 
 use App\Filament\Resources\ServerResource;
-use App\Jobs\Server\Creation;
+use App\Models\Server\Server;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateServer extends CreateRecord
@@ -15,9 +15,28 @@ class CreateServer extends CreateRecord
         return 'Server creation started and will take some time.';
     }
 
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        if ($data['provider'] === 'digitalocean') {
+            $data = $this->moveDigitalOceanSpecificDataToConfig($data);
+        }
+
+        return $data;
+    }
+
+    private function moveDigitalOceanSpecificDataToConfig(array $data): array
+    {
+
+        $data['config']['ssh_keys'] = [$data['config']['ssh_keys']];
+
+        return $data;
+    }
+
+
+
     protected function AfterCreate()
     {
-        Creation::dispatch($this->record);
+        Server::addServer($this->record);
     }
 
 

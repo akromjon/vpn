@@ -26,7 +26,7 @@ class Creation implements ShouldQueue
         $server=$this->server;
 
 
-        if($server->cloud_provider_type==CloudProviderType::DigitalOcean){
+        if($server->provider==CloudProviderType::DIGITALOCEAN){
 
 
             $this->digitalOceanClient($server);
@@ -44,11 +44,11 @@ class Creation implements ShouldQueue
 
             $droplet=$client->createDroplet(
                 name: $server->name,
-                regionSlug: $server->region,
-                sizeSlug: $server->size,
-                imageIdOrSlug: $server->image_id,
-                projectId: $server->project_id,
-                sshKeyIds: $server->ssh_key_ids,
+                regionSlug: $server->config['region'],
+                sizeSlug: $server->config['size'],
+                imageIdOrSlug: $server->config['image'],
+                projectId: $server->config['project'],
+                sshKeyIds: $server->config['ssh_keys'],
             );
 
             $server->status=$droplet["status"];

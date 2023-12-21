@@ -33,7 +33,7 @@ class InternalServerDeletion implements ShouldQueue
             ]);
 
             $client=PritunlClient::connect(
-                ip: $pritunl->server->public_ip_address,
+                ip: $pritunl->server->ip,
                 username: $pritunl->username,
                 password: $pritunl->password
             );

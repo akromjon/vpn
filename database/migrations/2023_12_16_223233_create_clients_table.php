@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
             $table->uuid("uuid")->unique();
-            $table->string("device_info",10);
-            $table->string("status",25)->nullable();
-            $table->string("email")->unique();
-            $table->string("ip_address",50);
-            $table->string("country_code",10)->nullable();
-            $table->dateTime("last_seen_at")->nullable();
-            $table->unsignedBigInteger("data_usage")->nullable();
+            $table->string("os_type",20);
+            $table->string("os_version",20);
+            $table->string("model",50);
+            $table->string("status",50)->default("active");
+            $table->string("email")->nullable()->unique();
+            $table->string("name")->nullable();
+            $table->dateTime("last_used_at")->nullable();
             $table->timestamps();
         });
     }

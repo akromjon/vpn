@@ -25,7 +25,7 @@ class CreationPritunlUserTest extends \Tests\TestCase
 
         $pritunlUser=PritunlUser::create([
             "pritunl_id"=>$pritunl->id,
-            "server_ip"=>$pritunl->server->public_ip_address,
+            "server_ip"=>$pritunl->server->ip,
             "name"=>"test",
         ]);
 

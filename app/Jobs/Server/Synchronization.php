@@ -21,68 +21,62 @@ class Synchronization implements ShouldQueue
         $this->synchronizeWithDigitalOcean();
     }
 
-    private function synchronizeWithDigitalOcean():void
+    private function synchronizeWithDigitalOcean(): void
     {
-        $droplets=DigitalOceanClient::connect(config("digitalocean.token"))->droplets();
+        $droplets = DigitalOceanClient::connect(config("digitalocean.token"))->droplets();
 
-        foreach($droplets as $droplet){
+        foreach ($droplets as $droplet) {
 
-            $server=Server::firstOrNew([
-                "uuid"=>$droplet["id"],
-                "cloud_provider_type"=>CloudProviderType::DigitalOcean,
+            $server = Server::firstOrNew([
+                "uuid" => $droplet["id"],
+                "provider" => CloudProviderType::DIGITALOCEAN,
             ]);
 
-            $this->fillWithDigitalOcean($server,$droplet)->save();
+
+            $this->fillWithDigitalOcean($server, $droplet)->save();
+
         }
 
         Server::setSynchronizationStatus(false);
     }
 
-    private function fillWithDigitalOcean(Server $server,array $droplet):Server
+    private function fillWithDigitalOcean(Server $server, array $droplet): Server
     {
-        $ipAddresses=$this->identifyIpAddresses($droplet["networks"]["v4"]);
+        $ipAddresses = $this->identifyIpAddresses($droplet["networks"]["v4"]);
 
         $server->fill([
             'name' => $droplet['name'],
+            'config' => [
+                "region" => $droplet["region"]["slug"],
+                "size" => $droplet["size_slug"],
+                "image" => $droplet["image"]["id"],
+                "project" => $server->config["project"],
+                "ssh_keys" => $server->config["ssh_keys"]
+            ],
             'status' => $droplet['status'],
-            'region' => $droplet['region']['slug'],
-            "size"=>$droplet["size_slug"],
-            'image_id' => $droplet['image']['id'],
-            'cloud_provider_type' => CloudProviderType::DigitalOcean,
-            'public_ip_address' => $ipAddresses['public_ip_address'] ?? null,
-            'private_ip_address' => $ipAddresses['private_ip_address'] ?? null,
-            'server_created_at' => $droplet['created_at'],
+            'ip' => $ipAddresses['ip'] ?? null,
             'price' => $droplet['size']['price_monthly'],
         ]);
 
         return $server;
     }
 
-    private function identifyIpAddresses(array $networks):array
+    private function identifyIpAddresses(array $networks): array
     {
-        $publicIpAddress=null;
+        $publicIpAddress = null;
 
-        $privateIpAddress=null;
+        foreach ($networks as $network) {
 
-        foreach($networks as $network){
+            if ($network["type"] === "public") {
 
-            if($network["type"]==="public"){
-
-                $publicIpAddress=$network["ip_address"];
-
-            }
-
-            if($network["type"]==="private"){
-
-                $privateIpAddress=$network["ip_address"];
+                $publicIpAddress = $network["ip_address"];
 
             }
 
         }
 
         return [
-            "public_ip_address"=>$publicIpAddress,
-            "private_ip_address"=>$privateIpAddress,
+            "ip" => $publicIpAddress,
         ];
     }
 }
