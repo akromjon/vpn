@@ -2,50 +2,68 @@
 
 namespace App\Models\Client;
 
+use App\Models\ClientPritunlUserConnection;
 use App\Models\Token;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 class Client extends Model
 {
     use HasFactory;
 
-    protected $casts=[
-        'device_info'=>'array'
+    protected $casts = [
+        'device_info' => 'array'
     ];
 
-    public function token():HasMany
+    public function token(): HasOne
     {
-        return $this->hasMany(Token::class);
+        return $this->hasOne(Token::class);
     }
 
     public function generateToken(): Token
     {
+
+        if ($this->token()->exists()) {
+            $this->token()->delete();
+        }
+
+
         return $this->token()->create([
-            'token'=>Str::random(32)
+            'token' => Str::random(32)
         ]);
     }
 
-    public function logs():HasMany
+    public function logs(): HasMany
     {
-        return $this->hasMany(ClientLog::class);
+        return $this->hasMany(ClientLog::class)->orderBy('created_at','desc');
     }
 
-    public static function isCached(string $uuid):bool
+    public function connections(): HasMany
     {
-        return in_array($uuid,self::getCache());
+        return $this->hasMany(ClientPritunlUserConnection::class);
     }
 
-    public static function setCache(string $uuid):void
+    public static function isCached(string $uuid): bool
     {
-        cache()->forever('clients',array_merge(self::getCache(),[$uuid]));
+        return in_array($uuid, self::getCache());
     }
 
-    public static function getCache():array
+    public static function setCache(string $uuid): void
     {
-        return cache()->get('clients',[]);
+        cache()->forever('clients', array_merge(self::getCache(), [$uuid]));
+    }
+
+    public static function getCache(): array
+    {
+        return cache()->get('clients', []);
+    }
+
+    public function totalLogs(): int
+    {
+        return $this->logs()->count();
     }
 
 

@@ -14,24 +14,10 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
 
-    protected function act(string $clientUuid,ClientAction $clientAction):void
+    protected function act(string $clientUuid, ClientAction $clientAction): void
     {
-        $this->cacheClientIfNotCached($clientUuid);
-
         ClientLogAction::dispatch($clientUuid, request()->ip(), $clientAction);
     }
 
-    private function cacheClientIfNotCached(string $clientUuid):void
-    {
-        if(!Client::isCached($clientUuid)){
 
-            $client=Client::where('uuid',$clientUuid)->first();
-
-            if(!$client){
-                throw new ClientNotFoundException("Client not found");
-            }
-
-            Client::setCache($clientUuid);
-        }
-    }
 }

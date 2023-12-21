@@ -66,6 +66,7 @@ class PritunlUserResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make("id")->label("ID")->searchable()->sortable(),
                 TextColumn::make("server_ip")->label("Server")->searchable()->sortable(),
                 TextColumn::make("status")->badge()->label("Status")->searchable()->sortable(),
                 TextColumn::make("internal_user_id")->label("User ID")->searchable()->sortable(),
@@ -77,6 +78,7 @@ class PritunlUserResource extends Resource
                     return response()->download($record->vpn_config_path);
                 })->color("warning")->label("VPN Config")->searchable()->sortable(),
             ])
+            ->defaultSort('last_active', 'desc')
             ->filters([
                 //
             ])

@@ -2,10 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Client\Client;
 use App\Models\Token;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Closure;
+use Illuminate\Support\Facades\DB;
 
 class TokenMiddleware
 {
@@ -35,13 +37,15 @@ class TokenMiddleware
 
     private function cacheTokenIfValid(string $token): bool
     {
-        $tokenModel = Token::where('token', $token)->first();
+        $client = Client::whereHas('token', function ($query) use ($token) {
+            $query->where('token', $token);
+        })->first();
 
-        if (!$tokenModel) {
+        if (!$client) {
             return false;
         }
 
-        Token::setCache($tokenModel->token);
+        Token::setCache([$client->token->token => $client]);
 
         return true;
     }

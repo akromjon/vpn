@@ -4,11 +4,18 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ClientResource\Pages;
 use App\Filament\Resources\ClientResource\RelationManagers;
-use App\Models\Client;
+use App\Filament\Resources\ClientResource\RelationManagers\ConnectionsRelationManager;
+use App\Filament\Resources\ClientResource\RelationManagers\LogsRelationManager;
+use App\Models\Client\Client;
 use Filament\Forms;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\Summarizers\Count;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -26,27 +33,32 @@ class ClientResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('uuid')
+                TextInput::make('uuid')
                     ->label('UUID')
                     ->required()
                     ->maxLength(36),
-                Forms\Components\TextInput::make('device_info')
+                TextInput::make('os_type')
+                    ->label('OS Type')
                     ->required()
-                    ->maxLength(10),
-                Forms\Components\TextInput::make('status')
-                    ->maxLength(25),
-                Forms\Components\TextInput::make('email')
-                    ->email()
+                    ->maxLength(20),
+                TextInput::make('os_version')
+                    ->label('OS Version')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('ip_address')
+                    ->maxLength(20),
+                TextInput::make('model')
+                    ->label('Model')
                     ->required()
                     ->maxLength(50),
-                Forms\Components\TextInput::make('country_code')
-                    ->maxLength(10),
-                Forms\Components\DateTimePicker::make('last_seen_at'),
-                Forms\Components\TextInput::make('data_usage')
-                    ->numeric(),
+                TextInput::make('status')
+                    ->label('Status')
+                    ->required()
+                    ->maxLength(50),
+                TextInput::make('last_used_at'),
+                Fieldset::make('token')->label("Token")->relationship('token')->schema([
+                    TextInput::make('token')->readOnly()->label('Value'),
+                    DateTimePicker::make('created_at')->readOnly()->label('Created At'),
+                ]),
+
             ]);
     }
 
@@ -54,37 +66,48 @@ class ClientResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('uuid')
+
+                TextColumn::make('uuid')
                     ->label('UUID')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('device_info')
+
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->color(fn(Client $client) => match ($client->status) {
+                        'active' => 'success',
+                        'inactive' => 'danger',
+                    })
+                    ->badge()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status')
+
+                TextColumn::make('logs_count')
+                    ->counts('logs')
+                    ->label('Total Logs'),
+
+                TextColumn::make('connections_count')
+                ->counts('connections')
+                ->label('Total Connections'),
+
+                TextColumn::make('os_type')
+                    ->label('OS Type')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+
+                TextColumn::make('os_version')
+                    ->label('OS Version')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('ip_address')
+
+                TextColumn::make('model')
+                    ->label('Model')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('country_code')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('last_seen_at')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('data_usage')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('last_used_at')
+                    ->label('Last Used At')
+                    ->searchable()->dateTime(),
             ])
             ->filters([
                 //
             ])
+            ->defaultSort('last_used_at', 'desc')
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
@@ -98,7 +121,8 @@ class ClientResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            LogsRelationManager::class,
+            ConnectionsRelationManager::class
         ];
     }
 

@@ -7,6 +7,7 @@ use Filament\Support\Contracts\HasLabel;
 enum PritunlUserStatus:string implements HasLabel,HasColor {
 
     case CREATING="creating";
+    case IN_USE="in_use";
     case ACTIVE="active";
     case INACTIVE="inactive";
     case UPDATING="updating";
@@ -20,6 +21,7 @@ enum PritunlUserStatus:string implements HasLabel,HasColor {
 
     public function getLabel(): ?string{
         return match ($this) {
+            self::IN_USE=>"In use",
             self::CREATING => "Creating",
             self::INACTIVE => "Inactive",
             self::ACTIVE => "Active",
@@ -36,6 +38,7 @@ enum PritunlUserStatus:string implements HasLabel,HasColor {
     public function getColor(): ?string
     {
         return match ($this) {
+            self::IN_USE=>"primary",
             self::CREATING => "warning",
             self::INACTIVE => "danger",
             self::ACTIVE => "success",

@@ -6,6 +6,7 @@ use App\Http\Requests\GenerateTokenRequest;
 use App\Jobs\ClientLogAction;
 use App\Models\Client\Client;
 use App\Models\Client\Enum\ClientAction;
+use App\Models\Token;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 class TokenController extends Controller
@@ -28,6 +29,8 @@ class TokenController extends Controller
         ClientLogAction::dispatch($client->uuid, $request->ip(), ClientAction::TOKEN_GENERATED);
 
         $token = $client->generateToken();
+
+        Token::setCache([$token->token => $client]);
 
         return response()->json([
             'token' => $token->token,
