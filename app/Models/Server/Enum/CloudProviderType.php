@@ -6,6 +6,7 @@ use Filament\Support\Contracts\HasLabel;
 enum CloudProviderType:string  implements HasLabel{
     case DIGITALOCEAN="digitalocean";
     case KAMATERA="kamatera";
+    case MVPS="mvps";
     case OTHER="other";
 
 
@@ -15,6 +16,7 @@ enum CloudProviderType:string  implements HasLabel{
             self::DIGITALOCEAN => "DigitalOcean",
             self::KAMATERA => "Kamatera",
             self::OTHER => "Other",
+            self::MVPS => "MVPS",
         };
     }
 }

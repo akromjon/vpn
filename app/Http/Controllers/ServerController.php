@@ -80,6 +80,10 @@ class ServerController extends Controller
                 "status" => 'disconnected',
                 'disconnected_at' => now()
             ]);
+
+            $lastConnection->pritunlUser->pritunl->update([
+                "online_user_count" => $lastConnection->pritunlUser->pritunl->online_user_count - 1
+            ]);
         }
 
         $client->connections()->create([
@@ -117,6 +121,10 @@ class ServerController extends Controller
             'last_active' => now()
         ]);
 
+        $lastConnection->pritunlUser->pritunl->update([
+            "online_user_count" => $lastConnection->pritunlUser->pritunl->online_user_count + 1
+        ]);
+
         return response()->json(["message" => "Connected"]);
     }
 
@@ -143,6 +151,10 @@ class ServerController extends Controller
             "status" => PritunlUserStatus::ACTIVE,
             "is_online" => false,
             'last_active' => now()
+        ]);
+
+        $lastConnection->pritunlUser->pritunl->update([
+            "online_user_count" => $lastConnection->pritunlUser->pritunl->online_user_count - 1
         ]);
 
         return response()->json(["message" => "Disconnected"]);

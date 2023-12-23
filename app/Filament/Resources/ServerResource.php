@@ -32,6 +32,7 @@ use Filament\Forms\Get;
 use Illuminate\Support\Facades\File;
 use Closure;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\ViewField;
 use Filament\Tables\Columns\ImageColumn;
 
 class ServerResource extends Resource
@@ -68,16 +69,21 @@ class ServerResource extends Resource
                         TextInput::make("name")->default(fn() => Str::random(6))->label("Name")->maxLength(255)->required(),
                         Select::make("provider")->label("Provider")->options(CloudProviderType::class)->live()->required(),
                         Select::make("status")->label("Status")->options(ServerStatus::class)->required(),
-                        TextInput::make("ip")->label("IP")->maxLength(100)->hiddenOn("create")->required(),
+                        TextInput::make("ip")->label("IP")->maxLength(100),
                         Select::make("country")->options(self::getCountryNames())->label("Country")->afterStateUpdated(function (Set $set, $state) {
                             $code = Str::lower(collect(self::countries())->where("name", $state)->first()["code"]);
                             $set("country_code", $code);
+                            $set('image', asset("flags/1x1/$code.svg"));
                             $set('flag', asset("flags/1x1/$code.svg"));
                         })
                             ->reactive()->required(),
                         TextInput::make("city")->label("City")->required(),
                         TextInput::make("country_code")->live()->label("Country Code")->minLength(2)->maxLength(3)->required(),
-                        TextInput::make("flag")->label("Flag")->required(),
+                        TextInput::make("flag")->live()->label("Flag")->required(),
+                        ViewField::make("image")->view('filament.forms.components.image')->formatStateUsing(function(Get $get){
+                            return $get("flag");
+                        })->live(),
+                        TextInput::make("price")->label("Price"),
                     ])
                     ->live()
                     ->columns(3),
@@ -94,38 +100,6 @@ class ServerResource extends Resource
                         Select::make("config.ssh_keys")->label("SSH Key")->options(self::sshKeyOptions())->required(),
                     ])
                     ->columns(3),
-
-                Fieldset::make('KAMATERA')
-                    ->hidden(function (Get $get) {
-                        return "kamatera" != $get("provider");
-                    })
-                    ->schema([
-                        Select::make("config.project")->label("Project")->options(self::projectOptions())->required(),
-                        Select::make("config.region")->label("Region")->options(self::regionOptions())->required(),
-                        Select::make("config.size")->label("Size")->options(self::sizeOptions())->required(),
-                        Select::make("config.image")->label("Image")->options(self::imageOptions())->required(),
-                        Select::make("config.ssh_keys")->label("SSH Key")->options(self::sshKeyOptions())->required(),
-                    ])
-                    ->columns(3),
-
-                Fieldset::make("Localization")
-                    ->schema([
-                        Repeater::make("localization")->schema(
-                            [
-                                Select::make("country_code")->label("Language")->options([
-                                    'spain' => 'Spain',
-                                    "ru" => "Russian",
-                                    "uz" => "Uzbek",
-                                ])->required()->disableOptionsWhenSelectedInSiblingRepeaterItems(),
-                                TextInput::make("country")->label("Country")->required(),
-                                TextInput::make("city")->label("City")->required(),
-                            ]
-
-                        )->maxWidth(100)->grid(3)->label("")->addActionLabel("Add Localization")->defaultItems(3),
-                    ])->columns(1),
-
-
-
             ]);
     }
 
@@ -133,16 +107,19 @@ class ServerResource extends Resource
     {
         return $table->columns([
             TextColumn::make("name")->label("Name")->searchable()->sortable(),
+            TextColumn::make("price")->label("Price")->searchable()->sortable(),
+            TextColumn::make("provider")->label("Provider")->searchable()->sortable(),
             TextColumn::make("status")->label("Status")->badge()->searchable()->sortable(),
             TextColumn::make("ip")->label("IP")->searchable()->sortable(),
             TextColumn::make("country")->label("Country")->searchable()->sortable(),
             TextColumn::make("city")->label("City")->searchable()->sortable(),
-            ImageColumn::make("flag")->label("Flag")->searchable()->sortable(),
+            ImageColumn::make("flag")->label("Flag")->circular()->searchable()->sortable(),
 
         ])
             ->filters([
                 //
             ])
+            ->defaultSort("created_at", "desc")
             ->actions(self::actions())
             ->bulkActions([
                 BulkActionGroup::make([

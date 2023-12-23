@@ -56,7 +56,7 @@ class PritunlResource extends Resource
             ->schema([
                 Select::make("server_id")->label("Server")
                     ->relationship("server", "ip")
-                    ->getOptionLabelFromRecordUsing(fn(Server $record) => "{$record->ip}-{$record->region}")
+                    ->getOptionLabelFromRecordUsing(fn(Server $record) => "{$record->ip}-{$record->name}")
                     ->required(),
 
 
@@ -106,6 +106,7 @@ class PritunlResource extends Resource
             ->filters([
                 //
             ])
+            ->defaultSort('updated_at', 'desc')
             ->actions([
                 Action::make("Sync Users")->icon("heroicon-o-arrow-path")->color("info")->requiresConfirmation("Are you sure you want to sync users?")->action(function (Pritunl $pritunl) {
                     Synchronization::dispatch($pritunl);

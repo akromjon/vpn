@@ -16,4 +16,12 @@ class EditServer extends EditRecord
 
         ];
     }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+
+        unset($data['image']);
+
+        return $data;
+    }
 }

@@ -21,6 +21,8 @@ class CreateServer extends CreateRecord
             $data = $this->moveDigitalOceanSpecificDataToConfig($data);
         }
 
+        unset($data['image']);
+
         return $data;
     }
 
