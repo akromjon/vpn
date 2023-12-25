@@ -2,9 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Horizon\Horizon;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class HorizonServiceProvider extends HorizonApplicationServiceProvider
 {
@@ -27,9 +31,10 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
      */
     protected function gate(): void
     {
-        Horizon::auth(function ($request) {
-            in_array($request->user()->email,[
-                'akyprog@gmail.com'
+
+        Gate::define('viewHorizon', function (User $user) {
+            return in_array($user->email, [
+                'akyprog@gmail.com',
             ]);
         });
     }

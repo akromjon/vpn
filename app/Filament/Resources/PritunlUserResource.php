@@ -68,6 +68,7 @@ class PritunlUserResource extends Resource
             ->columns([
                 TextColumn::make("id")->label("ID")->searchable()->sortable(),
                 TextColumn::make("server_ip")->label("Server")->searchable()->sortable(),
+                TextColumn::make("pritunl.server.country")->label("Country")->searchable()->sortable(),
                 TextColumn::make("status")->badge()->label("Status")->searchable()->sortable(),
                 TextColumn::make("internal_user_id")->label("User ID")->searchable()->sortable(),
                 IconColumn::make("is_online")->boolean()->label("Online"),

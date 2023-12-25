@@ -66,6 +66,7 @@ class ServerResource extends Resource
 
                 Fieldset::make('Server Configuration')
                     ->schema([
+                        TextInput::make("uuid")->label("Uuid")->maxLength(255),
                         TextInput::make("name")->default(fn() => Str::random(6))->label("Name")->maxLength(255)->required(),
                         Select::make("provider")->label("Provider")->options(CloudProviderType::class)->live()->required(),
                         Select::make("status")->label("Status")->options(ServerStatus::class)->required(),
@@ -80,7 +81,7 @@ class ServerResource extends Resource
                         TextInput::make("city")->label("City")->required(),
                         TextInput::make("country_code")->live()->label("Country Code")->minLength(2)->maxLength(3)->required(),
                         TextInput::make("flag")->live()->label("Flag")->required(),
-                        ViewField::make("image")->view('filament.forms.components.image')->formatStateUsing(function(Get $get){
+                        ViewField::make("image")->view('filament.forms.components.image')->formatStateUsing(function (Get $get) {
                             return $get("flag");
                         })->live(),
                         TextInput::make("price")->label("Price"),
@@ -116,20 +117,20 @@ class ServerResource extends Resource
             ImageColumn::make("flag")->label("Flag")->circular()->searchable()->sortable(),
 
         ])
-            ->filters([
-                //
-            ])
-            ->defaultSort("created_at", "desc")
-            ->actions(self::actions())
-            ->bulkActions([
-                BulkActionGroup::make([
-                    BulkAction::make("Delete")->action(function (Collection $records) {
-                        $records->each(function ($record) {
-                            self::fireDeleteJob($record);
-                        });
-                    })->color("danger")->icon("heroicon-o-trash")->requiresConfirmation("Are you sure you want to delete the servers?")
-                ]),
-            ]);
+        ->filters([
+            //
+        ])
+        ->defaultSort("created_at", "desc")
+        ->actions(self::actions())
+        ->bulkActions([
+            BulkActionGroup::make([
+                BulkAction::make("Delete")->action(function (Collection $records) {
+                    $records->each(function ($record) {
+                        self::fireDeleteJob($record);
+                    });
+                })->color("danger")->icon("heroicon-o-trash")->requiresConfirmation("Are you sure you want to delete the servers?")
+            ]),
+        ]);
     }
 
     public static function getRelations(): array

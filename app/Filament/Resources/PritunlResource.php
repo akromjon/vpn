@@ -81,6 +81,7 @@ class PritunlResource extends Resource
         return $table
             ->columns([
                 TextColumn::make("server.ip")->label("Server")->searchable()->sortable(),
+                TextColumn::make("server.country")->label("Country")->searchable()->sortable(),
                 TextColumn::make('status')->searchable()->sortable()->badge(),
                 TextColumn::make('internal_server_status')->label("Internal Status")->badge()->searchable()->sortable(),
                 TextColumn::make('sync_status')->label("Sync Status")->badge()->searchable()->sortable(),
