@@ -21,6 +21,7 @@ class Pritunl extends Model
         "status"=>PritunlStatus::class,
         "internal_server_status"=>InternalServerStatus::class,
         "sync_status"=>PritunlSyncStatus::class,
+        "online_user_count"=>"integer",
 
     ];
 
