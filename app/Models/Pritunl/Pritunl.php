@@ -22,7 +22,6 @@ class Pritunl extends Model
         "internal_server_status"=>InternalServerStatus::class,
         "sync_status"=>PritunlSyncStatus::class,
         "online_user_count"=>"integer",
-
     ];
 
     // we need to do something before we create a new record

@@ -81,8 +81,10 @@ class ServerController extends Controller
                 'disconnected_at' => now()
             ]);
 
+            $count=$lastConnection->pritunlUser->pritunl->online_user_count - 1;
+
             $lastConnection->pritunlUser->pritunl->update([
-                "online_user_count" => $lastConnection->pritunlUser->pritunl->online_user_count - 1
+                "online_user_count" => $count < 0 ? 0 : $count
             ]);
         }
 
