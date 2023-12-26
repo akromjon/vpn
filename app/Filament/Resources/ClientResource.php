@@ -7,6 +7,7 @@ use App\Filament\Resources\ClientResource\RelationManagers;
 use App\Filament\Resources\ClientResource\RelationManagers\ConnectionsRelationManager;
 use App\Filament\Resources\ClientResource\RelationManagers\LogsRelationManager;
 use App\Models\Client\Client;
+use App\Models\Token;
 use Filament\Forms;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
@@ -85,8 +86,8 @@ class ClientResource extends Resource
                     ->label('Total Logs'),
 
                 TextColumn::make('connections_count')
-                ->counts('connections')
-                ->label('Total Connections'),
+                    ->counts('connections')
+                    ->label('Total Connections'),
 
                 TextColumn::make('os_type')
                     ->label('OS Type')
@@ -113,7 +114,11 @@ class ClientResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->before(function ($records) {
+                        $records->each(function ($record) {
+                            Token::removeCache($record->token->token); //
+                        });
+                    }),
                 ]),
             ]);
     }

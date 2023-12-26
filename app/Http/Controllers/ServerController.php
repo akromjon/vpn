@@ -18,7 +18,7 @@ class ServerController extends Controller
 {
     public function list()
     {
-        $this->act(Token::getCachedClient()->uuid, ClientAction::LIST_SERVERS);
+        $this->act(Token::getCachedClientUuid(), ClientAction::LIST_SERVERS);
 
         $selectColumns = [
             "pritunls.online_user_count as online",
@@ -70,7 +70,7 @@ class ServerController extends Controller
 
         $pritunlUser->update(["status" => PritunlUserStatus::IN_USE]);
 
-        $client = Token::getCachedClient();
+        $client = Token::getClient();
 
         $lastConnection=$client->connections->last();
 
@@ -91,20 +91,26 @@ class ServerController extends Controller
             "status" => 'idle',
         ]);
 
-        $this->act(Token::getCachedClient()->uuid, ClientAction::DOWNLOADED_CONFIG);
+        $this->act(Token::getCachedClientUuid(), ClientAction::DOWNLOADED_CONFIG);
 
         return response()->download($server->vpn_config_path, 'vpn_config.ovpn', ['USER-ID' => $server->pritunl_user_id]);
     }
 
     public function connected()
     {
-        $client = Token::getCachedClient();
+        $client = Token::getClient();
 
         $lastConnection=$client->connections->last();
 
+        if(!$lastConnection){
+
+            return response()->json(["message" => "Need to be downloaded to connect"], 400);
+
+        }
+
         if($lastConnection->status!=='idle'){
 
-            return response()->json(["message" => "Need to be downloaded or disconnected to connect"], 400);
+            return response()->json(["message" => "Need to be disconnected to connect"], 400);
 
         }
 
@@ -130,7 +136,7 @@ class ServerController extends Controller
 
     public function disconnected()
     {
-        $client = Token::getCachedClient();
+        $client = Token::getClient();
 
         $lastConnection=$client->connections->last();
 

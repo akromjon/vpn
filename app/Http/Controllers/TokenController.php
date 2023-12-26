@@ -30,11 +30,10 @@ class TokenController extends Controller
 
         $token = $client->generateToken();
 
-        Token::setCache([$token->token => $client]);
+        Token::setCache([$token->token => $client->uuid]);
 
         return response()->json([
             'token' => $token->token,
-            'client_id' => $client->uuid,
         ]);
 
     }

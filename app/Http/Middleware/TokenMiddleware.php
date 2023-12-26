@@ -45,7 +45,7 @@ class TokenMiddleware
             return false;
         }
 
-        Token::setCache([$client->token->token => $client]);
+        Token::setCache([$client->token->token => $client->uuid]);
 
         return true;
     }

@@ -56,6 +56,7 @@ class Client extends Model
         cache()->forever('clients', array_merge(self::getCache(), [$uuid]));
     }
 
+
     public static function getCache(): array
     {
         return cache()->get('clients', []);
