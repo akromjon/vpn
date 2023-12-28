@@ -73,10 +73,10 @@ class PritunlUserResource extends Resource
                 TextColumn::make("pritunl.server.country")->label("Country")->searchable()->sortable(),
                 TextColumn::make("status")->badge()->label("Status")->searchable()->sortable(),
                 TextColumn::make("internal_user_id")->label("User ID")->searchable()->sortable(),
-                IconColumn::make("is_online")->boolean()->label("Online"),
-                IconColumn::make("disabled")->action(function(PritunlUser $record){
+                ToggleColumn::make("is_online")->label("Online"),
+                ToggleColumn::make("disabled")->action(function(PritunlUser $record){
 
-                })->trueColor("danger")->falseColor("success")->trueIcon("heroicon-o-x-mark")->falseIcon("heroicon-o-check-badge")->label("Enabled"),
+                }),
                 IconColumn::make("vpn_config_path")->size(IconColumnSize::Large)->icon("heroicon-o-arrow-down-tray")->action(function(PritunlUser $record){
                     return response()->download($record->vpn_config_path);
                 })->color("warning")->label("VPN Config")->searchable()->sortable(),
