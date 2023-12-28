@@ -59,6 +59,8 @@ class PritunlUserResource extends Resource
                     ->required(),
                 TextInput::make("name")->default(fn()=>Str::random(6))->label("Name")->maxLength(50)->required(),
                 Select::make("status")->options(PritunlUserStatus::class)->hiddenOn("create")->required(),
+                Toggle::make("disabled")->label("Enabled")->default(false)->required(),
+                Toggle::make("is_online")->label("Online")->default(false)->required(),
             ]);
     }
 
