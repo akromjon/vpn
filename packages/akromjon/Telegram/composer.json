@@ -1,0 +1,15 @@
+{
+    "name": "akromjon/telegram",
+    "autoload": {
+        "psr-4": {
+            "Akromjon\\Telegram\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "akromjon",
+            "email": "numonov.akromjon1998@gmail.com"
+        }
+    ],
+    "require": {}
+}

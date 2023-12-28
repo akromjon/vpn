@@ -31,13 +31,13 @@ class ClientLogAction implements ShouldQueue
 
         $client = Client::where('uuid',$this->clientUuid)->first();
 
+        if (!$client) {
+            throw new \Exception('Client not found!');
+        }
+
         $client->update([
             'last_used_at'=>now()
         ]);
-
-        if (!$client) {
-            return;
-        }
 
         $client->logs()->create([
             'ip_address' => $this->ip ?? '127.0.1.1',
