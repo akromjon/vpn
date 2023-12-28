@@ -35,9 +35,9 @@ class Telegram extends Base
     {
         $error="<b>Error</b>\n\n";
 
-        $error.="<b>Message:</b> {$e->getMessage()}\n";
+        $error.="<b>Message:</b> {$e->getMessage()}\n\n";
 
-        $error.="<b>Trace:</b> {$e->getTraceAsString()}\n";
+        $error.="<b>Trace:</b> {$e->getTraceAsString()}\n\n";
 
         return $this->sendMessage($chat_id, $error);
     }
