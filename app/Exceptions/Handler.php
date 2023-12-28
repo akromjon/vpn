@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Akromjon\Telegram\App\Telegram;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Throwable;
@@ -26,6 +27,14 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
 
+            if ($e instanceof \Exception) {
+
+                $telegram = Telegram::set(config('telegram.token'));
+
+                $telegram->sendErrorMessage(config('telegram.chat_id'), $e);
+
+            }
+
         });
 
     }
@@ -42,7 +51,7 @@ class Handler extends ExceptionHandler
 
         //Symfony\\Component\\HttpKernel\\Exception\\NotFoundHttpException
 
-        if($e instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException){
+        if ($e instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
 
             return response()->json([
                 'message' => 'Not found!'
@@ -50,7 +59,7 @@ class Handler extends ExceptionHandler
 
         }
 
-        if($e instanceof ClientNotFoundException){
+        if ($e instanceof ClientNotFoundException) {
 
             return response()->json([
                 'message' => $e->getMessage()

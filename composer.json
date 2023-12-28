@@ -33,6 +33,7 @@
             "Akromjon\\Pritunl\\": "packages/akromjon/Pritunl/src",
             "Akromjon\\DigitalOceanClient\\": "packages/akromjon/DigitalOceanClient/src",
             "Akromjon\\KamateraClient\\": "packages/akromjon/KamateraClient/src",
+            "Akromjon\\Telegram\\":"packages/akromjon/Telegram/src",
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"

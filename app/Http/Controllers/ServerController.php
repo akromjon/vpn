@@ -84,7 +84,7 @@ class ServerController extends Controller
             $count=$lastConnection->pritunlUser->pritunl->online_user_count - 1;
 
             $lastConnection->pritunlUser->pritunl->update([
-                "online_user_count" => $count < 0 ? 0 : $count
+                "online_user_count" => -1,
             ]);
         }
 
