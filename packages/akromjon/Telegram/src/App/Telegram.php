@@ -24,6 +24,8 @@ class Telegram extends Base
             $message=substr($message,0,4096);
         }
 
+        logger($message);
+
         return $this->method('sendMessage', [
             'chat_id' => $chat_id,
             'text' => $message,
@@ -33,11 +35,33 @@ class Telegram extends Base
 
     public function sendErrorMessage(string $chat_id, \Exception $e): Response
     {
-        $error="<b>Error</b>\n\n";
+
+        $error="_____________________________\n\n";
+
+        $app_url=config('app.url');
+
+        $error.="<b>Project: {$app_url}</b>\n\n";
 
         $error.="<b>Message:</b> {$e->getMessage()}\n\n";
 
-        $error.="<b>Trace:</b> {$e->getTraceAsString()}\n\n";
+        $traces=$e->getTrace();
+
+        $error.="-------Traces-----------\n\n";
+
+        foreach($traces as $trace)
+        {
+            if(!isset($trace['file']) || !isset($trace['line'])){
+                continue;
+            }
+
+            $trace['file']=str_replace(base_path(), '', $trace['file']);
+
+            $error.="File: {$trace['file']}\n";
+
+            $error.="Line: {$trace['line']}\n";
+        }
+
+        $error.="-------End-of-Traces-----\n\n";
 
         return $this->sendMessage($chat_id, $error);
     }
