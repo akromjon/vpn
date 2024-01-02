@@ -95,7 +95,7 @@ class ServerController extends Controller
 
         $this->act(Token::getCachedClientUuid(), ClientAction::DOWNLOADED_CONFIG);
 
-        return response()->download($server->vpn_config_path, 'vpn_config.ovpn', ['USER-ID' => $server->pritunl_user_id]);
+        return response()->download($server->vpn_config_path, 'vpn_config.ovpn');
     }
 
     public function connected()
