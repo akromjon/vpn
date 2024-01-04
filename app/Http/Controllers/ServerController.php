@@ -6,6 +6,7 @@ use App\Jobs\ClientLogAction;
 use App\Jobs\Server\Conntected;
 use App\Jobs\Server\Disconnected;
 use App\Jobs\Server\Download;
+use App\Jobs\Server\WaitForAMinute;
 use App\Models\Client\Client;
 use App\Models\Pritunl\Enum\InternalServerStatus;
 use App\Models\Pritunl\Enum\PritunlStatus;
@@ -50,6 +51,7 @@ class ServerController extends Controller
 
     public function download(string $ip)
     {
+
         $server = DB::table("servers")
                     ->select("pritunl_users.vpn_config_path as vpn_config_path", "pritunl_users.id as pritunl_user_id")
                     ->join("pritunls", "pritunls.server_id", "=", "servers.id")
@@ -69,9 +71,17 @@ class ServerController extends Controller
             return response()->json(["message" => "Server not found"], 404);
         }
 
-        Download::dispatch($server->pritunl_user_id, Token::getClient());
-
         $this->act(Token::getCachedClientUuid(), ClientAction::DOWNLOADED_CONFIG);
+
+        $pritunlUser = PritunlUser::where("id", $server->pritunl_user_id)->first();
+
+        $pritunlUser->update(["status" => PritunlUserStatus::IN_USE]);
+
+        $client=Token::getClient();
+
+        Download::dispatch($server->pritunl_user_id, $client);
+
+        WaitForAMinute::dispatch($pritunlUser,$client)->delay(now()->addSeconds(20));
 
         return response()->download($server->vpn_config_path, 'vpn_config.ovpn');
     }
@@ -88,9 +98,14 @@ class ServerController extends Controller
 
         }
 
-        if($lastConnection->status!=='idle'){
+        if($lastConnection->status=='connected'){
 
             return response()->json(["message" => "Need to be disconnected to connect"], 400);
+        }
+
+        if($lastConnection->status=='disconnected'){
+
+            return response()->json(["message" => "Need to be downloaded to connect"], 400);
         }
 
         Conntected::dispatch($client);
@@ -104,7 +119,12 @@ class ServerController extends Controller
 
         $lastConnection=$client->connections->last();
 
-        if($lastConnection->status!=='connected'){
+        if($lastConnection->status=='disconnected'){
+
+            return response()->json(["message" => "Need to be connected to disconnect"], 400);
+        }
+
+        if($lastConnection->status=='idle'){
 
             return response()->json(["message" => "Need to be connected to disconnect"], 400);
 
@@ -114,4 +134,11 @@ class ServerController extends Controller
 
         return response()->json(["message" => "Disconnected"]);
     }
+
+    public function pritunlUserAction(string $action, string $pritunlUserUuid)
+    {
+        return response()->json(["status" => "ok"]);
+    }
+
+
 }

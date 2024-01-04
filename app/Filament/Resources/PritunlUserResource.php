@@ -34,13 +34,13 @@ class PritunlUserResource extends Resource
 {
     protected static ?string $model = PritunlUser::class;
 
-    protected static ?string $navigationGroup="VPN";
+    protected static ?string $navigationGroup = "VPN";
 
     protected static ?string $navigationLabel = 'Users';
 
     public static function getNavigationBadge(): ?string
     {
-        return PritunlUser::where("status",PritunlUserStatus::ACTIVE)->count(). "/". Pritunl::where("status",PritunlStatus::ACTIVE)->count();
+        return PritunlUser::where("status", PritunlUserStatus::ACTIVE)->count() . "/" . Pritunl::where("status", PritunlStatus::ACTIVE)->count();
     }
     public static function getNavigationBadgeColor(): string|array|null
     {
@@ -52,12 +52,12 @@ class PritunlUserResource extends Resource
         return $form
             ->schema([
                 Select::make("pritunl_id")->label("Server")
-                    ->relationship("pritunl","id")
-                    ->getOptionLabelFromRecordUsing(function(Pritunl $record){
+                    ->relationship("pritunl", "id")
+                    ->getOptionLabelFromRecordUsing(function (Pritunl $record) {
                         return "{$record->server->ip}-{$record->server->region}";
                     })
                     ->required(),
-                TextInput::make("name")->default(fn()=>Str::random(6))->label("Name")->maxLength(50)->required(),
+                TextInput::make("name")->default(fn() => Str::random(6))->label("Name")->maxLength(50)->required(),
                 Select::make("status")->options(PritunlUserStatus::class)->hiddenOn("create")->required(),
                 Toggle::make("disabled")->label("Enabled")->default(false)->required(),
                 Toggle::make("is_online")->label("Online")->default(false)->required(),
@@ -73,44 +73,58 @@ class PritunlUserResource extends Resource
                 TextColumn::make("pritunl.server.country")->label("Country")->searchable()->sortable(),
                 TextColumn::make("status")->badge()->label("Status")->searchable()->sortable(),
                 TextColumn::make("internal_user_id")->label("User ID")->searchable()->sortable(),
-                ToggleColumn::make("is_online")->label("Online"),
-                ToggleColumn::make("disabled")->action(function(PritunlUser $record){
+                ToggleColumn::make("is_online")->afterStateUpdated(function ($record, $state) {
+                    if ($state) {
+                        $record->pritunl->update([
+                            'online_user_count' => $record->pritunl->online_user_count + 1,
+                        ]);
+                    } else {
+
+                        $count = $record->pritunlUser->pritunl->online_user_count - 1;
+
+                        $record->pritunl->update([
+                            'online_user_count' => $count < 0 ? 0 : $count,
+                        ]);
+
+                    }
+                })->label("Online"),
+                ToggleColumn::make("disabled")->action(function (PritunlUser $record) {
 
                 }),
-                IconColumn::make("vpn_config_path")->size(IconColumnSize::Large)->icon("heroicon-o-arrow-down-tray")->action(function(PritunlUser $record){
+                IconColumn::make("vpn_config_path")->size(IconColumnSize::Large)->icon("heroicon-o-arrow-down-tray")->action(function (PritunlUser $record) {
                     return response()->download($record->vpn_config_path);
                 })->color("warning")->label("VPN Config")->searchable()->sortable(),
             ])
             ->defaultSort('last_active', 'desc')
             ->filters([
-                //
-            ])
+                    //
+                ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
+                    Tables\Actions\EditAction::make(),
+                ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkActionGroup::make([
 
-                    BulkAction::make("Delete")->action(function(Collection $records){
+                        BulkAction::make("Delete")->action(function (Collection $records) {
 
-                        $records->each(function(PritunlUser $record){
+                            $records->each(function (PritunlUser $record) {
 
-                            if($record->status!=PritunlUserStatus::FAILED_TO_DELETE){
+                                if ($record->status != PritunlUserStatus::FAILED_TO_DELETE) {
 
-                                DeletionPritunlUser::dispatch($record);
-                            }
-                        });
+                                    DeletionPritunlUser::dispatch($record);
+                                }
+                            });
 
-                        Notification::make()
-                            ->title('Pritunl Users will be deleted shortly')
-                            ->success()
-                            ->duration(5000)
-                            ->send();
-                        return redirect(PritunlUserResource::getUrl());
+                            Notification::make()
+                                ->title('Pritunl Users will be deleted shortly')
+                                ->success()
+                                ->duration(5000)
+                                ->send();
+                            return redirect(PritunlUserResource::getUrl());
 
-                    })->label("Delete Users")->color("danger")->icon("heroicon-o-trash"),
-                ]),
-            ]);
+                        })->label("Delete Users")->color("danger")->icon("heroicon-o-trash"),
+                    ]),
+                ]);
     }
 
     public static function getRelations(): array

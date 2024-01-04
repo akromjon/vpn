@@ -38,12 +38,17 @@ class Client extends Model
 
     public function logs(): HasMany
     {
-        return $this->hasMany(ClientLog::class)->orderBy('created_at','desc');
+        return $this->hasMany(ClientLog::class)->orderBy('created_at', 'desc');
     }
 
     public function connections(): HasMany
     {
-        return $this->hasMany(ClientPritunlUserConnection::class);
+        return $this->hasMany(ClientPritunlUserConnection::class, 'client_id', 'id');
+    }
+
+    public function currentConnection(): ?ClientPritunlUserConnection
+    {
+        return $this->connections()->orderBy('id', 'desc')->first();
     }
 
     public static function isCached(string $uuid): bool

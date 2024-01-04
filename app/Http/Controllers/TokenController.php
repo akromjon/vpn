@@ -18,7 +18,7 @@ class TokenController extends Controller
     public function generateToken(GenerateTokenRequest $request):JsonResponse
     {
         $client= $this->client->create([
-            'uuid' => Str::uuid(),
+            'uuid' =>Str::uuid(),
             'os_type' => $request->os_type,
             'os_version' => $request->os_version,
             'model' => $request->model,

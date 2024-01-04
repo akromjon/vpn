@@ -68,5 +68,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'api-key'=>KeyMiddleware::class,
         'token'=>TokenMiddleware::class,
+        'pritunl-user-action'=>\App\Http\Middleware\PritunlUserAction::class,
+        'version'=>\App\Http\Middleware\VersionMiddleware::class,
     ];
 }

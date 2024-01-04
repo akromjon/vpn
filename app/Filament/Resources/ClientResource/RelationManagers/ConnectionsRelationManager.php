@@ -36,6 +36,7 @@ class ConnectionsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('status')
             ->columns([
+               TextColumn::make("id")->label("ID"),
                TextColumn::make("client.os_type")->label("OS Type"),
                TextColumn::make("pritunlUser.id")->label("PritunlUser ID"),
                TextColumn::make("pritunlUser.internal_user_id")->copyable()->label("Internal User ID"),

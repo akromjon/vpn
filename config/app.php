@@ -156,16 +156,16 @@ return [
     */
 
     'providers' => ServiceProvider::defaultProviders()->merge([
-        /*
-         * Package Service Providers...
-         */
+            /*
+             * Package Service Providers...
+             */
 
-        /*
-         * Application Service Providers...
-         */
+            /*
+             * Application Service Providers...
+             */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
+            // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\HorizonServiceProvider::class,
         App\Providers\Filament\AdminPanelProvider::class,
@@ -189,6 +189,10 @@ return [
     ])->toArray(),
 
 
-    "api-key"=>env("API_KEY")
+    "api-key" => env("API_KEY"),
+
+    "version" => env("APP_VERSION"),
+
+    "blocked_versions" => ['0.6.0', '0.1.0']
 
 ];

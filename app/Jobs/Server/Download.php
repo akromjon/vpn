@@ -24,33 +24,60 @@ class Download implements ShouldQueue
 
     public function handle(): void
     {
-        $pritunlUser = PritunlUser::where("id", $this->pritunlUserId)->first();
+        $client = $this->client;
 
-        $pritunlUser->update(["status" => PritunlUserStatus::IN_USE]);
+        $lastConnection = $client->connections->last();
 
-        $client=$this->client;
+        if ($this->shouldCreateNewConnection($lastConnection)) {
 
-        $lastConnection=$client->connections->last();
+            $this->createNewConnection($client);
 
-        if(isset($lastConnection->status) && $lastConnection->status!=='disconnected'){
-
-            $lastConnection->update([
-                "status" => 'disconnected',
-                'disconnected_at' => now()
-            ]);
-
-            $count=$lastConnection->pritunlUser->pritunl->online_user_count - 1;
-
-            $lastConnection->pritunlUser->pritunl->update([
-                "online_user_count" => $count < 0 ? 0 : $count
-            ]);
+            return ;
         }
 
+        if ($this->shouldDisconnect($lastConnection)) {
+
+            $this->disconnect($lastConnection);
+        }
+
+    }
+
+    private function shouldCreateNewConnection($lastConnection): bool
+    {
+        return empty($lastConnection) || $lastConnection->status == 'disconnected';
+    }
+
+    private function createNewConnection($client): void
+    {
         $client->connections()->create([
-            "pritunl_user_id" => $pritunlUser->id,
+            "pritunl_user_id" => $this->pritunlUserId,
             "status" => 'idle',
         ]);
+    }
 
+    private function shouldDisconnect($lastConnection): bool
+    {
+        return $lastConnection->status == 'connected';
+    }
+
+    private function disconnect($lastConnection): void
+    {
+        $lastConnection->update([
+            "status" => 'disconnected',
+            'disconnected_at' => now()
+        ]);
+
+        $count = $lastConnection->pritunlUser->pritunl->online_user_count - 1;
+
+        $lastConnection->pritunlUser->pritunl->update([
+            "online_user_count" => $count < 0 ? 0 : $count
+        ]);
+
+        $lastConnection->pritunlUser->update([
+            "status" => PritunlUserStatus::ACTIVE,
+            "is_online" => false,
+            'last_active' => now()
+        ]);
     }
 
 

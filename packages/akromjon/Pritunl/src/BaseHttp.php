@@ -151,7 +151,7 @@ abstract class BaseHttp
             "network_start" => "",
             "network_end" => "",
             "wg" => false,
-            "multi_device" => false,
+            "multi_device" => true,
             "search_domain" => null,
             "otp_auth" => false,
             "sso_auth" => false,

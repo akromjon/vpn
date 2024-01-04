@@ -1,37 +1,41 @@
 <?php
 
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ServerController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TokenController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
 
-Route::middleware('api-key')->prefix('/token')->group(function () {
 
-    Route::post("/",[TokenController::class, 'generateToken']);
+Route::middleware(['api-key','version'])->prefix('/token')->group(function () {
+
+    Route::post("/", [TokenController::class, 'generateToken']);
 
 });
 
-Route::middleware('token')->prefix("/servers")->group(function () {
+Route::middleware(['token','version'])->prefix("/servers")->group(function () {
 
-    Route::get("/",[ServerController::class, 'list']);
+    Route::get("/", [ServerController::class, 'list']);
 
-    Route::post("/{ip}/download",[ServerController::class, 'download']);
+    Route::post("/{ip}/download", [ServerController::class, 'download']);
 
-    Route::get("/connected",[ServerController::class, 'connected']);
+    Route::get("/connected", [ServerController::class, 'connected']);
 
-    Route::get("/disconnected",[ServerController::class, 'disconnected']);
-
-
+    Route::get("/disconnected", [ServerController::class, 'disconnected']);
 
 });
+
+Route::middleware(['token','version'])->prefix('/client')->group(function () {
+
+    Route::get("/status", [ClientController::class, 'status']);
+    Route::get("/getMe", [ClientController::class, 'getMe']);
+});
+
+Route::middleware(['token','version'])->prefix('/settings')->group(function () {
+
+    Route::get("/version", [SettingsController::class, 'getVersion']);
+
+});
+
+Route::middleware('pritunl-user-action')->get("/pritunl-user-action/{action}/{uuid}", [ServerController::class, 'pritunlUserAction']);

@@ -3,6 +3,7 @@
 namespace App\Jobs\Pritunl\User;
 
 use Akromjon\Pritunl\Pritunl as PritunlClient;
+use Akromjon\Telegram\App\Telegram;
 use App\Models\Pritunl\Enum\PritunlSyncStatus;
 use App\Models\Pritunl\Enum\PritunlUserStatus;
 use App\Models\Pritunl\Pritunl;
@@ -62,6 +63,10 @@ class Synchronization implements ShouldQueue
             $this->pritunl->update([
                 "sync_status" => PritunlSyncStatus::FAILED_TO_SYNC,
             ]);
+
+            $telegram = Telegram::set(config('telegram.token'));
+
+            $telegram->sendErrorMessage(config('telegram.chat_id'), $e);
 
             Log::error($e->getMessage());
         }
