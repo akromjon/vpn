@@ -3,6 +3,7 @@
 namespace App\Jobs\Pritunl;
 
 use Akromjon\Pritunl\Pritunl as PritunlClient;
+use Akromjon\Telegram\App\Telegram;
 use App\Models\Pritunl\Enum\InternalServerStatus;
 use App\Models\Pritunl\Enum\PritunlStatus;
 use App\Models\Pritunl\Pritunl;
@@ -48,6 +49,10 @@ class InternalServerOperation implements ShouldQueue
         } catch (\Exception $e) {
 
             Log::error($e->getMessage());
+
+            $telegram = Telegram::set(config('telegram.token'));
+
+            $telegram->sendErrorMessage(config('telegram.chat_id'), $e);
 
             $this->failed($this->operation);
         }

@@ -3,6 +3,7 @@
 namespace App\Jobs\Pritunl;
 
 use Akromjon\Pritunl\Pritunl as PritunlClient;
+use Akromjon\Telegram\App\Telegram;
 use App\Jobs\Pritunl\User\Synchronization;
 use App\Models\Pritunl\Enum\InternalServerStatus;
 use App\Models\Pritunl\Enum\PritunlStatus;
@@ -70,6 +71,10 @@ class Creation implements ShouldQueue
         catch(\Exception $e){
 
             Log::error($e->getMessage());
+
+            $telegram = Telegram::set(config('telegram.token'));
+
+            $telegram->sendErrorMessage(config('telegram.chat_id'), $e);
 
             $pritunl->update([
                 "status"=>PritunlStatus::FAILED_TO_CREATE,
