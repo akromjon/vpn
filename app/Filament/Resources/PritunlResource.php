@@ -61,6 +61,8 @@ class PritunlResource extends Resource
 
 
                 TextInput::make("user_count")->default(25)->label("Total User")->required()->numeric()->nullable(),
+                TextInput::make("online_user_count")->label("Online Users")->numeric()->nullable(),
+
 
                 TextInput::make("username")->prefixIcon("heroicon-o-user")->default(function () {
                     return config("pritunl.username");

@@ -32,7 +32,7 @@ class TokenMiddleware
 
     private function respondWithTokenError(string $message): Response
     {
-        return response()->json(['message' => $message], 404);
+        return response()->json(['message' => $message], 401);
     }
 
     private function cacheTokenIfValid(string $token): bool
