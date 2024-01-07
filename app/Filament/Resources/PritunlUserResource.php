@@ -40,7 +40,10 @@ class PritunlUserResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return PritunlUser::where("status", PritunlUserStatus::ACTIVE)->count() . "/" . Pritunl::where("status", PritunlStatus::ACTIVE)->count();
+        return PritunlUser::where(function($query){
+            $query= $query->where("status", PritunlUserStatus::ACTIVE)
+                ->where("is_online", false);
+        })->count() . "/" . Pritunl::where("status", PritunlStatus::ACTIVE)->count();
     }
     public static function getNavigationBadgeColor(): string|array|null
     {
