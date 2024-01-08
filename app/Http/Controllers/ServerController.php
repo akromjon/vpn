@@ -119,6 +119,11 @@ class ServerController extends Controller
 
         $lastConnection = $client->connections->last();
 
+        if(!$lastConnection){
+
+            return response()->json(["message" => "Need to be connected to disconnect"], 400);
+        }
+
         if ($lastConnection->status == 'disconnected') {
 
             return response()->json(["message" => "Need to be connected to disconnect"], 400);
@@ -137,7 +142,28 @@ class ServerController extends Controller
 
     public function pritunlUserAction(string $action, string $pritunlUserUuid)
     {
-        return response()->json(["status" => "ok"]);
+        if(!in_array($action, ["connected", "disconnected"])) {
+
+            return response()->json(["message" => "Action not found"], 404);
+
+        }
+
+        $pritunlUser = PritunlUser::where("internal_user_id", $pritunlUserUuid)->first();
+
+        if(!$pritunlUser) {
+
+            return response()->json(["message" => "Pritunl user not found"], 404);
+
+        }
+
+        $pritunlUser->update([
+            "status" => PritunlUserStatus::ACTIVE,
+            "is_online" => $action == "connected"
+        ]);
+
+        return response()->json([
+            "status" => "ok"
+        ]);
     }
 
 

@@ -13,6 +13,12 @@ class PritunlUserAction
     public function handle(Request $request, Closure $next): Response
     {
 
+        if("local"===app()->environment()) {
+
+            return $next($request);
+
+        }
+
         $server=Server::where("ip", $request->ip())->first();
 
         if(!$server) {

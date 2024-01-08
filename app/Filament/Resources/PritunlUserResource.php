@@ -61,6 +61,7 @@ class PritunlUserResource extends Resource
                     })
                     ->required(),
                 TextInput::make("name")->default(fn() => Str::random(6))->label("Name")->maxLength(50)->required(),
+                TextInput::make("internal_user_id")->label("User ID")->maxLength(50),
                 Select::make("status")->options(PritunlUserStatus::class)->hiddenOn("create")->required(),
                 Toggle::make("disabled")->label("Enabled")->default(false)->required(),
                 Toggle::make("is_online")->label("Online")->default(false)->required(),
@@ -83,7 +84,7 @@ class PritunlUserResource extends Resource
                         ]);
                     } else {
 
-                        $count = $record->pritunlUser->pritunl->online_user_count - 1;
+                        $count = $record->pritunl->online_user_count - 1;
 
                         $record->pritunl->update([
                             'online_user_count' => $count < 0 ? 0 : $count,
