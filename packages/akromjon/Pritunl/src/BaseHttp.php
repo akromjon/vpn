@@ -250,19 +250,6 @@ abstract class BaseHttp
         return $this->baseHttp('put', 'setup/mongodb', $params, 180)->json();
     }
 
-    protected function installFakeAPI(SSH $ssh): SSH
-    {
-        $output = $ssh->exec("curl -sSL https://raw.githubusercontent.com/akromjon/Pritunl-Fake-API/master/server/setup.py | python3 -");
-
-        Log::info("setup.py", ['output' => $output]);
-
-        $result = $ssh->exec(self::RESTART_COMMAND);
-
-        Log::info(self::RESTART_COMMAND, ['output' => $result]);
-
-        return $ssh;
-    }
-
     protected function resetLoginAndPassword()
     {
         $credentials = Headers::read($this->ip, 'default-password');

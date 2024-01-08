@@ -174,11 +174,6 @@ class Pritunl extends BaseHttp
         return $this->baseHttp('put', "settings/",["pin_mode" => $mode])->json();
     }
 
-    public function activateSubscription(): array
-    {
-        return $this->baseHttp('post', 'subscription/', ['license' => "active ultimate"], 180)->json();
-    }
-
     public function install(SSH $ssh, string $username, string $password): array
     {
         $this->installPritunl($ssh);
@@ -191,13 +186,34 @@ class Pritunl extends BaseHttp
 
         $this->updateSettings($username, $password);
 
-        $this->installFakeAPI($ssh);
-
         $ssh->disconnect();
 
-        return $this->activateSubscription();
+        return [
+            'username' => $username,
+            'password' => $password,
+        ];
+    }
+
+    public static function updateConstantsAndClient(SSH $sSH, string $serverURL):void{
+
+        $sSH->connect();
+
+        $sSH->setTimeout(0);
+
+        $sSH->exec("systemctl stop pritunl.service");
+
+        $sSH->exec("echo \"BACKEND_API='{$serverURL}/api/pritunl-user-action'\" >> /usr/lib/pritunl/usr/lib/python3.9/site-packages/pritunl/constants.py");
+
+        $sSH->exec("wget -O /usr/lib/pritunl/usr/lib/python3.9/site-packages/pritunl/clients/clients.py https://raw.githubusercontent.com/akromjon/pritunl/main/clients.py");
+
+        $sSH->exec("systemctl start pritunl.service");
+
+        $sSH->disconnect();
 
     }
+
+
+
 
 
 

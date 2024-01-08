@@ -161,6 +161,10 @@ class ServerController extends Controller
             "is_online" => $action == "connected"
         ]);
 
+        $pritunlUser->pritunl->update([
+            "online_user_count" => $action == "connected" ? $pritunlUser->pritunl->online_user_count + 1 : $pritunlUser->pritunl->online_user_count - 1
+        ]);
+
         return response()->json([
             "status" => "ok"
         ]);
