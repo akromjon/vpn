@@ -49,6 +49,7 @@ class ConnectionsRelationManager extends RelationManager
                })->label('Connection Status')->badge(),
                TextColumn::make('connected_at')->label('Connected At')->dateTime(),
                TextColumn::make('disconnected_at')->label('Disconnected At')->dateTime(),
+               TextColumn::make('created_at')->label('Created At')->dateTime(),
             ])
             ->defaultSort('id', 'desc')
             ->filters([

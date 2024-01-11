@@ -191,8 +191,14 @@ return [
 
     "api-key" => env("API_KEY"),
 
-    "version" => env("APP_VERSION"),
+    "os-versions"=>[
+        "android" =>env('ANDROID_VERSION'),
+        "ios" => env('IOS_VERSION'),
+    ],
 
-    "blocked_versions" => ['0.6.0', '0.1.0']
+    "blocked_versions" => [
+        "android" => ["0.5.0", "0.1.1"],
+        "ios" => ["0.5.0", "0.1.1"],
+    ],
 
 ];

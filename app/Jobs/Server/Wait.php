@@ -16,7 +16,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Filament\Notifications\Notification;
 
-class WaitForAMinute implements ShouldQueue
+class Wait implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 

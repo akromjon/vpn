@@ -6,7 +6,7 @@ use App\Jobs\ClientLogAction;
 use App\Jobs\Server\Conntected;
 use App\Jobs\Server\Disconnected;
 use App\Jobs\Server\Download;
-use App\Jobs\Server\WaitForAMinute;
+use App\Jobs\Server\Wait;
 use App\Models\Client\Client;
 use App\Models\Pritunl\Enum\InternalServerStatus;
 use App\Models\Pritunl\Enum\PritunlStatus;
@@ -81,7 +81,7 @@ class ServerController extends Controller
 
         Download::dispatch($server->pritunl_user_id, $client);
 
-        WaitForAMinute::dispatch($pritunlUser, $client)->delay(now()->addSeconds(20));
+        Wait::dispatch($pritunlUser, $client)->delay(now()->addSeconds(20));
 
         return response()->download($server->vpn_config_path, 'vpn_config.ovpn');
     }

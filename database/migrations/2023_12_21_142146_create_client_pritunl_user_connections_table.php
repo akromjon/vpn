@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum("status",['connected','disconnected','idle'])->default('connected');
             $table->dateTime("connected_at")->nullable();
             $table->dateTime("disconnected_at")->nullable();
+            $table->timestamps();
         });
     }
 
