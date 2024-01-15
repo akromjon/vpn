@@ -156,13 +156,32 @@ class ServerController extends Controller
 
         }
 
+        $identifyAction=$action == "connected" ? true : false;
+
+        if($pritunlUser->is_online == $identifyAction){
+
+            return response()->json([
+                "message" => "Pritunl user already {$action}"
+            ], 400);
+        }
+
         $pritunlUser->update([
             "status" => PritunlUserStatus::ACTIVE,
-            "is_online" => $action == "connected"
+            "is_online" => $identifyAction
         ]);
 
+        $count=0;
+
+        if($identifyAction){
+
+            $count = $pritunlUser->pritunl->online_user_count + 1;
+
+        }else{
+            $pritunlUser->pritunl->online_user_count - 1 < 0 ? $count = 0 : $count = $pritunlUser->pritunl->online_user_count - 1;
+        }
+
         $pritunlUser->pritunl->update([
-            "online_user_count" => $action == "connected" ? $pritunlUser->pritunl->online_user_count + 1 : $pritunlUser->pritunl->online_user_count - 1
+            "online_user_count" => $count
         ]);
 
         return response()->json([
