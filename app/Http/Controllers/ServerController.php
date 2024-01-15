@@ -108,7 +108,22 @@ class ServerController extends Controller
             return response()->json(["message" => "Need to be downloaded to connect"], 400);
         }
 
-        Conntected::dispatch($client);
+        $client->update(['last_used_at' => now()]);
+
+        $lastConnection->update([
+            "status" => 'connected',
+            'connected_at' => now()
+        ]);
+
+        $lastConnection->pritunlUser->update([
+            "status" => PritunlUserStatus::ACTIVE,
+            "is_online" => true,
+            'last_active' => now()
+        ]);
+
+        $lastConnection->pritunlUser->pritunl->update([
+            "online_user_count" => $lastConnection->pritunlUser->pritunl->online_user_count + 1
+        ]);
 
         return response()->json(["message" => "Connected"]);
     }
@@ -135,7 +150,26 @@ class ServerController extends Controller
 
         }
 
-        Disconnected::dispatch($client);
+        $lastConnection=$client->connections->last();
+
+        $client->update(['last_used_at' => now()]);
+
+        $lastConnection->update([
+            "status" => 'disconnected',
+            'disconnected_at' => now()
+        ]);
+
+        $lastConnection->pritunlUser->update([
+            "status" => PritunlUserStatus::ACTIVE,
+            "is_online" => false,
+            'last_active' => now()
+        ]);
+
+        $count = $lastConnection->pritunlUser->pritunl->online_user_count - 1;
+
+        $lastConnection->pritunlUser->pritunl->update([
+            "online_user_count" => $count < 0 ? 0 : $count
+        ]);
 
         return response()->json(["message" => "Disconnected"]);
     }
