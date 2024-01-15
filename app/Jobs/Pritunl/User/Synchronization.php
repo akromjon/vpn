@@ -89,8 +89,10 @@ class Synchronization implements ShouldQueue
 
     private function connect(): PritunlClient
     {
+
         return PritunlClient::connect(
             ip: $this->pritunl->server->ip,
+            port: $this->pritunl->port,
             username: $this->pritunl->username,
             password: $this->pritunl->password
         );

@@ -34,6 +34,7 @@ class DeletionPritunlUser implements ShouldQueue
 
             $pritunlClient = PritunlClient::connect(
                 ip: $pritunlUser->pritunl->server->ip,
+                port: $pritunlUser->pritunl->port,
                 username: $pritunlUser->pritunl->username,
                 password: $pritunlUser->pritunl->password
             );

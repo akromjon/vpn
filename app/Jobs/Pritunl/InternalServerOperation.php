@@ -36,6 +36,7 @@ class InternalServerOperation implements ShouldQueue
 
             $pritunlClient = PritunlClient::connect(
                 ip: $pritunl->server->ip,
+                port: $pritunl->port,
                 username: $pritunl->username,
                 password: $pritunl->password
             );

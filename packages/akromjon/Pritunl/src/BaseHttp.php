@@ -10,14 +10,18 @@ use Illuminate\Support\Facades\Log;
 abstract class BaseHttp
 {
     protected string $ip;
+
+    protected int $port;
     protected string $username;
     protected string $password;
     const RESTART_COMMAND = "sudo systemctl restart pritunl.service && sleep 10";
-    public function __construct(string $ip, string $username, string $password)
+    public function __construct(string $ip,int $port=443, string $username, string $password)
     {
-        $this->ip = $ip;
+        $this->port = $port;
+        $this->ip = $ip.":{$this->port}";
         $this->username = $username;
         $this->password = $password;
+
     }
 
     public static function connect(...$params): self

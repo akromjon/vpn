@@ -58,7 +58,7 @@ class PritunlResource extends Resource
                     ->relationship("server", "ip")
                     ->getOptionLabelFromRecordUsing(fn(Server $record) => "{$record->ip}-{$record->name}")
                     ->required(),
-
+                TextInput::make("port")->numeric()->nullable(),
 
                 TextInput::make("user_count")->default(25)->label("Total User")->required()->numeric()->nullable(),
                 TextInput::make("online_user_count")->label("Online Users")->numeric()->nullable(),

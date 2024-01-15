@@ -26,6 +26,7 @@ class PritunlUserSynchronizationTest extends \Tests\TestCase
 
         $pritunlClientUsersCount=count(PritunlClient::connect(
             ip: $pritunl->server->ip,
+            port: $pritunl->port,
             username: $pritunl->username,
             password: $pritunl->password
         )->users($pritunl->organization_id))-1;

@@ -33,8 +33,6 @@ class VersionMiddleware
 
         $version=$request->header('Version');
 
-        logger($version);
-
         if (!$version) {
 
             return response()->json([

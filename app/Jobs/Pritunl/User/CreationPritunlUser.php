@@ -32,6 +32,7 @@ class CreationPritunlUser implements ShouldQueue
 
             $client=PritunlClient::connect(
                 ip: $pritunlUser->pritunl->server->ip,
+                port: $pritunlUser->pritunl->port,
                 username: $pritunlUser->pritunl->username,
                 password: $pritunlUser->pritunl->password
             );
