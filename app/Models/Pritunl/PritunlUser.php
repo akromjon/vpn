@@ -20,7 +20,7 @@ class PritunlUser extends Model
     {
         static::updated(function ($model) {
 
-            if (!$model->isDirty('is_online')) {
+            if(!$model->isDirty('is_online') ||  $model->getOriginal('is_online') == $model->is_online){
 
                 return;
 
