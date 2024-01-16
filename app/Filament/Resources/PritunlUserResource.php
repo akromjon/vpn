@@ -78,19 +78,7 @@ class PritunlUserResource extends Resource
                 TextColumn::make("status")->badge()->label("Status")->searchable()->sortable(),
                 TextColumn::make("internal_user_id")->label("User ID")->searchable()->sortable(),
                 ToggleColumn::make("is_online")->afterStateUpdated(function ($record, $state) {
-                    if ($state) {
-                        $record->pritunl->update([
-                            'online_user_count' => $record->pritunl->online_user_count + 1,
-                        ]);
-                    } else {
 
-                        $count = $record->pritunl->online_user_count - 1;
-
-                        $record->pritunl->update([
-                            'online_user_count' => $count < 0 ? 0 : $count,
-                        ]);
-
-                    }
                 })->label("Online"),
                 ToggleColumn::make("disabled")->action(function (PritunlUser $record) {
 

@@ -42,11 +42,5 @@ class Disconnected implements ShouldQueue
             "is_online" => false,
             'last_active' => now()
         ]);
-
-        $count = $lastConnection->pritunlUser->pritunl->online_user_count - 1;
-
-        $lastConnection->pritunlUser->pritunl->update([
-            "online_user_count" => $count < 0 ? 0 : $count
-        ]);
     }
 }

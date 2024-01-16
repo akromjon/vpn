@@ -43,8 +43,6 @@ class Conntected implements ShouldQueue
             'last_active' => now()
         ]);
 
-        $lastConnection->pritunlUser->pritunl->update([
-            "online_user_count" => $lastConnection->pritunlUser->pritunl->online_user_count + 1
-        ]);
+
     }
 }

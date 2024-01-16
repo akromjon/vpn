@@ -121,10 +121,6 @@ class ServerController extends Controller
             'last_active' => now()
         ]);
 
-        $lastConnection->pritunlUser->pritunl->update([
-            "online_user_count" => $lastConnection->pritunlUser->pritunl->online_user_count + 1
-        ]);
-
         return response()->json(["message" => "Connected"]);
     }
 
@@ -165,12 +161,6 @@ class ServerController extends Controller
             'last_active' => now()
         ]);
 
-        $count = $lastConnection->pritunlUser->pritunl->online_user_count - 1;
-
-        $lastConnection->pritunlUser->pritunl->update([
-            "online_user_count" => $count < 0 ? 0 : $count
-        ]);
-
         return response()->json(["message" => "Disconnected"]);
     }
 
@@ -202,20 +192,6 @@ class ServerController extends Controller
         $pritunlUser->update([
             "status" => PritunlUserStatus::ACTIVE,
             "is_online" => $identifyAction
-        ]);
-
-        $count=0;
-
-        if($identifyAction){
-
-            $count = $pritunlUser->pritunl->online_user_count + 1;
-
-        }else{
-            $pritunlUser->pritunl->online_user_count - 1 < 0 ? $count = 0 : $count = $pritunlUser->pritunl->online_user_count - 1;
-        }
-
-        $pritunlUser->pritunl->update([
-            "online_user_count" => $count
         ]);
 
         return response()->json([

@@ -13,9 +13,45 @@ class PritunlUser extends Model
 {
     use HasFactory;
 
-    protected $casts=[
-        "status"=>PritunlUserStatus::class,
+    protected $casts = [
+        "status" => PritunlUserStatus::class,
     ];
+    protected static function booted()
+    {
+        static::updated(function ($model) {
+
+            if (!$model->isDirty('is_online')) {
+
+                return;
+
+            }
+
+            $model->is_online ? $model->incrementOnlineUserCount() : $model->decrementOnlineUserCount();
+
+        });
+
+        static::deleting(function ($model) {
+
+            if ($model->is_online) {
+
+                $model->decrementOnlineUserCount();
+
+            }
+
+        });
+    }
+
+    public function incrementOnlineUserCount()
+    {
+        $this->pritunl->increment('online_user_count');
+    }
+
+    public function decrementOnlineUserCount()
+    {
+        if ($this->pritunl->online_user_count > 0) {
+            $this->pritunl->decrement('online_user_count');
+        }
+    }
 
     public function pritunl(): BelongsTo
     {
@@ -26,5 +62,7 @@ class PritunlUser extends Model
     {
         return $this->hasMany(ClientPritunlUserConnection::class, 'pritunl_user_id', 'id');
     }
+
+
 
 }
