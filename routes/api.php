@@ -32,7 +32,7 @@ Route::middleware(['token','version'])->prefix('/client')->group(function () {
     Route::get("/getMe", [ClientController::class, 'getMe']);
 });
 
-Route::middleware(['token'])->prefix('/settings')->group(function () {
+Route::middleware(['token','version'])->prefix('/settings')->group(function () {
 
     Route::get("/version", [SettingsController::class, 'getVersion']);
 
