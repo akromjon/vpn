@@ -20,7 +20,7 @@ class VersionMiddleware
 
         if (!$osType) {
 
-            return response()->json(['message' => 'No Os-Type has been found in your request header!'], 401);
+            return response()->json(['message' => 'No Os-Type has been found in your request header!'], 400);
 
         }
 
@@ -28,7 +28,7 @@ class VersionMiddleware
 
             return response()->json([
                 'message' => 'Os-Type is not valid and it must be android or ios'
-            ], 401);
+            ], 400);
         }
 
         $version=$request->header('Version');
@@ -37,7 +37,7 @@ class VersionMiddleware
 
             return response()->json([
                 'message' => 'No version has been found in your request header!'
-            ], 401);
+            ], 400);
 
         }
 
@@ -47,7 +47,7 @@ class VersionMiddleware
 
             return response()->json([
                 'message' => 'You need to update the app!'
-            ], 401);
+            ], 400);
 
         }
 
@@ -57,7 +57,7 @@ class VersionMiddleware
 
             return response()->json([
                 'message' => 'Version mismatch!'
-            ], 401);
+            ], 400);
 
         }
 
