@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::middleware(['api-key','version'])->prefix('/token')->group(function () {
+Route::middleware(['api-key'])->prefix('/token')->group(function () {
 
     Route::post("/", [TokenController::class, 'generateToken']);
 

@@ -15,16 +15,18 @@ class KeyMiddleware
         if(!$request->hasHeader('API-KEY')) {
 
             return response()->json([
-                'message' => 'API_KEY not found'
-            ], 404);
+                'message' => 'API_KEY not found',
+                'code' => 1010
+            ], 401);
 
         }
 
         if (config('app.api-key')!=$request->header('API-KEY')) {
 
             return response()->json([
-                'message' => 'Not found!'
-            ], 404);
+                'message' => 'Invalid Key!',
+                'code' => 1015
+            ], 401);
 
         }
 

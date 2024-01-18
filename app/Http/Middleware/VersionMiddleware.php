@@ -8,35 +8,36 @@ use Symfony\Component\HttpFoundation\Response;
 
 class VersionMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
+
     public function handle(Request $request, Closure $next): Response
     {
 
-        $osType=$request->header('Os-Type');
+        $osType = $request->header('Os-Type');
 
         if (!$osType) {
 
-            return response()->json(['message' => 'No Os-Type has been found in your request header!'], 400);
+            return response()->json([
+                'message' => 'No Os-Type has been found in your request header!',
+                'code' => 2000
+            ], 400);
 
         }
 
         if (!in_array($osType, ['android', 'ios'])) {
 
             return response()->json([
-                'message' => 'Os-Type is not valid and it must be android or ios'
+                'message' => 'Os-Type is not valid and it must be android or ios',
+                'code' => 2005
             ], 400);
         }
 
-        $version=$request->header('Version');
+        $version = $request->header('Version');
 
         if (!$version) {
 
             return response()->json([
-                'message' => 'No version has been found in your request header!'
+                'message' => 'No version has been found in your request header!',
+                'code' => 2010
             ], 400);
 
         }
@@ -46,17 +47,8 @@ class VersionMiddleware
         if (in_array($version, $blockedVersions[$osType])) {
 
             return response()->json([
-                'message' => 'You need to update the app!'
-            ], 400);
-
-        }
-
-        $osVersions = config('app.os-versions');
-
-        if ($version != $osVersions[$osType]) {
-
-            return response()->json([
-                'message' => 'Version mismatch!'
+                'message' => 'You need to update the app!',
+                'code' => 2015
             ], 400);
 
         }

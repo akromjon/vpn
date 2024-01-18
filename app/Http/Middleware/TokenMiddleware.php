@@ -17,22 +17,25 @@ class TokenMiddleware
         $token = $request->header('TOKEN');
 
         if (!$token) {
-            return $this->respondWithTokenError('No Token found!');
+            return $this->respondWithTokenError('No Token found!',1000);
         }
 
         if (!Token::isCached($token)) {
 
             if (!$this->cacheTokenIfValid($token)) {
-                return $this->respondWithTokenError('No active token found!');
+                return $this->respondWithTokenError('No active token found!',1005);
             }
         }
 
         return $next($request);
     }
 
-    private function respondWithTokenError(string $message): Response
+    private function respondWithTokenError(string $message,int $status=1000): Response
     {
-        return response()->json(['message' => $message], 401);
+        return response()->json([
+            'message' => $message,
+            'code' => $status
+        ], 401);
     }
 
     private function cacheTokenIfValid(string $token): bool

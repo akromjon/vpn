@@ -45,6 +45,14 @@ class ServerController extends Controller
             ->orderBy("pritunls.online_user_count")
             ->get();
 
+        if ($results->isEmpty()) {
+
+            return response()->json([
+                "message" => "Servers not found",
+                'code' => 3000
+            ], 404);
+
+        }
 
         return response()->json($results);
     }
@@ -68,7 +76,11 @@ class ServerController extends Controller
             ->first();
 
         if (empty($server)) {
-            return response()->json(["message" => "Server not found"], 404);
+
+            return response()->json([
+                "message" => "Server not found",
+                'code' => 3000
+            ], 404);
         }
 
         $this->act(Token::getCachedClientUuid(), ClientAction::DOWNLOADED_CONFIG);
@@ -94,18 +106,27 @@ class ServerController extends Controller
 
         if (!$lastConnection) {
 
-            return response()->json(["message" => "Need to be downloaded to connect"], 400);
+            return response()->json([
+                "message" => "Need to be downloaded to connect",
+                'code' => 3005
+            ], 400);
 
         }
 
         if ($lastConnection->status == 'connected') {
 
-            return response()->json(["message" => "Need to be disconnected to connect"], 400);
+            return response()->json([
+                "message" => "Need to be disconnected to connect",
+                'code' => 3010
+            ], 400);
         }
 
         if ($lastConnection->status == 'disconnected') {
 
-            return response()->json(["message" => "Need to be downloaded to connect"], 400);
+            return response()->json([
+                "message" => "Need to be downloaded to connect",
+                'code' => 3015
+            ], 400);
         }
 
         $client->update(['last_used_at' => now()]);
@@ -130,20 +151,12 @@ class ServerController extends Controller
 
         $lastConnection = $client->connections->last();
 
-        if(!$lastConnection){
+        if(!$lastConnection || $lastConnection->status == 'disconnected' || $lastConnection->status == 'idle'){
 
-            return response()->json(["message" => "Need to be connected to disconnect"], 400);
-        }
-
-        if ($lastConnection->status == 'disconnected') {
-
-            return response()->json(["message" => "Need to be connected to disconnect"], 400);
-        }
-
-        if ($lastConnection->status == 'idle') {
-
-            return response()->json(["message" => "Need to be connected to disconnect"], 400);
-
+            return response()->json([
+                "message" => "Need to be connected to disconnect",
+                'code' => 3020
+            ], 400);
         }
 
         $lastConnection=$client->connections->last();
