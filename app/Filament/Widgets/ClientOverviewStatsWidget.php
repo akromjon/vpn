@@ -10,7 +10,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class ClientOverviewStatsWidget extends BaseWidget
 {
-    protected static ?string $pollingInterval = '10s';
+    protected static ?string $pollingInterval = '15s';
     protected function getStats(): array
     {
         return [
