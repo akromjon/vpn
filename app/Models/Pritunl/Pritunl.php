@@ -34,6 +34,6 @@ class Pritunl extends Model
 
     public function server():BelongsTo
     {
-        return $this->belongsTo(Server::class)->where("status",ServerStatus::ACTIVE);
+        return $this->belongsTo(Server::class);
     }
 }
