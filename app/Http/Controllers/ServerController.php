@@ -59,41 +59,55 @@ class ServerController extends Controller
 
     public function download(string $ip)
     {
+        $client = Token::getClient();
 
-        $server = DB::table("servers")
-            ->select("pritunl_users.vpn_config_path as vpn_config_path", "pritunl_users.id as pritunl_user_id")
-            ->join("pritunls", "pritunls.server_id", "=", "servers.id")
-            ->join("pritunl_users", "pritunl_users.pritunl_id", "=", "pritunls.id")
-            ->where("servers.status", ServerStatus::ACTIVE)
-            ->where("pritunls.internal_server_status", InternalServerStatus::ONLINE)
-            ->where("pritunls.sync_status", PritunlSyncStatus::SYNCED)
-            ->where("pritunls.status", PritunlStatus::ACTIVE)
-            ->where("pritunl_users.server_ip", $ip)
-            ->where("pritunl_users.is_online", false)
-            ->where("pritunl_users.disabled", false)
-            ->where("pritunl_users.status", PritunlUserStatus::ACTIVE)
-            ->where("servers.ip", $ip)
-            ->first();
+        $server = cache()->remember("{$client->uuid}:{$ip}:pritunl_users", 20, function () use ($client, $ip) {
+
+            $server = DB::table("servers")
+                ->select("pritunl_users.vpn_config_path as vpn_config_path", "pritunl_users.id as pritunl_user_id")
+                ->join("pritunls", "pritunls.server_id", "=", "servers.id")
+                ->join("pritunl_users", "pritunl_users.pritunl_id", "=", "pritunls.id")
+                ->where("servers.status", ServerStatus::ACTIVE)
+                ->where("pritunls.internal_server_status", InternalServerStatus::ONLINE)
+                ->where("pritunls.sync_status", PritunlSyncStatus::SYNCED)
+                ->where("pritunls.status", PritunlStatus::ACTIVE)
+                ->where("pritunl_users.server_ip", $ip)
+                ->where("pritunl_users.is_online", false)
+                ->where("pritunl_users.disabled", false)
+                ->where("pritunl_users.status", PritunlUserStatus::ACTIVE)
+                ->where("servers.ip", $ip)
+                ->first();
+
+            if (!$server) {
+
+                return [];
+
+            }
+
+            $this->act(Token::getCachedClientUuid(), ClientAction::DOWNLOADED_CONFIG);
+
+            $pritunlUser = PritunlUser::where("id", $server->pritunl_user_id)->first();
+
+            $pritunlUser->update(["status" => PritunlUserStatus::IN_USE]);
+
+            Download::dispatch($server->pritunl_user_id, $client);
+
+            Wait::dispatch($pritunlUser, $client)->delay(now()->addSeconds(20));
+
+            return $server;
+
+
+        });
 
         if (empty($server)) {
+
+            cache()->forget("{$client->uuid}:{$ip}:pritunl_users");
 
             return response()->json([
                 "message" => "Server not found",
                 'code' => 3000
             ], 404);
         }
-
-        $this->act(Token::getCachedClientUuid(), ClientAction::DOWNLOADED_CONFIG);
-
-        $pritunlUser = PritunlUser::where("id", $server->pritunl_user_id)->first();
-
-        $pritunlUser->update(["status" => PritunlUserStatus::IN_USE]);
-
-        $client = Token::getClient();
-
-        Download::dispatch($server->pritunl_user_id, $client);
-
-        Wait::dispatch($pritunlUser, $client)->delay(now()->addSeconds(20));
 
         return response()->download($server->vpn_config_path, 'vpn_config.ovpn');
     }
@@ -151,7 +165,7 @@ class ServerController extends Controller
 
         $lastConnection = $client->connections->last();
 
-        if(!$lastConnection || $lastConnection->status == 'disconnected' || $lastConnection->status == 'idle'){
+        if (!$lastConnection || $lastConnection->status == 'disconnected' || $lastConnection->status == 'idle') {
 
             return response()->json([
                 "message" => "Need to be connected to disconnect",
@@ -159,7 +173,7 @@ class ServerController extends Controller
             ], 400);
         }
 
-        $lastConnection=$client->connections->last();
+        $lastConnection = $client->connections->last();
 
         $client->update(['last_used_at' => now()]);
 
@@ -179,7 +193,7 @@ class ServerController extends Controller
 
     public function pritunlUserAction(string $action, string $pritunlUserUuid)
     {
-        if(!in_array($action, ["connected", "disconnected"])) {
+        if (!in_array($action, ["connected", "disconnected"])) {
 
             return response()->json(["message" => "Action not found"], 404);
 
@@ -187,15 +201,15 @@ class ServerController extends Controller
 
         $pritunlUser = PritunlUser::where("internal_user_id", $pritunlUserUuid)->first();
 
-        if(!$pritunlUser) {
+        if (!$pritunlUser) {
 
             return response()->json(["message" => "Pritunl user not found"], 404);
 
         }
 
-        $identifyAction=$action == "connected" ? true : false;
+        $identifyAction = $action == "connected" ? true : false;
 
-        if($pritunlUser->is_online == $identifyAction){
+        if ($pritunlUser->is_online == $identifyAction) {
 
             return response()->json([
                 "message" => "Pritunl user already {$action}"

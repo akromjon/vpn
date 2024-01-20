@@ -63,6 +63,4 @@ class PritunlUser extends Model
         return $this->hasMany(ClientPritunlUserConnection::class, 'pritunl_user_id', 'id');
     }
 
-
-
 }
