@@ -11,4 +11,6 @@ enum ClientAction: string
     case DISCONNECTING = "disconnecting";
     case DISCONNECTED = "disconnected";
 
+    case DELETED_APP= "deleted_app";
+
 }

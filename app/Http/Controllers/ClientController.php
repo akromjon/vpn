@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client\Client;
+use App\Models\Client\Enum\ClientAction;
 use App\Models\Token;
 use Illuminate\Http\Request;
 
@@ -49,6 +50,18 @@ class ClientController extends Controller
             'message' => 'Ready to connect!',
         ]);
 
+    }
+
+
+    public function delete()
+    {
+        $client = Token::getClient();
+
+        $client->update(['status' => 'deleted']);
+
+        $this->act(Token::getCachedClientUuid(), ClientAction::DELETED_APP);
+
+        return response()->json(["message" => "Deleted"]);
     }
 
 }

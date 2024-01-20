@@ -81,7 +81,7 @@ class ClientLineChartWidget extends ChartWidget
                     'data' => $data->map(fn(TrendValue $value) => $value->aggregate),
                 ],
             ],
-            'labels' => $data->map(fn(TrendValue $value) => Carbon::parse($value->date)->format('d.m.Y')),
+            'labels' => $data->map(fn(TrendValue $value) => Carbon::parse($value->date)->format($activeFilter === 'today' ? 'H:i' : 'd.m.Y')),
         ];
     }
 

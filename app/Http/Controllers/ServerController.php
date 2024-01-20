@@ -80,7 +80,7 @@ class ServerController extends Controller
 
             if (!$server) {
 
-                return [];
+                return null;
 
             }
 
@@ -190,7 +190,6 @@ class ServerController extends Controller
 
         return response()->json(["message" => "Disconnected"]);
     }
-
     public function pritunlUserAction(string $action, string $pritunlUserUuid)
     {
         if (!in_array($action, ["connected", "disconnected"])) {

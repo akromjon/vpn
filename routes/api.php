@@ -28,8 +28,12 @@ Route::middleware(['token','version'])->prefix("/servers")->group(function () {
 
 Route::middleware(['token','version'])->prefix('/client')->group(function () {
 
+    Route::delete("/delete", [ClientController::class, 'delete']);
+
     Route::get("/status", [ClientController::class, 'status']);
+
     Route::get("/getMe", [ClientController::class, 'getMe']);
+
 });
 
 Route::middleware(['token','version'])->prefix('/settings')->group(function () {
