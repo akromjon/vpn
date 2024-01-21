@@ -215,9 +215,20 @@ class ServerController extends Controller
             ], 400);
         }
 
+        $lastConnection = $pritunlUser->connections->last();
+
+        if (!empty($lastConnection) && $lastConnection->status == 'connected' && $action == "disconnected") {
+
+            $lastConnection->update([
+                "status" => 'disconnected',
+                'disconnected_at' => now()
+            ]);
+        }
+
         $pritunlUser->update([
             "status" => PritunlUserStatus::ACTIVE,
-            "is_online" => $identifyAction
+            "is_online" => $identifyAction,
+            'last_active' => now()
         ]);
 
         return response()->json([

@@ -16,7 +16,7 @@ class ClientLineChartWidget extends ChartWidget
 
     public ?string $filter = 'week';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static ?string $maxHeight = "300px";
 
@@ -33,10 +33,24 @@ class ClientLineChartWidget extends ChartWidget
 
     protected function getData(): array
     {
+        $filterData = $this->getFilterData();
 
-        $activeFilter = $this->filter;
+        $data = $this->fetchData($filterData);
 
-        $filterData = [
+        return [
+            'datasets' => [
+                [
+                    'label' => 'Clients Registered',
+                    'data' => $data->map(fn(TrendValue $value) => $value->aggregate),
+                ],
+            ],
+            'labels' => $data->map(fn(TrendValue $value) => Carbon::parse($value->date)->format($this->filter === 'today' ? 'H:i' : 'd.m.Y')),
+        ];
+    }
+
+    protected function getFilterData(): array
+    {
+        return [
             'today' => [
                 'start' => now()->startOfDay(),
                 'end' => now()->endOfDay(),
@@ -46,7 +60,6 @@ class ClientLineChartWidget extends ChartWidget
                 'start' => now()->startOfWeek(),
                 'end' => now()->endOfWeek(),
                 'per' => 'perDay'
-
             ],
             'month' => [
                 'start' => now()->startOfMonth(),
@@ -64,25 +77,17 @@ class ClientLineChartWidget extends ChartWidget
                 'per' => 'perMonth'
             ],
         ];
+    }
 
-
-        $data = Trend::model(Client::class)
+    protected function fetchData(array $filterData)
+    {
+        return Trend::model(Client::class)
                     ->between(
-                        start: $filterData[$activeFilter]['start'],
-                        end: $filterData[$activeFilter]['end'],
+                        start: $filterData[$this->filter]['start'],
+                        end: $filterData[$this->filter]['end'],
                     )
-            ->{$filterData[$activeFilter]['per']}()
+            ->{$filterData[$this->filter]['per']}()
                 ->count();
-
-        return [
-            'datasets' => [
-                [
-                    'label' => 'Clients Registered',
-                    'data' => $data->map(fn(TrendValue $value) => $value->aggregate),
-                ],
-            ],
-            'labels' => $data->map(fn(TrendValue $value) => Carbon::parse($value->date)->format($activeFilter === 'today' ? 'H:i' : 'd.m.Y')),
-        ];
     }
 
     protected function getType(): string
