@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use Akromjon\Pritunl\Pritunl as PritunlService;
 use App\Filament\Resources\PritunlResource\Pages;
 use App\Jobs\Pritunl\CreateNumberOfUsers;
 use App\Jobs\Pritunl\Deletion;
+use App\Jobs\Pritunl\EnableReverseAction;
 use App\Jobs\Pritunl\InternalServerOperation;
 use App\Jobs\Pritunl\User\Synchronization;
 use App\Models\Pritunl\Enum\InternalServerStatus;
@@ -19,11 +21,13 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextInputColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -60,6 +64,11 @@ class PritunlResource extends Resource
                     ->required(),
                 TextInput::make("port")->numeric()->nullable(),
 
+                Toggle::make("reverse_action_enabled")->label("Reverse Enabled")->afterStateUpdated(function($record){
+
+                })->default(false)->required(),
+                TextInput::make("reverse_value")->label("reverse Value")->nullable(),
+
                 TextInput::make("user_count")->default(25)->label("Total User")->required()->numeric()->nullable(),
                 TextInput::make("online_user_count")->label("Online Users")->numeric()->nullable(),
 
@@ -83,14 +92,29 @@ class PritunlResource extends Resource
         return $table
             ->columns([
                 TextColumn::make("server.ip")->label("Server")->searchable()->sortable(),
+
                 TextColumn::make("server.country")->label("Country")->searchable()->sortable(),
+
                 TextColumn::make('status')->searchable()->sortable()->badge(),
-                TextColumn::make('internal_server_status')->label("Internal Status")->badge()->searchable()->sortable(),
+
+                TextColumn::make('internal_server_status')->badge()->label("Internal Status")->searchable()->sortable(),
+
                 TextColumn::make('sync_status')->label("Sync Status")->badge()->searchable()->sortable(),
+
+                ToggleColumn::make('reverse_action_enabled')->label("Reverse Enabled")->afterStateUpdated(function($record){
+
+                    if($record->reverse_action_enabled){
+                        EnableReverseAction::dispatch($record,$record->server->ip,config("app.url"));
+                    }
+
+                })->searchable()->sortable(),
+
                 TextColumn::make('online_user_count')->label("Online")->searchable()->sortable(),
+
                 TextInputColumn::make('user_count')->disabled(function($record){
                     return $record->status != PritunlStatus::ACTIVE;
-                })->updateStateUsing(function ($record, $state) {
+                })
+                ->updateStateUsing(function ($record, $state) {
 
                     if ($state <= $record->user_count) {
 

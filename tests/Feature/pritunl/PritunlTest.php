@@ -20,7 +20,7 @@ class PritunlTest extends TestCase
 
         $this->setUpCredentials();
 
-        $this->pritunl = new Pritunl($this->ip, $this->username, $this->password);
+        $this->pritunl = new Pritunl($this->ip, 443,$this->username, $this->password);
 
     }
 
@@ -182,13 +182,7 @@ class PritunlTest extends TestCase
 
     public function test_it_can_update_constants_credentials()
     {
-        $ssh = SSH::load(
-            ip: "test",
-        );
-
-        $serverURL="test";
-
-        Pritunl::updateConstantsAndClient($ssh,$serverURL);
+        Pritunl::enableReverseAction('test','test');
     }
 
 

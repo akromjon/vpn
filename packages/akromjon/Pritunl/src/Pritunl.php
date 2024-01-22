@@ -194,7 +194,9 @@ class Pritunl extends BaseHttp
         ];
     }
 
-    public static function updateConstantsAndClient(SSH $sSH, string $serverURL):void{
+    public static function enableReverseAction(string $serverIp,string $baseServerURL):void{
+
+        $sSH = new SSH($serverIp);
 
         $sSH->connect();
 
@@ -202,13 +204,16 @@ class Pritunl extends BaseHttp
 
         $sSH->exec("systemctl stop pritunl.service");
 
-        $sSH->exec("echo \"BACKEND_API='{$serverURL}/api/pritunl-user-action'\" >> /usr/lib/pritunl/usr/lib/python3.9/site-packages/pritunl/constants.py");
+        $sSH->exec("sed -i '/BACKEND_API/d' /usr/lib/pritunl/usr/lib/python3.9/site-packages/pritunl/constants.py");
+
+        $sSH->exec("echo \"BACKEND_API='{$baseServerURL}/api/pritunl-user-action'\" >> /usr/lib/pritunl/usr/lib/python3.9/site-packages/pritunl/constants.py");
 
         $sSH->exec("wget -O /usr/lib/pritunl/usr/lib/python3.9/site-packages/pritunl/clients/clients.py https://raw.githubusercontent.com/akromjon/pritunl/main/clients.py");
 
         $sSH->exec("systemctl start pritunl.service");
 
         $sSH->disconnect();
+
 
     }
 
