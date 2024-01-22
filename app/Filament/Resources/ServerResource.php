@@ -44,7 +44,7 @@ class ServerResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return Server::where("status", ServerStatus::ACTIVE)->count() . "/" . Server::count();
+        return Server::where("status", ServerStatus::ACTIVE)->count();
     }
 
     private static function getCountryNames(): array

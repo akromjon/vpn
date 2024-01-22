@@ -25,11 +25,12 @@ class ListPritunlUsers extends ListRecords
     public function getTabs(): array
     {
         return [
-            "All"=>Tab::make()->badge(fn()=>PritunlUser::count()),
-            "Active"=>Tab::make()->badge(fn()=>PritunlUser::where('status',PritunlUserStatus::ACTIVE)->count())
+
+            "Total Active"=>Tab::make()->badge(fn()=>PritunlUser::where('status',PritunlUserStatus::ACTIVE)->count())
             ->modifyQueryUsing(function(){
                 return PritunlUser::where('status',PritunlUserStatus::ACTIVE);
             }),
+
             "In Use"=>Tab::make()->badge(fn()=>PritunlUser::where('status',PritunlUserStatus::IN_USE)->count())
             ->modifyQueryUsing(function(){
                 return PritunlUser::where('status',PritunlUserStatus::IN_USE);
@@ -39,6 +40,8 @@ class ListPritunlUsers extends ListRecords
             ->modifyQueryUsing(function(){
                 return PritunlUser::where('is_online',true);
             }),
+
+            "All"=>Tab::make()->badge(fn()=>PritunlUser::count()),
         ];
     }
 

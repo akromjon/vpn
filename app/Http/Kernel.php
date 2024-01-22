@@ -70,5 +70,6 @@ class Kernel extends HttpKernel
         'token'=>TokenMiddleware::class,
         'pritunl-user-action'=>\App\Http\Middleware\PritunlUserAction::class,
         'version'=>\App\Http\Middleware\VersionMiddleware::class,
+        'cors'=>\App\Http\Middleware\CorsMiddleware::class,
     ];
 }

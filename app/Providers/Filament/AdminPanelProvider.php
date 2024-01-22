@@ -65,6 +65,7 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
 
             ])
+            ->favicon(asset('img/favicon.ico'))
             ->authMiddleware([
                 Authenticate::class,
             ]);

@@ -4,6 +4,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ServerController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TokenController;
+use App\Http\Controllers\WebsiteController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -43,3 +44,6 @@ Route::middleware(['token','version'])->prefix('/settings')->group(function () {
 });
 
 Route::middleware('pritunl-user-action')->get("/pritunl-user-action/{action}/{uuid}", [ServerController::class, 'pritunlUserAction']);
+
+
+Route::post("/contact",[WebsiteController::class,'contact']);
