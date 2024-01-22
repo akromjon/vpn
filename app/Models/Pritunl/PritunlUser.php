@@ -48,6 +48,8 @@ class PritunlUser extends Model
 
     public function decrementOnlineUserCount()
     {
+        $this->pritunl->refresh();
+        // keep eye on this
         if ($this->pritunl->online_user_count > 0) {
             $this->pritunl->decrement('online_user_count');
         }
