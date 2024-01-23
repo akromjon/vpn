@@ -3,37 +3,32 @@
 namespace App\Filament\Resources;
 
 use Akromjon\DigitalOceanClient\DigitalOceanClient;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Select;
-use App\Models\Server\Enum\CloudProviderType;
+use Modules\Server\Models\Enum\CloudProviderType;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\Action;
-use App\Models\Server\Enum\ServerStatus;
-use App\Jobs\Server\Deletion;
-use App\Jobs\Server\Reboot;
-use Filament\Forms\Components\CheckboxList;
+use Modules\Server\Models\Enum\ServerStatus;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\BulkAction;
-use Filament\Tables\Columns\SelectColumn;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
 use Filament\Forms\Set;
 use App\Filament\Resources\ServerResource\Pages;
-use App\Jobs\Server\Creation;
-use App\Models\Server\Server;
+
+use Modules\Server\Models\Server;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Get;
 use Illuminate\Support\Facades\File;
-use Closure;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\ViewField;
 use Filament\Tables\Columns\ImageColumn;
+use Modules\Server\Jobs\Deletion;
+use Modules\Server\Jobs\Reboot;
 
 class ServerResource extends Resource
 {

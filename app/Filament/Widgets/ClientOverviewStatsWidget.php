@@ -2,7 +2,8 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Client\Client;
+use Modules\Client\Models\Client;
+
 use App\Models\Pritunl\Enum\PritunlUserStatus;
 use App\Models\Pritunl\PritunlUser;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;

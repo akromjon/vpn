@@ -14,7 +14,7 @@ use App\Models\Pritunl\Enum\PritunlStatus;
 use App\Models\Pritunl\Enum\PritunlSyncStatus;
 use App\Models\Pritunl\Pritunl;
 use App\Models\Server\Enum\ServerStatus;
-use App\Models\Server\Server;
+use Modules\Server\Models\Server;
 use Faker\Provider\ar_EG\Text;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\EditAction;

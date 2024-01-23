@@ -171,6 +171,8 @@ return [
         App\Providers\Filament\AdminPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\TelescopeServiceProvider::class,
+        Modules\Client\Providers\ClientServiceProvider::class,
+        Modules\Server\Providers\ServerServiceProvider::class,
     ])->toArray(),
 
     /*

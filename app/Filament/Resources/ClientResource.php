@@ -3,13 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ClientResource\Pages;
-use App\Filament\Resources\ClientResource\RelationManagers;
 use App\Filament\Resources\ClientResource\RelationManagers\ConnectionsRelationManager;
 use App\Filament\Resources\ClientResource\RelationManagers\LogsRelationManager;
-use App\Models\Client\Client;
-use App\Models\Client\Enum\ClientModeType;
-use App\Models\Token;
-use Filament\Forms;
+use Modules\Client\Models\Client;
+use Modules\Client\Models\Enum\ClientModeType;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
@@ -17,12 +14,10 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\Summarizers\Count;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+use Modules\Client\Models\Token;
 
 class ClientResource extends Resource
 {

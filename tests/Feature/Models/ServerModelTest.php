@@ -3,7 +3,8 @@
 namespace Tests\Feature\Models;
 
 use Akromjon\DigitalOceanClient\DigitalOceanClient;
-use App\Models\Server\Server;
+use Modules\Server\Models\Server;
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

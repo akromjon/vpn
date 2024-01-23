@@ -7,7 +7,8 @@ use App\Models\Pritunl\Enum\PritunlSyncStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Pritunl\Enum\PritunlStatus;
 use App\Models\Server\Enum\ServerStatus;
-use App\Models\Server\Server;
+use Modules\Server\Models\Server;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;

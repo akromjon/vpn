@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\ClientNotFoundException;
-use App\Jobs\ClientLogAction;
-use App\Models\Client\Client;
-use App\Models\Client\Enum\ClientAction;
+use Modules\Client\Jobs\ClientLogAction;
+use Modules\Client\Models\Client;
+use Modules\Client\Models\Enum\ClientAction;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;

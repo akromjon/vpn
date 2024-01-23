@@ -1,39 +1,14 @@
 <?php
 
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\ServerController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\WebsiteController;
 use Illuminate\Support\Facades\Route;
-
-
+use Modules\Server\Http\Controllers\ServerController;
 
 Route::middleware(['api-key'])->prefix('/token')->group(function () {
 
     Route::post("/", [TokenController::class, 'generateToken']);
-
-});
-
-Route::middleware(['token','version'])->prefix("/servers")->group(function () {
-
-    Route::get("/", [ServerController::class, 'list']);
-
-    Route::post("/{ip}/download", [ServerController::class, 'download']);
-
-    Route::get("/connected", [ServerController::class, 'connected']);
-
-    Route::get("/disconnected", [ServerController::class, 'disconnected']);
-
-});
-
-Route::middleware(['token','version'])->prefix('/client')->group(function () {
-
-    Route::delete("/delete", [ClientController::class, 'delete']);
-
-    Route::get("/status", [ClientController::class, 'status']);
-
-    Route::get("/getMe", [ClientController::class, 'getMe']);
 
 });
 

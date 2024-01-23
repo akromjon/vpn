@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\ServerResource\Pages;
 
 use App\Filament\Resources\ServerResource;
-use App\Models\Server\Server;
+use Modules\Server\Models\Server;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateServer extends CreateRecord

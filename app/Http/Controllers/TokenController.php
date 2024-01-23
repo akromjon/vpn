@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GenerateTokenRequest;
-use App\Jobs\ClientLogAction;
-use App\Models\Client\Client;
-use App\Models\Client\Enum\ClientAction;
-use App\Models\Token;
+
+use Modules\Client\Models\Client;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
+use Modules\Client\Jobs\ClientLogAction;
+use Modules\Client\Models\Enum\ClientAction;
+use Modules\Client\Models\Token;
+
 class TokenController extends Controller
 {
 

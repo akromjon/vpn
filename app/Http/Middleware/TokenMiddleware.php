@@ -2,7 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Client\Client;
+use Modules\Client\Models\Client;
+
 use App\Models\Token;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
