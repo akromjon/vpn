@@ -14,12 +14,13 @@ class ClientController extends Controller
 
     public function getMe()
     {
-        $client = Client::select('last_used_at', 'status', 'uuid')->whereHas('token', function ($query) {
+        $client = Client::select('last_used_at', 'status','mode_type','uuid')->whereHas('token', function ($query) {
             return $query->where('token', request()->header('TOKEN'));
         })->first();
 
+        $client->token=request()->header('TOKEN');
+
         return response()->json([
-            'token' => request()->header('TOKEN'),
             'me' => $client,
         ]);
     }

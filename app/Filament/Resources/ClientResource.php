@@ -7,10 +7,12 @@ use App\Filament\Resources\ClientResource\RelationManagers;
 use App\Filament\Resources\ClientResource\RelationManagers\ConnectionsRelationManager;
 use App\Filament\Resources\ClientResource\RelationManagers\LogsRelationManager;
 use App\Models\Client\Client;
+use App\Models\Client\Enum\ClientModeType;
 use App\Models\Token;
 use Filament\Forms;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -19,6 +21,7 @@ use Filament\Tables\Columns\Summarizers\Count;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ClientResource extends Resource
@@ -38,6 +41,7 @@ class ClientResource extends Resource
                     ->label('UUID')
                     ->required()
                     ->maxLength(36),
+                Select::make("mode_type")->label("Mode Type")->options(ClientModeType::class),
                 TextInput::make('os_type')
                     ->label('OS Type')
                     ->required()
@@ -71,6 +75,8 @@ class ClientResource extends Resource
                 TextColumn::make('uuid')
                     ->label('UUID')
                     ->searchable(),
+
+                TextColumn::make("mode_type")->label("Mode Type")->searchable(),
 
                 TextColumn::make('status')
                     ->label('Status')
@@ -139,4 +145,5 @@ class ClientResource extends Resource
             'edit' => Pages\EditClient::route('/{record}/edit'),
         ];
     }
+
 }

@@ -19,6 +19,13 @@ class ListClients extends ListRecords
         ];
     }
 
+    // public static function getGlobalSearchResultDetails(Client $record): array
+    // {
+    //     return [
+    //         'Token' => $record->token->token,
+    //     ];
+    // }
+
     public function getTabs(): array
     {
         return [
