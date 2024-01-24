@@ -3,13 +3,12 @@
 namespace App\Filament\Resources\PritunlUserResource\Pages;
 
 use App\Filament\Resources\PritunlUserResource;
-use App\Models\Pritunl\Enum\PritunlStatus;
-use App\Models\Pritunl\Enum\PritunlUserStatus;
-use App\Models\Pritunl\PritunlUser;
+
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components\Tab;
-
+use Modules\Pritunl\Models\Enum\PritunlUserStatus;
+use Modules\Pritunl\Models\PritunlUser;
 
 class ListPritunlUsers extends ListRecords
 {

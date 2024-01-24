@@ -3,37 +3,31 @@
 namespace App\Filament\Resources;
 
 use Akromjon\DigitalOceanClient\DigitalOceanClient;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Select;
-use App\Models\Server\Enum\CloudProviderType;
+use Modules\Server\Models\Enum\CloudProviderType;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\Action;
-use App\Models\Server\Enum\ServerStatus;
-use App\Jobs\Server\Deletion;
-use App\Jobs\Server\Reboot;
-use Filament\Forms\Components\CheckboxList;
+use Modules\Server\Models\Enum\ServerStatus;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\BulkAction;
-use Filament\Tables\Columns\SelectColumn;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
 use Filament\Forms\Set;
 use App\Filament\Resources\ServerResource\Pages;
-use App\Jobs\Server\Creation;
-use App\Models\Server\Server;
+use Modules\Server\Models\Server;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Get;
 use Illuminate\Support\Facades\File;
-use Closure;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\ViewField;
 use Filament\Tables\Columns\ImageColumn;
+use Modules\Server\Jobs\Deletion;
+use Modules\Server\Jobs\Reboot;
 
 class ServerResource extends Resource
 {
@@ -89,18 +83,18 @@ class ServerResource extends Resource
                     ->live()
                     ->columns(3),
 
-                Fieldset::make('DIGITALOCEAN')
-                    ->hidden(function (Get $get) {
-                        return "digitalocean" != $get("provider");
-                    })
-                    ->schema([
-                        Select::make("config.project")->label("Project")->options(self::projectOptions())->required(),
-                        Select::make("config.region")->label("Region")->options(self::regionOptions())->required(),
-                        Select::make("config.size")->label("Size")->options(self::sizeOptions())->required(),
-                        Select::make("config.image")->label("Image")->options(self::imageOptions())->required(),
-                        Select::make("config.ssh_keys")->label("SSH Key")->options(self::sshKeyOptions())->required(),
-                    ])
-                    ->columns(3),
+                // Fieldset::make('DIGITALOCEAN')
+                //     ->hidden(function (Get $get) {
+                //         return "digitalocean" != $get("provider");
+                //     })
+                //     ->schema([
+                //         Select::make("config.project")->label("Project")->options(self::projectOptions())->required(),
+                //         Select::make("config.region")->label("Region")->options(self::regionOptions())->required(),
+                //         Select::make("config.size")->label("Size")->options(self::sizeOptions())->required(),
+                //         Select::make("config.image")->label("Image")->options(self::imageOptions())->required(),
+                //         Select::make("config.ssh_keys")->label("SSH Key")->options(self::sshKeyOptions())->required(),
+                //     ])
+                //     ->columns(3),
             ]);
     }
 

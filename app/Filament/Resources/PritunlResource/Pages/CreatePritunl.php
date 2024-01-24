@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\PritunlResource\Pages;
 
 use App\Filament\Resources\PritunlResource;
-use App\Jobs\Pritunl\Creation;
 use Filament\Resources\Pages\CreateRecord;
+use Modules\Pritunl\Jobs\Creation;
 
 class CreatePritunl extends CreateRecord
 {

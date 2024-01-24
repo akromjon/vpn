@@ -3,10 +3,9 @@
 namespace App\Filament\Resources\PritunlResource\Pages;
 
 use App\Filament\Resources\PritunlResource;
-use App\Jobs\Pritunl\Deletion;
 use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Modules\Pritunl\Jobs\Deletion;
 
 class EditPritunl extends EditRecord
 {

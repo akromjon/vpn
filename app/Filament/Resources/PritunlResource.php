@@ -2,20 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use Akromjon\Pritunl\Pritunl as PritunlService;
 use App\Filament\Resources\PritunlResource\Pages;
-use App\Jobs\Pritunl\CreateNumberOfUsers;
-use App\Jobs\Pritunl\Deletion;
-use App\Jobs\Pritunl\EnableReverseAction;
-use App\Jobs\Pritunl\InternalServerOperation;
-use App\Jobs\Pritunl\User\Synchronization;
-use App\Models\Pritunl\Enum\InternalServerStatus;
-use App\Models\Pritunl\Enum\PritunlStatus;
-use App\Models\Pritunl\Enum\PritunlSyncStatus;
-use App\Models\Pritunl\Pritunl;
-use App\Models\Server\Enum\ServerStatus;
-use App\Models\Server\Server;
-use Faker\Provider\ar_EG\Text;
+use Modules\Server\Models\Server;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\Action;
@@ -30,7 +18,15 @@ use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
-
+use Modules\Pritunl\Jobs\CreateNumberOfUsers;
+use Modules\Pritunl\Jobs\Deletion;
+use Modules\Pritunl\Jobs\EnableReverseAction;
+use Modules\Pritunl\Jobs\InternalServerOperation;
+use Modules\Pritunl\Jobs\User\Synchronization;
+use Modules\Pritunl\Models\Enum\InternalServerStatus;
+use Modules\Pritunl\Models\Enum\PritunlStatus;
+use Modules\Pritunl\Models\Enum\PritunlSyncStatus;
+use Modules\Pritunl\Models\Pritunl;
 
 class PritunlResource extends Resource
 {

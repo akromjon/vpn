@@ -3,14 +3,13 @@
 namespace App\Filament\Resources\ServerResource\Pages;
 
 use App\Filament\Resources\ServerResource;
-use App\Jobs\Server\Synchronization;
-use App\Models\Server\Enum\ServerStatus;
-use App\Models\Server\Server;
+use Modules\Server\Models\Server;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components\Tab;
+use Modules\Server\Jobs\Synchronization as JobsSynchronization;
 
 class ListServers extends ListRecords
 {
@@ -33,7 +32,7 @@ class ListServers extends ListRecords
 
                 Server::setSynchronizationStatus(true);
 
-                Synchronization::dispatch();
+                JobsSynchronization::dispatch();
 
             })->disabled(function () {
                 return Server::getSynchronizationStatus();
@@ -46,8 +45,8 @@ class ListServers extends ListRecords
     public function getTabs(): array
     {
         return [
-            "Total Active" => Tab::make()->badge(fn() => Server::where('status', ServerStatus::ACTIVE)->count())->modifyQueryUsing(function () {
-                return Server::where('status', ServerStatus::ACTIVE);
+            "Total Active" => Tab::make()->badge(fn() => Server::where('status', \Modules\Server\Models\Enum\ServerStatus::ACTIVE)->count())->modifyQueryUsing(function () {
+                return Server::where('status', \Modules\Server\Models\Enum\ServerStatus::ACTIVE);
             }),
             "All" => Tab::make()->badge(fn() => Server::count()),
         ];
