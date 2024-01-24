@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Models\Pritunl;
+namespace Modules\Pritunl\Models;
 
-use App\Models\ClientPritunlUserConnection;
-use App\Models\Pritunl\Enum\PritunlUserStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Client\Models\ClientPritunlUserConnection;
+use Modules\Pritunl\Models\Enum\PritunlUserStatus;
+use Modules\Pritunl\Models\Pritunl;
 
 class PritunlUser extends Model
 {

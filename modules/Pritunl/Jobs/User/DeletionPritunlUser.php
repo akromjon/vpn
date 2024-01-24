@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Jobs\Pritunl\User;
+namespace Modules\Pritunl\Jobs\User;
 
 use Akromjon\Pritunl\Pritunl as PritunlClient;
 use Akromjon\Telegram\App\Telegram;
-use App\Models\Pritunl\Enum\PritunlUserStatus;
-use App\Models\Pritunl\PritunlUser;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Modules\Pritunl\Models\Enum\PritunlUserStatus;
+use Modules\Pritunl\Models\PritunlUser;
 
 class DeletionPritunlUser implements ShouldQueue
 {

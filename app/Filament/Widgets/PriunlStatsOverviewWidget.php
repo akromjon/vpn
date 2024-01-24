@@ -2,11 +2,12 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Pritunl\Enum\PritunlStatus;
-use App\Models\Pritunl\Enum\PritunlSyncStatus;
-use App\Models\Pritunl\Pritunl;
+
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Modules\Pritunl\Models\Enum\PritunlStatus;
+use Modules\Pritunl\Models\Enum\PritunlSyncStatus;
+use Modules\Pritunl\Models\Pritunl;
 
 class PriunlStatsOverviewWidget extends BaseWidget
 {

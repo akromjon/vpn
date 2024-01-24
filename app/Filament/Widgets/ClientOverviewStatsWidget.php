@@ -4,10 +4,11 @@ namespace App\Filament\Widgets;
 
 use Modules\Client\Models\Client;
 
-use App\Models\Pritunl\Enum\PritunlUserStatus;
-use App\Models\Pritunl\PritunlUser;
+
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Modules\Pritunl\Models\Enum\PritunlUserStatus;
+use Modules\Pritunl\Models\PritunlUser;
 
 class ClientOverviewStatsWidget extends BaseWidget
 {

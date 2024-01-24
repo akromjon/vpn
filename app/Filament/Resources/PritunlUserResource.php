@@ -3,13 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PritunlUserResource\Pages;
-use App\Filament\Resources\PritunlUserResource\RelationManagers;
-use App\Jobs\Pritunl\User\DeletionPritunlUser;
-use App\Models\Pritunl\Enum\PritunlStatus;
-use App\Models\Pritunl\Enum\PritunlUserStatus;
-use App\Models\Pritunl\Pritunl;
-use App\Models\Pritunl\PritunlUser;
-use Filament\Forms;
+
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -17,18 +11,18 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\BooleanColumn;
-use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\IconColumn\IconColumnSize;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use Filament\Tables\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
+use Modules\Pritunl\Jobs\User\DeletionPritunlUser;
+use Modules\Pritunl\Models\Enum\PritunlUserStatus;
+use Modules\Pritunl\Models\Pritunl as ModelsPritunl;
+use Modules\Pritunl\Models\PritunlUser;
 
 class PritunlUserResource extends Resource
 {
@@ -56,7 +50,7 @@ class PritunlUserResource extends Resource
             ->schema([
                 Select::make("pritunl_id")->label("Server")
                     ->relationship("pritunl", "id")
-                    ->getOptionLabelFromRecordUsing(function (Pritunl $record) {
+                    ->getOptionLabelFromRecordUsing(function (ModelsPritunl $record) {
                         return "{$record->server->ip}-{$record->server->region}";
                     })
                     ->required(),

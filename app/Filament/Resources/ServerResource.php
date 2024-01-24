@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
 use Filament\Forms\Set;
 use App\Filament\Resources\ServerResource\Pages;
-
 use Modules\Server\Models\Server;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
@@ -84,18 +83,18 @@ class ServerResource extends Resource
                     ->live()
                     ->columns(3),
 
-                Fieldset::make('DIGITALOCEAN')
-                    ->hidden(function (Get $get) {
-                        return "digitalocean" != $get("provider");
-                    })
-                    ->schema([
-                        Select::make("config.project")->label("Project")->options(self::projectOptions())->required(),
-                        Select::make("config.region")->label("Region")->options(self::regionOptions())->required(),
-                        Select::make("config.size")->label("Size")->options(self::sizeOptions())->required(),
-                        Select::make("config.image")->label("Image")->options(self::imageOptions())->required(),
-                        Select::make("config.ssh_keys")->label("SSH Key")->options(self::sshKeyOptions())->required(),
-                    ])
-                    ->columns(3),
+                // Fieldset::make('DIGITALOCEAN')
+                //     ->hidden(function (Get $get) {
+                //         return "digitalocean" != $get("provider");
+                //     })
+                //     ->schema([
+                //         Select::make("config.project")->label("Project")->options(self::projectOptions())->required(),
+                //         Select::make("config.region")->label("Region")->options(self::regionOptions())->required(),
+                //         Select::make("config.size")->label("Size")->options(self::sizeOptions())->required(),
+                //         Select::make("config.image")->label("Image")->options(self::imageOptions())->required(),
+                //         Select::make("config.ssh_keys")->label("SSH Key")->options(self::sshKeyOptions())->required(),
+                //     ])
+                //     ->columns(3),
             ]);
     }
 

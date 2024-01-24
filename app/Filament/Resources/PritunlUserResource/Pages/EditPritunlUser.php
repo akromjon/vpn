@@ -3,10 +3,10 @@
 namespace App\Filament\Resources\PritunlUserResource\Pages;
 
 use App\Filament\Resources\PritunlUserResource;
-use App\Jobs\Pritunl\User\DeletionPritunlUser;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Modules\Pritunl\Jobs\User\DeletionPritunlUser;
 
 class EditPritunlUser extends EditRecord
 {

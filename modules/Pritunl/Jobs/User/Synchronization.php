@@ -1,13 +1,10 @@
 <?php
 
-namespace App\Jobs\Pritunl\User;
+namespace Modules\Pritunl\Jobs\User;
 
 use Akromjon\Pritunl\Pritunl as PritunlClient;
 use Akromjon\Telegram\App\Telegram;
-use App\Models\Pritunl\Enum\PritunlSyncStatus;
-use App\Models\Pritunl\Enum\PritunlUserStatus;
-use App\Models\Pritunl\Pritunl;
-use App\Models\Pritunl\PritunlUser;
+
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -15,6 +12,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Modules\Pritunl\Models\Enum\PritunlSyncStatus;
+use Modules\Pritunl\Models\Enum\PritunlUserStatus;
+use Modules\Pritunl\Models\Pritunl;
+use Modules\Pritunl\Models\PritunlUser;
 
 class Synchronization implements ShouldQueue
 {

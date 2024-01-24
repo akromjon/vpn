@@ -3,9 +3,9 @@
 namespace Modules\Client\Models;
 
 use Modules\Client\Models\Client;
-use App\Models\Pritunl\PritunlUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Pritunl\Models\PritunlUser;
 
 class ClientPritunlUserConnection extends Model
 {

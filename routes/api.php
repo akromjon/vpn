@@ -1,16 +1,12 @@
 <?php
 
 use App\Http\Controllers\SettingsController;
-use App\Http\Controllers\TokenController;
 use App\Http\Controllers\WebsiteController;
 use Illuminate\Support\Facades\Route;
+use Modules\Client\Http\Controllers\TokenController;
 use Modules\Server\Http\Controllers\ServerController;
 
-Route::middleware(['api-key'])->prefix('/token')->group(function () {
 
-    Route::post("/", [TokenController::class, 'generateToken']);
-
-});
 
 Route::middleware(['token','version'])->prefix('/settings')->group(function () {
 

@@ -3,8 +3,7 @@
 namespace App\Http\Middleware;
 
 use Modules\Client\Models\Client;
-
-use App\Models\Token;
+use Modules\Client\Models\Token;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Closure;

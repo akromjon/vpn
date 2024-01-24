@@ -1,19 +1,18 @@
 <?php
 
-namespace App\Models\Pritunl;
+namespace Modules\Pritunl\Models;
 
-use App\Models\Pritunl\Enum\InternalServerStatus;
-use App\Models\Pritunl\Enum\PritunlSyncStatus;
+
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\Pritunl\Enum\PritunlStatus;
-use App\Models\Server\Enum\ServerStatus;
 use Modules\Server\Models\Server;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
-
+use Modules\Pritunl\Models\Enum\InternalServerStatus;
+use Modules\Pritunl\Models\Enum\PritunlStatus;
+use Modules\Pritunl\Models\Enum\PritunlSyncStatus;
 
 class Pritunl extends Model
 {

@@ -5,7 +5,6 @@ namespace Modules\Client\Jobs;
 use Modules\Client\Models\Client;
 use Modules\Client\Models\Enum\ClientAction;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;

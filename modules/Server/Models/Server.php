@@ -2,12 +2,13 @@
 
 namespace Modules\Server\Models;
 
-use App\Models\Pritunl\Enum\PritunlStatus;
-use App\Models\Pritunl\Pritunl;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Cache;
+use Modules\Pritunl\Models\Enum\PritunlStatus;
+use Modules\Pritunl\Models\Pritunl;
 use Modules\Server\Jobs\Creation;
 use Modules\Server\Models\Enum\CloudProviderType;
 use Modules\Server\Models\Enum\ServerStatus;

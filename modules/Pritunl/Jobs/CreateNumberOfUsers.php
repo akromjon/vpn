@@ -1,13 +1,9 @@
 <?php
 
-namespace App\Jobs\Pritunl;
+namespace Modules\Pritunl\Jobs;
 
 use Akromjon\Pritunl\Pritunl as PritunlClient;
 use Akromjon\Telegram\App\Telegram;
-use App\Jobs\Pritunl\User\Synchronization;
-use App\Models\Pritunl\Enum\InternalServerStatus;
-use App\Models\Pritunl\Enum\PritunlStatus;
-use App\Models\Pritunl\Pritunl;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,6 +11,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Modules\Pritunl\Jobs\User\Synchronization as UserSynchronization;
+use Modules\Pritunl\Models\Enum\PritunlStatus;
+use Modules\Pritunl\Models\Pritunl;
 
 class CreateNumberOfUsers implements ShouldQueue
 {
@@ -51,7 +50,7 @@ class CreateNumberOfUsers implements ShouldQueue
                 "user_count"=>$pritunl->user_count+$this->numberOfUsers,
             ]);
 
-            Synchronization::dispatch($pritunl);
+            UserSynchronization::dispatch($pritunl)->delay(now()->addSeconds(5));
         }
         catch(\Exception $e){
 

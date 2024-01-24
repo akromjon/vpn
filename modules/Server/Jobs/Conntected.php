@@ -3,12 +3,12 @@
 namespace Modules\Server\Jobs;
 
 use Modules\Client\Models\Client;
-use App\Models\Pritunl\Enum\PritunlUserStatus;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Modules\Pritunl\Models\Enum\PritunlUserStatus;
 
 class Conntected implements ShouldQueue
 {

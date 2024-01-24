@@ -5,17 +5,15 @@ namespace Modules\Server\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Modules\Server\Jobs\Download;
 use Modules\Server\Jobs\Wait;
-
-use App\Models\Pritunl\Enum\InternalServerStatus;
-use App\Models\Pritunl\Enum\PritunlStatus;
-use App\Models\Pritunl\Enum\PritunlSyncStatus;
-use App\Models\Pritunl\PritunlUser;
 use Modules\Server\Models\Enum\ServerStatus;
 use Illuminate\Support\Facades\DB;
-use App\Models\Pritunl\Enum\PritunlUserStatus;
 use Modules\Client\Models\Enum\ClientAction;
 use Modules\Client\Models\Token;
-
+use Modules\Pritunl\Models\Enum\InternalServerStatus;
+use Modules\Pritunl\Models\Enum\PritunlStatus;
+use Modules\Pritunl\Models\Enum\PritunlSyncStatus;
+use Modules\Pritunl\Models\PritunlUser;
+use Modules\Pritunl\Models\Enum\PritunlUserStatus;
 
 class ServerController extends Controller
 {

@@ -1,17 +1,20 @@
 <?php
 
-namespace App\Jobs\Pritunl;
+namespace Modules\Pritunl\Jobs;
 
-use App\Models\Pritunl\Pritunl;
+
+
 use Akromjon\Pritunl\Pritunl as PritunlService;
 use Akromjon\Telegram\App\Telegram;
-use App\Models\Pritunl\Enum\PritunlStatus;
+
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Modules\Pritunl\Models\Enum\PritunlStatus;
+use Modules\Pritunl\Models\Pritunl;
 
 class EnableReverseAction implements ShouldQueue
 {

@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Models\Pritunl\Enum;
+namespace Modules\Pritunl\Models\Enum;
+
+
 
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;

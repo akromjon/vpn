@@ -3,21 +3,14 @@
 namespace Modules\Server\Jobs;
 
 
-use Akromjon\Pritunl\Cloud\SSH\SSH;
 use Modules\Client\Models\Client;
-
-use App\Models\Pritunl\Enum\PritunlUserStatus;
-use App\Models\Pritunl\PritunlUser;
-use App\Models\Server\Enum\ServerStatus;
-use Modules\Server\Models\Server;
-
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Filament\Notifications\Notification;
+use Modules\Pritunl\Models\Enum\PritunlUserStatus;
+use Modules\Pritunl\Models\PritunlUser;
 
 class Wait implements ShouldQueue
 {
