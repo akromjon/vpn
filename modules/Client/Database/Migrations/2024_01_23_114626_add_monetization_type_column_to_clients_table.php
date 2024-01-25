@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('clients', function (Blueprint $table) {
-            $table->string('mode_type',50)->default('free');
+            $table->string('monetization_type',50)->default('free');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('clients', function (Blueprint $table) {
-            $table->dropColumn('mode_type');
+            $table->dropColumn('monetization_type');
         });
     }
 };

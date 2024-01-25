@@ -4,7 +4,6 @@ namespace Modules\Pritunl\Jobs\User;
 
 use Akromjon\Pritunl\Pritunl as PritunlClient;
 use Akromjon\Telegram\App\Telegram;
-
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

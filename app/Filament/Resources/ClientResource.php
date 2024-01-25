@@ -6,7 +6,7 @@ use App\Filament\Resources\ClientResource\Pages;
 use App\Filament\Resources\ClientResource\RelationManagers\ConnectionsRelationManager;
 use App\Filament\Resources\ClientResource\RelationManagers\LogsRelationManager;
 use Modules\Client\Models\Client;
-use Modules\Client\Models\Enum\ClientModeType;
+use Modules\Client\Models\Enum\ClientMonetizationType;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
@@ -32,28 +32,37 @@ class ClientResource extends Resource
     {
         return $form
             ->schema([
+
                 TextInput::make('uuid')
                     ->label('UUID')
                     ->required()
                     ->maxLength(36),
-                Select::make("mode_type")->label("Mode Type")->options(ClientModeType::class),
+
+                Select::make("monetization_type")
+                    ->options(ClientMonetizationType::class)
+                    ->label("Monetization Type"),
+
                 TextInput::make('os_type')
                     ->label('OS Type')
                     ->required()
                     ->maxLength(20),
+
                 TextInput::make('os_version')
                     ->label('OS Version')
                     ->required()
                     ->maxLength(20),
+
                 TextInput::make('model')
                     ->label('Model')
                     ->required()
                     ->maxLength(50),
+
                 TextInput::make('status')
                     ->label('Status')
                     ->required()
                     ->maxLength(50),
                 TextInput::make('last_used_at'),
+
                 Fieldset::make('token')->label("Token")->relationship('token')->schema([
                     TextInput::make('token')->readOnly()->label('Value'),
                     DateTimePicker::make('created_at')->readOnly()->label('Created At'),
@@ -71,7 +80,7 @@ class ClientResource extends Resource
                     ->label('UUID')
                     ->searchable(),
 
-                TextColumn::make("mode_type")->label("Mode Type")->searchable(),
+                TextColumn::make("monetization_type")->label("Monetization Type")->searchable(),
 
                 TextColumn::make('status')
                     ->label('Status')
