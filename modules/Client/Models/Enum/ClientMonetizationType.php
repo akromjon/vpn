@@ -7,16 +7,16 @@ use Filament\Support\Contracts\HasLabel;
 enum ClientMonetizationType: string implements HasLabel
 {
     case FREE = "free";
-    case INTERACTIVE_ADS="interactive_ads";
-    case VIDEO_ADS="video_ads";
+    case REWARDED="rewarded";
+    case APP_OPEN="app_open";
     case SUBSCRIPTION = "subscription";
 
     public function getLabel(): ?string
     {
         return match ($this) {
             self::FREE => "FREE",
-            self::INTERACTIVE_ADS => "INTERACTIVE_ADS",
-            self::VIDEO_ADS => "VIDEO_ADS",
+            self::REWARDED => "REWARDED",
+            self::APP_OPEN => "APP_OPEN",
             self::SUBSCRIPTION => "SUBSCRIPTION"
         };
     }
