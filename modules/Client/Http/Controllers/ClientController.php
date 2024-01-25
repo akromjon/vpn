@@ -12,7 +12,7 @@ class ClientController extends Controller
 
     public function getMe()
     {
-        $client = Client::select('last_used_at', 'status','monetization_type','uuid')->whereHas('token', function ($query) {
+        $client = Client::select('last_used_at', 'status','monetization_type as ad_type','uuid')->whereHas('token', function ($query) {
             return $query->where('token', request()->header('TOKEN'));
         })->first();
 
