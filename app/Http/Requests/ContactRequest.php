@@ -19,7 +19,6 @@ class ContactRequest extends FormRequest
             'subject' => 'required|string|max:255|in:feedback,billing,technical,other',
             'email' => 'required|email|max:255',
             'message' => 'required|string|max:5000',
-            'ip_address' => 'required|ip',
         ];
     }
 }
