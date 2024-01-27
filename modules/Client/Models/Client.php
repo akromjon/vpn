@@ -15,7 +15,9 @@ class Client extends Model
     use HasFactory;
 
     protected $casts = [
-        'device_info' => 'array'
+        'device_info' => 'array',
+        'monetization_type' => 'array',
+        'ad_type'=>'array',
     ];
 
     public function token(): HasOne

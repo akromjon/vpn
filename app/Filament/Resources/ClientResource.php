@@ -40,6 +40,7 @@ class ClientResource extends Resource
 
                 Select::make("monetization_type")
                     ->options(ClientMonetizationType::class)
+                    ->multiple()
                     ->label("Monetization Type"),
 
                 TextInput::make('os_type')

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('clients', function (Blueprint $table) {
-            $table->string('monetization_type',50)->default('free');
+            $table->string('monetization_type')->default(json_encode(['free']));
         });
     }
 
