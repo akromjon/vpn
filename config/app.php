@@ -196,6 +196,4 @@ return [
         "ios" => ["0.5.0", "0.1.1"],
     ],
 
-    "dns_provider" => env("DNS_PROVIDER", "default"),
-
 ];

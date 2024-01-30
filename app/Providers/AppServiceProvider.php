@@ -26,14 +26,6 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        if (config("app.dns_provider") === "cloudflare") {
-
-            Request::setTrustedProxies(
-                ['REMOTE_ADDR'],
-                Request::HEADER_X_FORWARDED_FOR
-            );
-        }
-
         Model::unguard();
     }
 }
