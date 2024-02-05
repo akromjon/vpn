@@ -126,7 +126,7 @@ abstract class BaseHttp
             "name" => $name,
             "network" => "192.168.231.0/24",
             "port" => 443,
-            "protocol" => "udp",
+            "protocol" => "tcp",
             "dh_param_bits" => 2048,
             "ipv6_firewall" => true,
             "dns_servers" => [
@@ -175,7 +175,7 @@ abstract class BaseHttp
             "dns_mapping" => false,
             "debug" => false,
             "pre_connect_msg" => null,
-            "mss_fix" => null,
+            "mss_fix" => true,
             "multihome" => false
         ];
     }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use Modules\Client\Models\ClientPritunlUserConnection;
 use Modules\Pritunl\Models\Enum\PritunlUserStatus;
 use Modules\Pritunl\Models\Pritunl;
@@ -21,23 +22,31 @@ class PritunlUser extends Model
     {
         static::updated(function ($model) {
 
-            if(!$model->isDirty('is_online') ||  $model->getOriginal('is_online') == $model->is_online){
+            DB::transaction(function () use ($model) {
 
-                return;
+                if (!$model->isDirty('is_online') || $model->getOriginal('is_online') == $model->is_online) {
 
-            }
+                    return;
 
-            $model->is_online ? $model->incrementOnlineUserCount() : $model->decrementOnlineUserCount();
+                }
+
+                $model->is_online ? $model->incrementOnlineUserCount() : $model->decrementOnlineUserCount();
+
+            });
 
         });
 
         static::deleting(function ($model) {
 
-            if ($model->is_online) {
+            DB::transaction(function () use ($model) {
 
-                $model->decrementOnlineUserCount();
+                if ($model->is_online) {
 
-            }
+                    $model->decrementOnlineUserCount();
+
+                }
+
+            });
 
         });
     }
@@ -49,7 +58,7 @@ class PritunlUser extends Model
 
     public function decrementOnlineUserCount()
     {
-        $pritunl=$this->pritunl->refresh();
+        $pritunl = $this->pritunl;
         // keep eye on this
         if ($pritunl->online_user_count > 0) {
             $pritunl->decrement('online_user_count');
