@@ -9,3 +9,6 @@ Route::middleware(['token','version'])->prefix("/servers")->group(function () {
 
     Route::post("/{ip}/download", [ServerController::class, 'download']);
 });
+
+Route::middleware('pritunl-user-action')->get("/action", [ServerController::class, 'pritunlUserAction']);
+

@@ -14,6 +14,4 @@ Route::middleware(['token','version'])->prefix('/settings')->group(function () {
 
 });
 
-Route::middleware('pritunl-user-action')->post("/action", [ServerController::class, 'pritunlUserAction']);
-
 Route::post("/contact",[WebsiteController::class,'contact']);
