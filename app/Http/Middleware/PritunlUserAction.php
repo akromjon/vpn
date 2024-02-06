@@ -20,14 +20,21 @@ class PritunlUserAction
 
         }
 
-        $server=Server::where("ip", $request->ip())->first();
+        $token=$request->header("Token");
 
-        if(!$server) {
+        if(!$token) {
 
             return response()->json([
-                'message' => 'Server not found!'
-            ], 404);
+                'message' => 'Token not found!'
+            ], 401);
 
+        }
+
+        if($token!==config("app.pritunl.token")) {
+
+            return response()->json([
+                'message' => 'Token not valid!'
+            ], 401);
         }
 
         return $next($request);
