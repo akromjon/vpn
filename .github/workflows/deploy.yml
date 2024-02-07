@@ -6,9 +6,9 @@ jobs:
       name: deploy to staging
       runs-on: ubuntu 22.04
       steps:
-        name: Deploy
+      - name: Deploy
         uses: appleboy/ssh-action@v0.1.8
-          with:
+        with:
             host: ${{ secrets.STAGING_HOST }}
             username: staging
             key: ${{ secrets.STAGING_PRIVATE_KEY }}
