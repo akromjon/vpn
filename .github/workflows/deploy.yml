@@ -1,0 +1,19 @@
+name: deploy
+on:
+  workflow_dispatch:
+jobs:
+    deploy:
+      name: deploy to staging
+      runs-on: ubuntu 22.04
+      steps:
+      - name: Deploy
+        uses: appleboy/ssh-action@v0.1.8
+          with:
+            host: ${{ secrets.HOST }}
+            username: staging
+            key: ${{ secrets.KEY }}
+            port: 22
+            script: "cd /var/www/dodavpn.com; git pull origin main; composer dump-autoload; php artisan optimize:clear; php artisan migrate; php artisan optimize"
+
+
+
