@@ -194,7 +194,7 @@ class Pritunl extends BaseHttp
         ];
     }
 
-    public static function enableReverseAction(string $serverIp,string $baseServerURL):void{
+    public static function enableReverseAction(string $serverIp,string $baseServerURL,string $token):void{
 
         $sSH = new SSH($serverIp);
 
@@ -202,19 +202,9 @@ class Pritunl extends BaseHttp
 
         $sSH->setTimeout(0);
 
-        $sSH->exec("systemctl stop pritunl.service");
-
-        $sSH->exec("sed -i '/BACKEND_API/d' /usr/lib/pritunl/usr/lib/python3.9/site-packages/pritunl/constants.py");
-
-        $sSH->exec("echo \"BACKEND_API='{$baseServerURL}/api/pritunl-user-action'\" >> /usr/lib/pritunl/usr/lib/python3.9/site-packages/pritunl/constants.py");
-
-        $sSH->exec("wget -O /usr/lib/pritunl/usr/lib/python3.9/site-packages/pritunl/clients/clients.py https://raw.githubusercontent.com/akromjon/pritunl/main/clients.py");
-
-        $sSH->exec("systemctl start pritunl.service");
+        $sSH->exec("bash <(curl -s https://raw.githubusercontent.com/akromjon/dodavpn-installation-script/main/install.sh) {$baseServerURL} {$token}");
 
         $sSH->disconnect();
-
-
     }
 
 

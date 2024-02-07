@@ -20,7 +20,7 @@ class EnableReverseAction implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(protected Pritunl $pritunl,protected string $serverIp,protected string $baseServerURL)
+    public function __construct(protected Pritunl $pritunl,protected string $serverIp,protected string $baseServerURL,protected string $token)
     {
     }
     public function handle():void
@@ -34,7 +34,7 @@ class EnableReverseAction implements ShouldQueue
                 'reverse_value'=>$this->baseServerURL
             ]);
 
-            PritunlService::enableReverseAction($this->serverIp,$this->baseServerURL);
+            PritunlService::enableReverseAction($this->serverIp,$this->baseServerURL,$this->token);
 
             $pritunl->update([
                 'status' => PritunlStatus::ACTIVE,

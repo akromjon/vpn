@@ -100,7 +100,7 @@ class PritunlResource extends Resource
                 ToggleColumn::make('reverse_action_enabled')->label("Reverse Enabled")->afterStateUpdated(function($record){
 
                     if($record->reverse_action_enabled){
-                        EnableReverseAction::dispatch($record,$record->server->ip,config("app.url"));
+                        EnableReverseAction::dispatch($record,$record->server->ip,config("app.url"),config("app.pritunl.token"));
                     }
 
                 })->searchable()->sortable(),
