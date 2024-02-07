@@ -9,6 +9,7 @@ enum ClientMonetizationType: string implements HasLabel
     case FREE = "free";
     case REWARDED="rewarded";
     case APP_OPEN="app_open";
+    case INTERSTITIAL = "interstitial";
     case SUBSCRIPTION = "subscription";
 
     public function getLabel(): ?string
@@ -17,7 +18,8 @@ enum ClientMonetizationType: string implements HasLabel
             self::FREE => "FREE",
             self::REWARDED => "REWARDED",
             self::APP_OPEN => "APP_OPEN",
-            self::SUBSCRIPTION => "SUBSCRIPTION"
+            self::SUBSCRIPTION => "SUBSCRIPTION",
+            self::INTERSTITIAL => "INTERSTITIAL",
         };
     }
 }
