@@ -13,7 +13,7 @@ jobs:
             username: staging
             key: ${{ secrets.STAGING_PRIVATE_KEY }}
             port: 22
-            script: "cd /var/www/dodavpn.com; git pull origin main; composer dump-autoload; php artisan optimize:clear; php artisan migrate; php artisan optimize"
+            script: "cd /var/www/dodavpn.com; git pull origin main; composer dump-autoload; php artisan optimize:clear; php artisan migrate"
 
 
 
