@@ -9,9 +9,9 @@ jobs:
       - name: Deploy
         uses: appleboy/ssh-action@v0.1.8
           with:
-            host: ${{ secrets.HOST }}
+            host: ${{ secrets.STAGING_HOST }}
             username: staging
-            key: ${{ secrets.KEY }}
+            key: ${{ secrets.STAGING_PRIVATE_KEY }}
             port: 22
             script: "cd /var/www/dodavpn.com; git pull origin main; composer dump-autoload; php artisan optimize:clear; php artisan migrate; php artisan optimize"
 
