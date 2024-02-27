@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Modules\Pritunl\Models\Enum\PritunlStatus;
 use Modules\Pritunl\Models\Enum\PritunlSyncStatus;
 use Modules\Pritunl\Models\Enum\PritunlUserStatus;
 use Modules\Pritunl\Models\Pritunl;
@@ -29,6 +30,7 @@ class Synchronization implements ShouldQueue
         try {
 
             $this->pritunl->update([
+                "status" => PritunlStatus::INACTIVE,
                 "sync_status" => PritunlSyncStatus::SYNCING,
             ]);
 
@@ -64,6 +66,7 @@ class Synchronization implements ShouldQueue
         } catch (\Exception $e) {
 
             $this->pritunl->update([
+                "status"=>PritunlStatus::INACTIVE,
                 "sync_status" => PritunlSyncStatus::FAILED_TO_SYNC,
             ]);
 

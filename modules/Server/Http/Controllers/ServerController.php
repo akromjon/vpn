@@ -120,6 +120,31 @@ class ServerController extends Controller
         return response()->download($server->vpn_config_path, 'vpn_config.ovpn');
     }
 
+    public function pritunlUserAction(PritunlActionRequest $request)
+    {
+        $request = $request->validated();
+
+        $state = $request['state'];
+
+        $pritunlUser = PritunlUser::where("internal_user_id", $request['pritunl_user_id'])->first();
+
+        if (!$pritunlUser) {
+
+            return response()->json(["message" => "Pritunl user not found"], 404);
+
+        }
+
+        $client = Client::where("uuid", $request['client_uuid'])->first();
+
+        if (!$client) {
+
+            return response()->json(["message" => "Client not found"], 404);
+        }
+
+        return $this->$state($client, $pritunlUser->id);
+
+    }
+
     private function cleanFile(string $filePath)
     {
         $fileContents = File::get($filePath);
@@ -200,28 +225,5 @@ class ServerController extends Controller
 
         return response()->json(["message" => "Disconnected"]);
     }
-    public function pritunlUserAction(PritunlActionRequest $request)
-    {
-        $request = $request->validated();
 
-        $state = $request['state'];
-
-        $pritunlUser = PritunlUser::where("internal_user_id", $request['pritunl_user_id'])->first();
-
-        if (!$pritunlUser) {
-
-            return response()->json(["message" => "Pritunl user not found"], 404);
-
-        }
-
-        $client = Client::where("uuid", $request['client_uuid'])->first();
-
-        if (!$client) {
-
-            return response()->json(["message" => "Client not found"], 404);
-        }
-
-        return $this->$state($client, $pritunlUser->id);
-
-    }
 }
