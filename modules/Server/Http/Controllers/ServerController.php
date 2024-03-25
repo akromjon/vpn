@@ -18,34 +18,20 @@ use Modules\Pritunl\Models\PritunlUser;
 use Modules\Pritunl\Models\Enum\PritunlUserStatus;
 use Modules\Server\Http\Requests\PritunlActionRequest;
 use Illuminate\Support\Facades\File;
-
+use Modules\Pritunl\Repository\PritunlUserRepository;
+use Modules\Server\Repository\ServerRepository;
 
 class ServerController extends Controller
 {
+
+    public function __construct(protected ServerRepository $ServerRepository, protected PritunlUserRepository $pritunlUserRepository)
+    {
+    }
     public function list()
     {
         $this->act(Token::getCachedClientUuid(), ClientAction::LIST_SERVERS);
 
-        $selectColumns = [
-            "pritunls.online_user_count as online",
-            "servers.ip as ip",
-            "servers.flag as flag",
-            "servers.name as name",
-            "servers.country as country",
-            "servers.city as city",
-            "servers.country_code as country_code",
-        ];
-
-        $results = DB::table("pritunls")
-            ->select($selectColumns)
-            ->join("servers", "pritunls.server_id", "=", "servers.id")
-            ->where("servers.status", ServerStatus::ACTIVE)
-            ->where("pritunls.internal_server_status", InternalServerStatus::ONLINE)
-            ->where("pritunls.sync_status", PritunlSyncStatus::SYNCED)
-            ->where("pritunls.status", PritunlStatus::ACTIVE)
-            ->whereColumn("pritunls.online_user_count", "<>", "pritunls.user_count")
-            ->orderBy("pritunls.online_user_count")
-            ->get();
+        $results = $this->ServerRepository->list();
 
         if ($results->isEmpty()) {
 
@@ -53,28 +39,9 @@ class ServerController extends Controller
                 "message" => "Servers not found",
                 'code' => 3000
             ], 404);
-
         }
 
         return response()->json($results);
-    }
-
-    private function getServer(string $ip)
-    {
-        return DB::table("servers")
-            ->select("pritunl_users.vpn_config_path as vpn_config_path", "pritunl_users.id as pritunl_user_id")
-            ->join("pritunls", "pritunls.server_id", "=", "servers.id")
-            ->join("pritunl_users", "pritunl_users.pritunl_id", "=", "pritunls.id")
-            ->where("servers.status", ServerStatus::ACTIVE)
-            ->where("pritunls.internal_server_status", InternalServerStatus::ONLINE)
-            ->where("pritunls.sync_status", PritunlSyncStatus::SYNCED)
-            ->where("pritunls.status", PritunlStatus::ACTIVE)
-            ->where("pritunl_users.server_ip", $ip)
-            ->where("pritunl_users.is_online", false)
-            ->where("pritunl_users.disabled", false)
-            ->where("pritunl_users.status", PritunlUserStatus::ACTIVE)
-            ->where("servers.ip", $ip)
-            ->first();
     }
 
     public function download(string $ip)
@@ -83,19 +50,16 @@ class ServerController extends Controller
 
         $server = cache()->remember("{$client->uuid}:{$ip}:pritunl_users", 30, function () use ($client, $ip) {
 
-            $server = $this->getServer($ip);
+            $server = $this->ServerRepository->get($ip);
 
             if (!$server) {
 
                 return null;
-
             }
 
             $this->act(Token::getCachedClientUuid(), ClientAction::DOWNLOADED_CONFIG);
 
-            $pritunlUser = PritunlUser::where("id", $server->pritunl_user_id)->first();
-
-            $pritunlUser->update(["status" => PritunlUserStatus::IN_USE]);
+            $pritunlUser=$this->pritunlUserRepository->updateToInUse($server->pritunl_user_id);
 
             $this->cleanFile($server->vpn_config_path);
 
@@ -104,7 +68,6 @@ class ServerController extends Controller
             Wait::dispatch($pritunlUser, $client)->delay(now()->addSeconds(30));
 
             return $server;
-
         });
 
         if (empty($server)) {
@@ -131,7 +94,6 @@ class ServerController extends Controller
         if (!$pritunlUser) {
 
             return response()->json(["message" => "Pritunl user not found"], 404);
-
         }
 
         $client = Client::where("uuid", $request['client_uuid'])->first();
@@ -142,7 +104,6 @@ class ServerController extends Controller
         }
 
         return $this->$state($client, $pritunlUser->id);
-
     }
 
     private function cleanFile(string $filePath)
@@ -167,7 +128,7 @@ class ServerController extends Controller
         File::put($filePath, $newContents);
     }
 
-    private function connected(Client $client,int $pritunlId)
+    private function connected(Client $client, int $pritunlId)
     {
         $lastConnection = $client->connections->last();
 
@@ -183,7 +144,7 @@ class ServerController extends Controller
 
         $client->update(['last_used_at' => now()]);
 
-        $lastConnection=$client->connections()->create([
+        $lastConnection = $client->connections()->create([
             "pritunl_user_id" => $pritunlId,
             "status" => 'connected',
             "connected_at" => now(),
@@ -198,7 +159,7 @@ class ServerController extends Controller
         return response()->json(["message" => "Connected"]);
     }
 
-    private function disconnected(Client $client,int $pritunlId=0)
+    private function disconnected(Client $client, int $pritunlId = 0)
     {
         $lastConnection = $client->connections->last();
 
@@ -225,5 +186,4 @@ class ServerController extends Controller
 
         return response()->json(["message" => "Disconnected"]);
     }
-
 }
