@@ -4,4 +4,4 @@ This is a VPN (Virtual Private Network) application built using the Laravel fram
 
 📱 Android app - [download](https://play.google.com/store/apps/details?id=com.dodavpn.app&pcampaignid=web_share "download")
 
-Credits: @II11II @otabek
+Credits: [@islom](https://github.com/II11II "@islom") [@otabek](https://github.com/otabek "@otabek")
