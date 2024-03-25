@@ -1,48 +1,7 @@
-## DigitalOceanClient Class
+DODA VPN - [dodavpn.com](https://dodavpn.com "dodavpn.com")
 
-The `DigitalOceanClient` class is a part of our application designed to interact with the DigitalOcean API. It provides a convenient way to perform various operations on DigitalOcean resources.
-### Examples:
-Creating an instance of DigitalOceanClient Class.
-```php
-$client=DigitalOceanClient::connect(env('DIGITAL_OCEAN_TOKEN'));
-```
-###### Projects - Supports CRUD actions and Project Resources: getting default project, assigning project resources and droplets as well.
-```php
-$client->projects():array;
+This is a VPN (Virtual Private Network) application built using the Laravel framework and Flutter and Golang, OpenVPN.
 
-$client->createProject(
-    string $name,
-    string $purpose="",
-    string $description="",
-    string $environment=""
-):array;
+📱 Android app - [download](https://play.google.com/store/apps/details?id=com.dodavpn.app&pcampaignid=web_share "download")
 
-$client->project(string $projectId):array;
-
-$client->updateProject(
-    string $projectId, 
-    string $name = "", 
-    string $purpose = "", 
-    string $description = "", 
-    string $environment = "", 
-    bool $isDefault = false
-):array;
-
-$client->deleteProject(string $projectId):array;
-
-$client->projectResources(string $projectId):array;
-
-$client->assignProjectResources(
-string $projectId, 
-array $resources,
-):array;
-
-$client->assignProjectDroplets(
-string $projectId, 
-array $dropletIds,
-);
-
-$client->defaultProject():array;
-```
-
-
+Credits: @II11II @otabek
