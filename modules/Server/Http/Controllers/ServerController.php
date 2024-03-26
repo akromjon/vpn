@@ -3,21 +3,12 @@
 namespace Modules\Server\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Modules\Server\Jobs\Download;
-use Modules\Server\Jobs\Wait;
-use Modules\Server\Models\Enum\ServerStatus;
-use Illuminate\Support\Facades\DB;
+
 use Modules\Client\Models\Client;
-use Modules\Client\Models\ClientPritunlUserConnection;
 use Modules\Client\Models\Enum\ClientAction;
 use Modules\Client\Models\Token;
-use Modules\Pritunl\Models\Enum\InternalServerStatus;
-use Modules\Pritunl\Models\Enum\PritunlStatus;
-use Modules\Pritunl\Models\Enum\PritunlSyncStatus;
 use Modules\Pritunl\Models\PritunlUser;
-use Modules\Pritunl\Models\Enum\PritunlUserStatus;
 use Modules\Server\Http\Requests\PritunlActionRequest;
-use Illuminate\Support\Facades\File;
 use Modules\Pritunl\Repository\PritunlUserRepository;
 use Modules\Server\Repository\ServerRepository;
 
