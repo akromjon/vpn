@@ -12,7 +12,7 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
 
-    protected function act(string $clientUuid, ClientAction $clientAction): void
+    protected function log(string $clientUuid, ClientAction $clientAction): void
     {
         ClientLogAction::dispatch($clientUuid, request()->ip(), $clientAction);
     }

@@ -58,7 +58,7 @@ class ClientController extends Controller
 
         $client->update(['status' => 'deleted']);
 
-        $this->act(Token::getCachedClientUuid(), ClientAction::DELETED_APP);
+        $this->log(Token::getCachedClientUuid(), ClientAction::DELETED_APP);
 
         return response()->json(["message" => "Deleted"]);
     }

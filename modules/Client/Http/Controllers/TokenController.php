@@ -28,7 +28,7 @@ class TokenController extends Controller
             'name' => $request->name,
         ]);
 
-        ClientLogAction::dispatch($client->uuid, $request->ip(), ClientAction::TOKEN_GENERATED);
+        $this->log($client->uuid,ClientAction::TOKEN_GENERATED);
 
         $token = $client->generateToken();
 

@@ -22,7 +22,7 @@ class ServerController extends Controller
     }
     public function list()
     {
-        $this->act(Token::getCachedClientUuid(), ClientAction::LIST_SERVERS);
+        $this->log(Token::getCachedClientUuid(), ClientAction::LIST_SERVERS);
 
         $results = $this->ServerRepository->list();
 
@@ -43,7 +43,7 @@ class ServerController extends Controller
 
         $server = $this->ServerRepository->downloadConfig($client, $ip);
 
-        $this->act(Token::getCachedClientUuid(), ClientAction::DOWNLOADED_CONFIG);
+        $this->log(Token::getCachedClientUuid(), ClientAction::DOWNLOADED_CONFIG);
 
         if (empty($server)) {
 
