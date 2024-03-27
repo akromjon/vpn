@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ClientResource\Pages;
 use App\Filament\Resources\ClientResource\RelationManagers\ConnectionsRelationManager;
 use App\Filament\Resources\ClientResource\RelationManagers\LogsRelationManager;
+use Illuminate\Support\Str;
 use Modules\Client\Models\Client;
 use Modules\Client\Models\Enum\ClientMonetizationType;
 use Filament\Forms\Components\DateTimePicker;
@@ -79,39 +80,40 @@ class ClientResource extends Resource
 
                 TextColumn::make('uuid')
                     ->label('UUID')
+                    ->formatStateUsing(function ($state, Client $client) {
+                        return Str::limit($client->uuid, 10, '...');
+                    })
+                    ->copyable()
                     ->searchable(),
 
-                TextColumn::make("monetization_type")->label("Monetization Type")->searchable(),
+                TextColumn::make("monetization_type")->label("Mon Type")->searchable(),
 
                 TextColumn::make('status')
                     ->label('Status')
-                    ->color(fn(Client $client) => match ($client->status) {
+                    ->color(fn (Client $client) => match ($client->status) {
                         'active' => 'success',
                         'inactive' => 'danger',
                     })
                     ->badge()
                     ->searchable(),
 
-                TextColumn::make('logs_count')
-                    ->counts('logs')
-                    ->label('Total Logs'),
-
-                TextColumn::make('connections_count')
-                    ->counts('connections')
-                    ->label('Total Connections'),
+                TextColumn::make("status")
+                    ->label('Logs')
+                    ->formatStateUsing(function ($state, Client $client) {
+                        return "L: " . $client->logs->count() . ' C: ' . $client->connections->count();
+                    }),
 
                 TextColumn::make('os_type')
                     ->label('OS Type')
-                    ->searchable(),
-
-                TextColumn::make('os_version')
-                    ->label('OS Version')
                     ->searchable(),
 
                 TextColumn::make('model')
                     ->label('Model')
                     ->searchable(),
 
+                TextColumn::make('created_at')
+                    ->label('Registered At')
+                    ->searchable()->dateTime(),
                 TextColumn::make('last_used_at')
                     ->label('Last Used At')
                     ->searchable()->dateTime(),
@@ -150,5 +152,4 @@ class ClientResource extends Resource
             'edit' => Pages\EditClient::route('/{record}/edit'),
         ];
     }
-
 }
