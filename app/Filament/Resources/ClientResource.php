@@ -97,10 +97,15 @@ class ClientResource extends Resource
                     ->badge()
                     ->searchable(),
 
-                TextColumn::make("status")
+                TextColumn::make("logs")
                     ->label('Logs')
                     ->formatStateUsing(function ($state, Client $client) {
                         return "L: " . $client->logs->count() . ' C: ' . $client->connections->count();
+                    }),
+
+                TextColumn::make("logs.city")->label('Location')
+                    ->formatStateUsing(function ($state, Client $client) {
+                        return $client->logs?->first()?->country_code . ", " . $client->logs?->first()?->city;
                     }),
 
                 TextColumn::make('os_type')
