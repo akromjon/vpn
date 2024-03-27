@@ -7,7 +7,6 @@ use Modules\Client\Models\Client;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 use Modules\Client\Http\Requests\GenerateTokenRequest;
-use Modules\Client\Jobs\ClientLogAction;
 use Modules\Client\Models\Enum\ClientAction;
 use Modules\Client\Models\Token;
 

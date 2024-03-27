@@ -39,7 +39,8 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
-            "Modules\\": "modules/"
+            "Modules\\": "modules/",
+            "Akromjon\\DBBackup\\":"packages/akromjon/DBBackup/src"
         }
     },
     "autoload-dev": {
