@@ -11,27 +11,49 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 class Backup
 {
     protected static string $dir = "backups";
-    public static function run(): bool|ProcessFailedException
+    protected string $fullPath = "";
+    protected bool $status;
+    public function handle(): bool|ProcessFailedException
     {
         $process = new Process([
             'mysqldump',
             '-u' . config('database.connections.mysql.username'),
             '-p' . config('database.connections.mysql.password'),
             config('database.connections.mysql.database'),
-            '--result-file=' . self::getDir()
+            '--result-file=' . $this->getDir()
         ]);
 
         $process->run();
 
-        if (!$result = $process->isSuccessful()) {
+        $this->status = $process->isSuccessful();
+
+        if (!$this->status) {
 
             throw new ProcessFailedException($process);
         }
 
-        return $result;
+        return $this->status;
     }
 
-    public static function getDir()
+    public function isSuccessful(): bool
+    {
+        return $this->status;
+    }
+    public static function run(): Backup
+    {
+        $self = new self();
+
+        $self->handle();
+
+        return $self;
+    }
+
+    public function getFullPath(): string
+    {
+        return $this->fullPath;
+    }
+
+    protected function getDir(): string
     {
         $path = storage_path(self::$dir);
 
@@ -40,6 +62,8 @@ class Backup
             File::makeDirectory($path);
         }
 
-        return $path . "/" . now()->format('d_m_Y_h:m:s') . ".sql";
+        $this->fullPath = $path . "/" . now()->format('d_m_Y_h:m:s') . ".sql";
+
+        return $this->fullPath;
     }
 }

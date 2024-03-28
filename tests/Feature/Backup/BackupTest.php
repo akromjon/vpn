@@ -6,7 +6,9 @@ class BackupTest extends Tests\TestCase
 {
     public function test_it_can_get_backup_dir()
     {
-        $dir = Backup::getDir();
+        $bu=new Backup;
+
+        $dir =$bu->getFullPath();
 
         $this->assertIsString($dir);
     }
@@ -15,6 +17,8 @@ class BackupTest extends Tests\TestCase
     {
         $cmd=Backup::run();
 
-        $this->assertTrue($cmd);
+        $this->assertTrue($cmd->isSuccessful());
+
+        $this->assertIsString($cmd->getFullPath());
     }
 }
