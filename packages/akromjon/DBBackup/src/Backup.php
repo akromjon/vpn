@@ -4,7 +4,6 @@ namespace Akromjon\DBBackup;
 
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Process\Process;
-use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
 
@@ -39,7 +38,7 @@ class Backup
     {
         return $this->status;
     }
-    public static function run(): Backup
+    public static function run(): self
     {
         $self = new self();
 
