@@ -48,7 +48,7 @@ class ServerResource extends Resource
             ->toArray();
     }
 
-    private static function countries(): array
+    public static function countries(): array
     {
         return json_decode(File::get(public_path("json/countries.json"), true), true);
     }

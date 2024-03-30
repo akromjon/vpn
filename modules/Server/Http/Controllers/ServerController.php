@@ -43,8 +43,6 @@ class ServerController extends Controller
 
         $server = $this->ServerRepository->downloadConfig($client, $ip);
 
-        $this->log(Token::getCachedClientUuid(), ClientAction::DOWNLOADED_CONFIG);
-
         if (empty($server)) {
 
             cache()->forget("{$client->uuid}:{$ip}:pritunl_users");
@@ -54,6 +52,8 @@ class ServerController extends Controller
                 'code' => 3000
             ], 404);
         }
+
+        $this->log(Token::getCachedClientUuid(), ClientAction::DOWNLOADED_CONFIG);
 
         return response()->download($server->vpn_config_path, 'vpn_config.ovpn');
     }
