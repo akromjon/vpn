@@ -37,7 +37,7 @@ class ClientWidgetBarChart extends ChartWidget
 
             $country = ($countries->where('code', $row->country_code)->first());
 
-            $row->country = isset($country['name']) ? $country['name'] : '';
+            $row->country = isset($country['name']) ? $country['name'] : 'unknow_country';
 
             $data['data'][] = $row->client_count;
 
