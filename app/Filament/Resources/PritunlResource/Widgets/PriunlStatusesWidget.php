@@ -25,7 +25,7 @@ class PriunlStatusesWidget extends BaseWidget
             )
             ->columns([
                 TextColumn::make("server.ip")->copyable()->label("Server")->searchable()->sortable(),
-                TextColumn::make("online_user_count")->searchable()->sortable()->label("Online"),
+                TextColumn::make("online_user_count")->formatStateUsing(fn($state)=>$state===0 ? "-": $state )->searchable()->sortable()->label("Online"),
                 TextColumn::make("server")->formatStateUsing(function ($state, Pritunl $pritunl) {
                     return $pritunl?->server?->city . ", " . $pritunl?->server?->country;
                 })->label("Country")->searchable()->sortable(),
