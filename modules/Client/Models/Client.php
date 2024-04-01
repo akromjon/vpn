@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
+use Modules\Client\Models\Enum\ClientAction;
 
 class Client extends Model
 {
@@ -41,6 +42,10 @@ class Client extends Model
     public function logs(): HasMany
     {
         return $this->hasMany(ClientLog::class)->orderBy('created_at', 'desc');
+    }
+
+    public function oldest(){
+        return $this->hasMany(ClientLog::class)->where('action',ClientAction::TOKEN_GENERATED);
     }
 
     public function connections(): HasMany

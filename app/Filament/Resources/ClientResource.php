@@ -104,7 +104,8 @@ class ClientResource extends Resource
 
                 TextColumn::make("logs.city")->label('Location')
                     ->formatStateUsing(function ($state, Client $client) {
-                        return $client->logs?->first()?->country_code . ", " . $client->logs?->first()?->city;
+                        $log = $client?->oldest()?->first();
+                        return $log?->country_code . ", " . $log?->city;
                     }),
 
                 TextColumn::make('os_type')
