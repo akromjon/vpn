@@ -31,6 +31,6 @@ class PriunlStatusesWidget extends BaseWidget
                 })->label("Country")->searchable()->sortable(),
                 TextColumn::make("status")->label("Status")->badge()->searchable()->sortable(),
 
-            ])->poll(15);
+            ])->poll("5s");
     }
 }
