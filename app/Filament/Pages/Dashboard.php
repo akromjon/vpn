@@ -2,6 +2,8 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Resources\PritunlResource\Widgets\PriunlStatusesWidget;
+use App\Filament\Resources\ServerResource\Widgets\ServerStatuses;
 use App\Filament\Widgets\ClientCountryWidget;
 use App\Filament\Widgets\ClientLineChartWidget;
 use App\Filament\Widgets\ClientOverviewStatsWidget;
@@ -16,9 +18,9 @@ class Dashboard extends PagesDashboard
     {
         return [
             ClientOverviewStatsWidget::class,
+            PriunlStatusesWidget::class,
             ClientLineChartWidget::class,
             ClientWidgetBarChart::class,
-            PriunlStatsOverviewWidget::class
         ];
     }
 

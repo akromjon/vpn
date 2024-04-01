@@ -16,9 +16,9 @@ class ClientOverviewStatsWidget extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Total Clients', Client::count()),
-            Stat::make('Online Clients', PritunlUser::where('is_online', true)->count()),
-            Stat::make('Free Pritunl Users', PritunlUser::where('is_online', false)->where('status', PritunlUserStatus::ACTIVE)->count()),
+            Stat::make('Total Users', Client::count()),
+            Stat::make('Online Users', PritunlUser::where('is_online', true)->count()),
+            Stat::make('Available Slots', PritunlUser::where('is_online', false)->where('status', PritunlUserStatus::ACTIVE)->count()),
         ];
     }
 }

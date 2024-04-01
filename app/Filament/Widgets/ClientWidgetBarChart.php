@@ -10,7 +10,7 @@ use Modules\Client\Models\Enum\ClientAction;
 
 class ClientWidgetBarChart extends ChartWidget
 {
-    protected static ?string $heading = 'Users';
+    protected static ?string $heading = 'Users per Country';
 
     protected int|string|array $columnSpan = 'full';
 

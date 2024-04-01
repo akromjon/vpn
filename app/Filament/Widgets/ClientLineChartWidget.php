@@ -11,7 +11,7 @@ use Flowframe\Trend\TrendValue;
 
 class ClientLineChartWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Registered Clients';
+    protected static ?string $heading = 'New Users';
 
     protected static string $color = 'success';
 
