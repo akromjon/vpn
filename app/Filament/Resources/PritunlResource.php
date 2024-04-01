@@ -37,7 +37,6 @@ class PritunlResource extends Resource
     protected static ?string $navigationLabel = 'Pritunl';
 
 
-
     public static function getNavigationBadge(): ?string
     {
         return Pritunl::where(function ($query) {
@@ -126,6 +125,7 @@ class PritunlResource extends Resource
 
                 })->label("Total Users")->searchable()->sortable(),
             ])
+
             ->filters([
                 //
             ])
@@ -175,7 +175,7 @@ class PritunlResource extends Resource
 
                     })->label("Delete Pritunl")->color("danger")->icon("heroicon-o-trash"),
                 ]),
-            ]);
+            ])->poll("5s");
     }
 
     public static function getRelations(): array

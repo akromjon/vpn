@@ -24,7 +24,6 @@ class ClientResource extends Resource
 {
     protected static ?string $model = Client::class;
 
-    // protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = "Clients";
 
     protected static ?string $navigationLabel = 'Clients';
@@ -138,7 +137,7 @@ class ClientResource extends Resource
                         });
                     }),
                 ]),
-            ]);
+            ])->poll("10s");
     }
 
     public static function getRelations(): array
