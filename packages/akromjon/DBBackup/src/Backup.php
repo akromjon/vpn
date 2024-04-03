@@ -61,7 +61,7 @@ class Backup
             File::makeDirectory($path);
         }
 
-        $this->fullPath = $path . "/" . now()->format('d_m_Y_h:m:s') . ".sql";
+        $this->fullPath = $path . "/" . now()->format('d_m_Y_h_i_s') . ".sql";
 
         return $this->fullPath;
     }

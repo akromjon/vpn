@@ -17,14 +17,13 @@ class Telegram extends Base
         return $this->method('getUpdates');
     }
 
+
     public function sendMessage(string $chat_id, string $message): Response
     {
         if(strlen($message)>4096){
 
             $message=substr($message,0,4096);
         }
-
-        logger($message);
 
         return $this->method('sendMessage', [
             'chat_id' => $chat_id,
