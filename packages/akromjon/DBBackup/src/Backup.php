@@ -65,4 +65,15 @@ class Backup
 
         return $this->fullPath;
     }
+
+    public function delete(): bool
+    {
+        $file = File::delete($this->getFullPath());
+
+        if (!$file) {
+            return false;
+        }
+
+        return true;
+    }
 }

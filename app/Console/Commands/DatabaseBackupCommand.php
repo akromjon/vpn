@@ -34,7 +34,7 @@ class DatabaseBackupCommand extends Command
 
         if (!$backup) {
 
-            $this->error("Database Backup Failed");
+            return $this->error("Database Backup Failed");
         }
 
         $this->info("Database Backup was finished successfully!");
@@ -53,5 +53,13 @@ class DatabaseBackupCommand extends Command
         );
 
         $this->info("Database Backup was send to Telegram Channel!");
+
+        $deleted = $backup->delete();
+
+        if (!$deleted) {
+            return $this->error("Database Backup was not deleted!");
+        }
+
+        $this->info("Database Backup was deleted successfully!");
     }
 }
