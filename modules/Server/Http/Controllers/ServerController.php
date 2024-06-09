@@ -10,6 +10,7 @@ use Modules\Client\Models\Token;
 use Modules\Pritunl\Models\PritunlUser;
 use Modules\Server\Http\Requests\PritunlActionRequest;
 use Modules\Pritunl\Repository\PritunlUserRepository;
+use Modules\Server\Jobs\UserAction;
 use Modules\Server\Repository\ServerRepository;
 
 class ServerController extends Controller
@@ -62,35 +63,10 @@ class ServerController extends Controller
     {
         $request = $request->validated();
 
-        $pritunlUser = PritunlUser::where("internal_user_id", $request['pritunl_user_id'])->first();
+        UserAction::dispatch($request);
 
-        if (!$pritunlUser) {
-
-            return response()->json(["message" => "Pritunl user not found"], 404);
-        }
-
-        $client = Client::where("uuid", $request['client_uuid'])->first();
-
-        if (!$client) {
-
-            return response()->json(["message" => "Client not found"], 404);
-        }
-
-        // $request['state'] in [connected,disconnected]
-
-        $state=$request['state'];
-
-        $action = $this->ServerRepository->$state($client, $pritunlUser->id);
-
-        if (!$action) {
-
-            return response()->json([
-                "message" => "Need to be connected to disconnect",
-                'code' => 3020
-            ], 400);
-
-        }
-
-        return response()->json(["message" => $state]);
+        return response()->json([
+            "message"=>"the job has been queued and processed soon!"
+        ]);
     }
 }

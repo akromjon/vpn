@@ -61,7 +61,7 @@ class ServerRepository
     public function downloadConfig(Client $client, string $ip)
     {
 
-        return cache()->remember("{$client->uuid}:{$ip}:pritunl_users", 30, function () use ($client, $ip) {
+        return cache()->remember("{$client->uuid}:{$ip}:pritunl_users", 180, function () use ($client, $ip) {
 
             $server = $this->get($ip);
 
@@ -76,7 +76,7 @@ class ServerRepository
 
             File::append($server->vpn_config_path, PHP_EOL . "setenv UV_CLIENT_UUID {$client->uuid}" . PHP_EOL);
 
-            Wait::dispatch($pritunlUser, $client)->delay(now()->addSeconds(30));
+            Wait::dispatch($pritunlUser, $client)->delay(now()->addSeconds(180));
 
             return $server;
         });
