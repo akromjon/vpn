@@ -25,6 +25,7 @@ class TokenController extends Controller
             'model' => $request->model,
             'email' => $request->email,
             'name' => $request->name,
+            'monetization_type'=>['free','rewarded','app_open','interstitial']
         ]);
 
         $this->log($client->uuid,ClientAction::TOKEN_GENERATED);
